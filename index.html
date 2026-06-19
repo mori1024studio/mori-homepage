@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MORI — 底層邏輯 × AI 工具 × 副業思維</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&display=swap" rel="stylesheet">
   <style>
 
 /* ── TOKENS ── */
 :root {
-  --bg:   #0A0A0F;
-  --gold: #C4A96A;
+  --bg:     #0A0807;
+  --stone:  #13100A;
+  --gold:   #C4A96A;
   --gold-b: #E8C86A;
-  --text: #F0F0F0;
-  --muted: #666680;
+  --text:   #EDE8DF;
+  --muted:  #6B6050;
   --border: rgba(196,169,106,0.12);
 }
 
@@ -24,12 +25,12 @@ html { scroll-behavior: auto; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Noto Sans TC', sans-serif;
+  font-family: 'Noto Serif TC', serif;
   overflow-x: hidden;
   cursor: none;
 }
 
-/* ── GRAIN OVERLAY ── */
+/* ── GRAIN OVERLAY (warmer tint) ── */
 body::before {
   content: '';
   position: fixed;
@@ -37,7 +38,7 @@ body::before {
   width: 200%; height: 200%;
   z-index: 9000;
   pointer-events: none;
-  opacity: 0.04;
+  opacity: 0.06;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
   animation: grain .35s steps(1) infinite;
@@ -52,7 +53,19 @@ body::before {
   85% { transform: translate(0%,15%) }
 }
 
-/* ── THREE CANVAS (fixed, behind all) ── */
+/* ── VIGNETTE (DaVincii edge frame) ── */
+#vignette {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  background: radial-gradient(ellipse 88% 88% at 50% 50%,
+    transparent 28%,
+    rgba(4,3,2,0.55) 68%,
+    rgba(2,1,1,0.88) 100%
+  );
+}
+
+/* ── THREE CANVAS ── */
 #three-canvas {
   position: fixed;
   top: 0; left: 0;
@@ -113,23 +126,20 @@ body.hovering #cursor-ring { width: 58px; height: 58px; border-color: rgba(232,2
 }
 .pre-line.open { width: clamp(56px, 20vw, 240px); }
 #pre-text {
-  font-size: 10px;
-  letter-spacing: .6em;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px;
+  letter-spacing: .65em;
   color: var(--muted);
   padding: 0 28px;
   white-space: nowrap;
   user-select: none;
-  transition: color .4s, letter-spacing .4s;
+  transition: color .4s;
 }
 #pre-text.ready { color: var(--text); cursor: none; }
 #pre-text.ready:hover { color: var(--gold); }
 
-/* ── SITE (scrollable layer) ── */
-#site {
-  position: relative;
-  z-index: 10;
-  opacity: 0;
-}
+/* ── SITE ── */
+#site { position: relative; z-index: 10; opacity: 0; }
 
 /* ── NAV ── */
 nav {
@@ -142,18 +152,22 @@ nav {
   padding: 28px 52px;
 }
 .logo {
-  font-size: 12px; font-weight: 900;
-  letter-spacing: .45em;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px; font-weight: 400;
+  letter-spacing: .5em;
+  color: var(--text);
 }
 .nav-links { display: flex; gap: 36px; }
 .nav-links a {
+  font-family: 'Noto Serif TC', serif;
   font-size: 10px; letter-spacing: .35em;
   color: var(--muted); text-decoration: none;
   transition: color .3s; cursor: none;
+  font-weight: 300;
 }
 .nav-links a:hover { color: var(--gold); }
 
-/* ── HERO (transparent so canvas shows) ── */
+/* ── HERO ── */
 #hero {
   height: 160vh;
   display: flex;
@@ -170,9 +184,11 @@ nav {
   padding: 0 24px;
 }
 .hero-eyebrow {
-  font-size: 10px; letter-spacing: .55em;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; letter-spacing: .6em;
   color: var(--gold); margin-bottom: 40px;
   opacity: 0; transform: translateY(12px);
+  font-weight: 300;
 }
 .hero-title {
   display: flex; gap: 1px;
@@ -180,6 +196,7 @@ nav {
   margin-bottom: 36px;
 }
 .hero-letter {
+  font-family: 'Noto Serif TC', serif;
   font-size: clamp(96px,15vw,210px);
   font-weight: 900; line-height: .88;
   background: linear-gradient(175deg, #FFF 0%, #D4B878 55%, var(--gold) 100%);
@@ -190,9 +207,10 @@ nav {
   display: inline-block;
 }
 .hero-sub {
+  font-family: 'Noto Serif TC', serif;
   font-size: clamp(13px,1.4vw,17px);
   font-weight: 300; color: var(--muted);
-  letter-spacing: .18em; line-height: 2;
+  letter-spacing: .12em; line-height: 2.2;
   opacity: 0; transform: translateY(18px);
 }
 .hero-sub em {
@@ -207,29 +225,113 @@ nav {
   position: absolute;
   bottom: 5vh; left: 50%;
   transform: translateX(-50%);
+  font-family: 'Cormorant Garamond', serif;
   font-size: 9px; letter-spacing: .5em;
-  color: rgba(102,102,128,.5);
+  color: rgba(107,96,80,.5);
   white-space: nowrap; opacity: 0;
 }
 .scroll-cue::before, .scroll-cue::after {
   content: '';
   position: absolute; top: 50%;
   height: 1px; width: 32px;
-  background: rgba(196,169,106,.25);
+  background: rgba(196,169,106,.2);
 }
 .scroll-cue::before { right: calc(100% + 12px); }
 .scroll-cue::after  { left:  calc(100% + 12px); }
 
-/* ── QUIZ SECTION (frosted glass so canvas bleeds through) ── */
-#quizzes {
-  padding: 120px 52px 140px;
-  background: rgba(10,10,15,.78);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-top: 1px solid var(--border);
+/* ── ORNAMENT ── */
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
 }
+.orn-line { display: block; width: 80px; height: 1px; }
+.orn-line-l { background: linear-gradient(to right, transparent, rgba(196,169,106,.35)); }
+.orn-line-r { background: linear-gradient(to left,  transparent, rgba(196,169,106,.35)); }
+.orn-diamond {
+  width: 5px; height: 5px;
+  border: 1px solid rgba(196,169,106,.5);
+  transform: rotate(45deg);
+  display: block;
+}
+
+/* ── MEDALLION SECTION ── */
+#medallion {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  background: rgba(10,8,7,.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border);
+  padding: 80px 24px;
+}
+.medallion-disc {
+  width: min(65vw, 560px);
+  height: min(65vw, 560px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 38%, #1C1508 0%, #0E0A05 55%, #070502 100%);
+  border: 1px solid rgba(196,169,106,.13);
+  box-shadow:
+    0 0 120px rgba(0,0,0,.7),
+    inset 0 0 70px rgba(0,0,0,.5),
+    0 0 0 1px rgba(196,169,106,.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: circle(0% at 50% 50%);
+  position: relative;
+}
+.medallion-disc::before {
+  content: '';
+  position: absolute; inset: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(196,169,106,.07);
+}
+.medallion-disc::after {
+  content: '';
+  position: absolute; inset: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(196,169,106,.04);
+}
+.medallion-inner {
+  text-align: center;
+  padding: 0 48px;
+  z-index: 1;
+}
+.medallion-roman {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(44px,8vw,76px);
+  font-weight: 300;
+  color: rgba(196,169,106,.45);
+  line-height: 1;
+  letter-spacing: .2em;
+  margin-bottom: 6px;
+}
+.medallion-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 10px;
+  letter-spacing: .65em;
+  color: rgba(196,169,106,.38);
+  margin-bottom: 30px;
+}
+.medallion-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(16px,2.6vw,24px);
+  font-weight: 300;
+  color: rgba(237,232,223,.65);
+  line-height: 2;
+  letter-spacing: .1em;
+}
+
+/* ── SECTION LABEL ── */
 .section-label {
-  font-size: 9px; letter-spacing: .55em;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 10px; letter-spacing: .6em;
   color: var(--gold); margin-bottom: 72px;
   display: flex; align-items: center; gap: 20px;
 }
@@ -238,115 +340,182 @@ nav {
   background: var(--border);
 }
 
-/* ── QUIZ GRID ── */
-.quiz-grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  border: 1px solid var(--border);
-  gap: 1px; background: var(--border);
+/* ── QUIZ SECTION ── */
+#quizzes {
+  padding: 120px 0 100px;
+  background: rgba(10,8,7,.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  overflow: hidden;
 }
-@media(max-width:900px){ .quiz-grid { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:560px){ .quiz-grid { grid-template-columns: 1fr; } }
+.quizzes-header { padding: 0 52px; }
+
+/* ── QUIZ STAGE (3D carousel) ── */
+.quiz-stage-wrap {
+  position: relative;
+  height: 480px;
+  perspective: 1100px;
+  margin-bottom: 0;
+}
+.quiz-stage {
+  position: relative;
+  width: 100%; height: 100%;
+  transform-style: preserve-3d;
+}
 
 /* ── QUIZ CARD ── */
 .quiz-card {
-  background: rgba(10,10,15,.85);
-  padding: 44px 40px;
-  position: relative; overflow: hidden;
-  transition: background .45s;
-  transform-style: preserve-3d;
-  will-change: transform;
+  position: absolute;
+  left: 50%; top: 50%;
+  width: min(440px, 88vw);
+  background: rgba(19,16,10,.92);
+  border: 1px solid var(--border);
+  padding: 52px 48px;
+  transition:
+    transform .75s cubic-bezier(.4,0,.2,1),
+    opacity   .75s cubic-bezier(.4,0,.2,1),
+    box-shadow .4s;
+  will-change: transform, opacity;
   cursor: none;
-  opacity: 0; transform: translateY(40px);
+  overflow: hidden;
 }
-.quiz-card:hover { background: rgba(20,20,31,.95); }
-.quiz-card::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(108deg,transparent 36%,rgba(196,169,106,.07) 50%,transparent 64%);
-  background-size: 200%; background-position: 100%;
-  transition: background-position .75s;
-  pointer-events: none;
-}
-.quiz-card:hover::after { background-position: 0%; }
 .quiz-card::before {
   content: '';
   position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
   background: var(--gold);
   transform: scaleY(0); transform-origin: bottom;
-  transition: transform .4s;
+  transition: transform .5s;
 }
-.quiz-card:hover::before { transform: scaleY(1); }
+.quiz-card.is-active {
+  box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(196,169,106,.12);
+}
+.quiz-card.is-active::before { transform: scaleY(1); }
+.quiz-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(130deg, transparent 40%, rgba(196,169,106,.065) 50%, transparent 60%);
+  background-size: 200%; background-position: 100%;
+  transition: background-position .9s;
+  pointer-events: none;
+}
+.quiz-card.is-active::after { background-position: 0%; }
 .card-num {
-  font-size: 10px; letter-spacing: .35em;
-  color: var(--gold); margin-bottom: 36px; opacity: .65;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; letter-spacing: .35em;
+  color: var(--gold); margin-bottom: 40px; opacity: .5;
 }
 .card-title {
-  font-size: clamp(18px,1.8vw,24px); font-weight: 900;
-  line-height: 1.35; margin-bottom: 16px;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(20px,2vw,26px); font-weight: 600;
+  line-height: 1.55; margin-bottom: 18px;
+  color: var(--text);
 }
 .card-tag {
-  font-size: 10px; letter-spacing: .22em;
-  color: var(--muted); margin-bottom: 52px;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 11px; letter-spacing: .15em;
+  color: var(--muted); margin-bottom: 56px;
+  font-weight: 300;
 }
 .card-cta {
   display: inline-flex; align-items: center; gap: 14px;
-  font-size: 9px; letter-spacing: .4em; color: var(--gold);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 10px; letter-spacing: .42em; color: var(--gold);
 }
 .cta-line {
   display: block; width: 24px; height: 1px;
   background: var(--gold); transition: width .35s;
 }
-.quiz-card:hover .cta-line { width: 40px; }
+.quiz-card.is-active .cta-line { width: 40px; }
 .card-link { position: absolute; inset: 0; z-index: 3; }
+
+/* ── CAROUSEL NAV ── */
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 60px;
+  padding: 0 52px;
+}
+.carousel-btn {
+  width: 48px; height: 48px;
+  border: 1px solid rgba(196,169,106,.22);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--gold);
+  font-size: 18px;
+  cursor: none;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .3s, background .3s;
+}
+.carousel-btn:hover { border-color: var(--gold); background: rgba(196,169,106,.07); }
+.carousel-pips { display: flex; gap: 12px; align-items: center; }
+.pip {
+  width: 20px; height: 1px;
+  background: rgba(196,169,106,.2);
+  transition: background .4s, width .4s;
+  cursor: none;
+}
+.pip.active { background: var(--gold); width: 36px; }
 
 /* ── ABOUT ── */
 #about {
   padding: 160px 52px;
-  background: rgba(10,10,15,.65);
+  background: rgba(10,8,7,.72);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid var(--border);
 }
 .about-inner { max-width: 920px; margin: 0 auto; }
 .about-label {
-  font-size: 9px; letter-spacing: .55em;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 10px; letter-spacing: .6em;
   color: var(--gold); margin-bottom: 60px;
 }
 .about-text {
-  font-size: clamp(26px,3.4vw,46px);
-  font-weight: 300; line-height: 1.75;
-  color: rgba(240,240,240,.45);
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(24px,3.2vw,44px);
+  font-weight: 300; line-height: 1.9;
+  color: rgba(237,232,223,.35);
   transition: color 1s;
 }
 .about-text em {
   font-style: italic;
   font-family: 'Cormorant Garamond', serif;
   color: var(--text); -webkit-text-fill-color: var(--text);
-  font-size: 1.1em; font-weight: 300;
+  font-size: 1.12em; font-weight: 300;
 }
 .about-text .hl {
   color: var(--gold); -webkit-text-fill-color: var(--gold);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* ── FOOTER ── */
 footer {
   padding: 56px 52px;
-  background: rgba(10,10,15,.92);
+  background: rgba(10,8,7,.96);
   border-top: 1px solid var(--border);
   display: flex; align-items: center;
   justify-content: space-between; flex-wrap: wrap; gap: 24px;
 }
-.footer-logo { font-size: 12px; font-weight: 900; letter-spacing: .45em; }
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px; font-weight: 400; letter-spacing: .5em;
+}
 .footer-links { display: flex; gap: 36px; }
 .footer-links a {
+  font-family: 'Noto Serif TC', serif;
   font-size: 10px; letter-spacing: .3em;
   color: var(--muted); text-decoration: none;
-  transition: color .3s; cursor: none;
+  transition: color .3s; cursor: none; font-weight: 300;
 }
 .footer-links a:hover { color: var(--gold); }
-.footer-copy { font-size: 9px; letter-spacing: .15em; color: rgba(102,102,128,.4); }
+.footer-copy {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 10px; letter-spacing: .15em;
+  color: rgba(107,96,80,.4);
+}
 
   </style>
 </head>
@@ -354,6 +523,9 @@ footer {
 
   <!-- ── THREE.JS CANVAS ── -->
   <canvas id="three-canvas"></canvas>
+
+  <!-- ── VIGNETTE ── -->
+  <div id="vignette"></div>
 
   <!-- ── PRELOADER ── -->
   <div id="preloader">
@@ -399,59 +571,99 @@ footer {
       <div class="scroll-cue">SCROLL TO EXPLORE</div>
     </section>
 
-    <!-- QUIZZES -->
+    <!-- MEDALLION -->
+    <section id="medallion">
+      <div class="ornament">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+      <div class="medallion-disc">
+        <div class="medallion-inner">
+          <div class="medallion-roman">VI</div>
+          <div class="medallion-label">PATHS OF MIND</div>
+          <div class="medallion-title">
+            知曉自己<br>才能超越自己
+          </div>
+        </div>
+      </div>
+      <div class="ornament">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+    </section>
+
+    <!-- QUIZZES CAROUSEL -->
     <section id="quizzes">
-      <div class="section-label">TEST YOURSELF</div>
-      <div class="quiz-grid">
+      <div class="quizzes-header">
+        <div class="section-label">TEST YOURSELF</div>
+      </div>
+      <div class="quiz-stage-wrap">
+        <div class="quiz-stage" id="quiz-stage">
 
-        <div class="quiz-card">
-          <a class="card-link" href="https://mori1024studio.github.io/not-enough-quiz/" target="_blank" rel="noopener"></a>
-          <div class="card-num">01 / 06</div>
-          <div class="card-title">你的不夠好<br>從哪裡來？</div>
-          <div class="card-tag">心理探索 · 5 種類型</div>
-          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+          <div class="quiz-card" data-idx="0">
+            <a class="card-link" href="https://mori1024studio.github.io/not-enough-quiz/" target="_blank" rel="noopener"></a>
+            <div class="card-num">01 / 06</div>
+            <div class="card-title">你的不夠好<br>從哪裡來？</div>
+            <div class="card-tag">心理探索 · 5 種類型</div>
+            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+          </div>
+
+          <div class="quiz-card" data-idx="1">
+            <a class="card-link" href="https://mori1024studio.github.io/mbti-shadow-quiz/" target="_blank" rel="noopener"></a>
+            <div class="card-num">02 / 06</div>
+            <div class="card-title">MBTI<br>壓力影子測驗</div>
+            <div class="card-tag">人格分析 · 4 種類型</div>
+            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+          </div>
+
+          <div class="quiz-card" data-idx="2">
+            <a class="card-link" href="https://mori1024studio.github.io/mindfuck-quiz/" target="_blank" rel="noopener"></a>
+            <div class="card-num">03 / 06</div>
+            <div class="card-title">你的暗黑心智<br>是哪一種？</div>
+            <div class="card-tag">思維模式 · 7 種類型</div>
+            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+          </div>
+
+          <div class="quiz-card" data-idx="3">
+            <a class="card-link" href="https://mori1024studio.github.io/wealth-ladder/" target="_blank" rel="noopener"></a>
+            <div class="card-num">04 / 06</div>
+            <div class="card-title">財富階梯<br>測驗</div>
+            <div class="card-tag">財務意識 · 6 個層級</div>
+            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+          </div>
+
+          <div class="quiz-card" data-idx="4">
+            <a class="card-link" href="https://mori1024studio.github.io/atomic-habits-quiz/" target="_blank" rel="noopener"></a>
+            <div class="card-num">05 / 06</div>
+            <div class="card-title">原子習慣<br>斷點測驗</div>
+            <div class="card-tag">習慣系統 · 6 種類型</div>
+            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+          </div>
+
+          <div class="quiz-card" data-idx="5">
+            <a class="card-link" href="https://mori1024studio.github.io/sidebiz-quiz/" target="_blank" rel="noopener"></a>
+            <div class="card-num">06 / 06</div>
+            <div class="card-title">副業基因<br>測驗</div>
+            <div class="card-tag">副業路徑 · 5 種類型</div>
+            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+          </div>
+
         </div>
+      </div>
 
-        <div class="quiz-card">
-          <a class="card-link" href="https://mori1024studio.github.io/mbti-shadow-quiz/" target="_blank" rel="noopener"></a>
-          <div class="card-num">02 / 06</div>
-          <div class="card-title">MBTI<br>壓力影子測驗</div>
-          <div class="card-tag">人格分析 · 4 種類型</div>
-          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+      <div class="carousel-nav">
+        <button class="carousel-btn" id="prev-btn">&#8592;</button>
+        <div class="carousel-pips">
+          <div class="pip active" data-pip="0"></div>
+          <div class="pip" data-pip="1"></div>
+          <div class="pip" data-pip="2"></div>
+          <div class="pip" data-pip="3"></div>
+          <div class="pip" data-pip="4"></div>
+          <div class="pip" data-pip="5"></div>
         </div>
-
-        <div class="quiz-card">
-          <a class="card-link" href="https://mori1024studio.github.io/mindfuck-quiz/" target="_blank" rel="noopener"></a>
-          <div class="card-num">03 / 06</div>
-          <div class="card-title">你的暗黑心智<br>是哪一種？</div>
-          <div class="card-tag">思維模式 · 7 種類型</div>
-          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
-        </div>
-
-        <div class="quiz-card">
-          <a class="card-link" href="https://mori1024studio.github.io/wealth-ladder/" target="_blank" rel="noopener"></a>
-          <div class="card-num">04 / 06</div>
-          <div class="card-title">財富階梯<br>測驗</div>
-          <div class="card-tag">財務意識 · 6 個層級</div>
-          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
-        </div>
-
-        <div class="quiz-card">
-          <a class="card-link" href="https://mori1024studio.github.io/atomic-habits-quiz/" target="_blank" rel="noopener"></a>
-          <div class="card-num">05 / 06</div>
-          <div class="card-title">原子習慣<br>斷點測驗</div>
-          <div class="card-tag">習慣系統 · 6 種類型</div>
-          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
-        </div>
-
-        <div class="quiz-card">
-          <a class="card-link" href="https://mori1024studio.github.io/sidebiz-quiz/" target="_blank" rel="noopener"></a>
-          <div class="card-num">06 / 06</div>
-          <div class="card-title">副業基因<br>測驗</div>
-          <div class="card-tag">副業路徑 · 5 種類型</div>
-          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
-        </div>
-
+        <button class="carousel-btn" id="next-btn">&#8594;</button>
       </div>
     </section>
 
@@ -530,7 +742,7 @@ footer {
   const cvs = document.getElementById('three-canvas');
   const W = window.innerWidth, H = window.innerHeight;
   const scene    = new THREE.Scene();
-  scene.fog      = new THREE.FogExp2(0x0A0A0F, 0.0028);
+  scene.fog      = new THREE.FogExp2(0x0A0807, 0.0028);
 
   const camera   = new THREE.PerspectiveCamera(68, W/H, 0.1, 2000);
   camera.position.set(0, 90, 380);
@@ -539,7 +751,7 @@ footer {
   const renderer = new THREE.WebGLRenderer({ canvas: cvs, antialias: false });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
   renderer.setSize(W, H);
-  renderer.setClearColor(0x0A0A0F, 1);
+  renderer.setClearColor(0x0A0807, 1);
 
   const circleTex = makeCircleTex();
 
@@ -547,33 +759,25 @@ footer {
   const isMobile = window.innerWidth < 768;
   const COUNT = isMobile ? 7000 : 16000;
 
-  const pos = new Float32Array(COUNT * 3);
-  const col = new Float32Array(COUNT * 3);
-  const phase = new Float32Array(COUNT);    // for float animation
+  const pos   = new Float32Array(COUNT * 3);
+  const col   = new Float32Array(COUNT * 3);
+  const phase = new Float32Array(COUNT);
 
   for (let i = 0; i < COUNT; i++) {
     const x = (Math.random() - .5) * 1000;
-    const z = Math.random() * 1400 - 1000; // z from -1000 to 400
-
-    // two layers of noise for terrain detail
+    const z = Math.random() * 1400 - 1000;
     const n1 = noise2D(x * .004, z * .004);
     const n2 = noise2D(x * .012, z * .012);
     const n3 = noise2D(x * .03,  z * .03);
     let y = n1 * 28 + n2 * 10 + n3 * 5 - 40;
-
-    // ~12% are "atmosphere" particles floating above
     if (Math.random() < .12) y += 60 + Math.random() * 90;
-
     pos[i*3]   = x;
     pos[i*3+1] = y;
     pos[i*3+2] = z;
-
-    // gold with warm variation
     const b = .25 + Math.random() * .75;
     col[i*3]   = (196/255) * b;
     col[i*3+1] = (169/255) * b * (.9 + Math.random() * .2);
     col[i*3+2] = (106/255) * b * (.7 + Math.random() * .3);
-
     phase[i] = Math.random() * Math.PI * 2;
   }
 
@@ -593,11 +797,10 @@ footer {
     blending: THREE.AdditiveBlending,
     alphaTest: .01,
   });
-
   const particles = new THREE.Points(geo, mat);
   scene.add(particles);
 
-  /* ── AMBIENT STAR FIELD (distant, very sparse) ── */
+  /* ── AMBIENT STAR FIELD ── */
   const STAR_COUNT = 1200;
   const starPos = new Float32Array(STAR_COUNT * 3);
   for (let i = 0; i < STAR_COUNT; i++) {
@@ -608,7 +811,7 @@ footer {
   const starGeo = new THREE.BufferGeometry();
   starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
   const starMat = new THREE.PointsMaterial({
-    size: 1.2, color: 0xC4A96A, transparent: true, opacity: .25,
+    size: 1.2, color: 0xC4A96A, transparent: true, opacity: .22,
     sizeAttenuation: true, depthWrite: false,
     blending: THREE.AdditiveBlending, map: circleTex, alphaTest: .01,
   });
@@ -631,50 +834,31 @@ footer {
     varying vec3 vNormal;
     varying vec3 vViewDir;
     void main() {
-      // Fresnel rim glow — softer, more diffuse (DaVincii style)
       float cosTheta = max(dot(vViewDir, vNormal), 0.0);
-      float fresnel = 1.0 - cosTheta;
-      float rim     = pow(fresnel, 1.4);        // soft wide rim
-
-      // Slow breath pulse
-      float breath = 0.88 + 0.12 * sin(uTime * 0.72);
-
-      // Warm inner glow (center, like DaVincii orb center)
-      float core = pow(cosTheta, 3.5) * 0.45;
-
-      // Wide diffuse halo around the sphere
-      float halo = pow(fresnel, 0.6) * 0.20;
-
-      float alpha = (rim * 0.75 + core + halo) * breath * uFade;
-
-      // Gold: bright warm rim, soft amber core
-      vec3 rimCol  = vec3(0.98, 0.88, 0.52);
-      vec3 coreCol = vec3(0.82, 0.65, 0.30);
-      vec3 color = mix(rimCol, coreCol, pow(cosTheta, 0.5));
-
-      gl_FragColor = vec4(color, alpha);
+      float fresnel  = 1.0 - cosTheta;
+      float rim      = pow(fresnel, 1.4);
+      float breath   = 0.88 + 0.12 * sin(uTime * 0.72);
+      float core     = pow(cosTheta, 3.5) * 0.45;
+      float halo     = pow(fresnel, 0.6) * 0.20;
+      float alpha    = (rim * 0.75 + core + halo) * breath * uFade;
+      vec3 rimCol    = vec3(0.98, 0.88, 0.52);
+      vec3 coreCol   = vec3(0.82, 0.65, 0.30);
+      vec3 color     = mix(rimCol, coreCol, pow(cosTheta, 0.5));
+      gl_FragColor   = vec4(color, alpha);
     }
   `;
   const sphereGeo = new THREE.SphereGeometry(200, 64, 64);
-  const sphereUni = {
-    uTime: { value: 0.0 },
-    uFade: { value: 1.0 },
-  };
+  const sphereUni = { uTime: { value: 0.0 }, uFade: { value: 1.0 } };
   const sphereMat = new THREE.ShaderMaterial({
-    vertexShader:   sphereVert,
-    fragmentShader: sphereFrag,
-    uniforms:       sphereUni,
-    transparent:    true,
-    side:           THREE.FrontSide,
-    depthWrite:     false,
-    blending:       THREE.AdditiveBlending,
+    vertexShader: sphereVert, fragmentShader: sphereFrag,
+    uniforms: sphereUni, transparent: true,
+    side: THREE.FrontSide, depthWrite: false,
+    blending: THREE.AdditiveBlending,
   });
   const glowSphere = new THREE.Mesh(sphereGeo, sphereMat);
   glowSphere.position.set(0, 0, -30);
   glowSphere.renderOrder = 0;
   scene.add(glowSphere);
-
-  // Make particles render on top of sphere
   particles.renderOrder = 1;
 
   /* ── SCROLL → CAMERA ── */
@@ -682,8 +866,8 @@ footer {
   window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
 
   const camPath = {
-    start: { px:0, py:90,  pz:380, lx:0, ly:10,  lz:0   },
-    end:   { px:0, py:15,  pz:-350, lx:0, ly:5,  lz:-700 },
+    start: { px:0, py:90, pz:380,  lx:0, ly:10, lz:0    },
+    end:   { px:0, py:15, pz:-350, lx:0, ly:5,  lz:-700 },
   };
   function lerp(a,b,t){ return a+(b-a)*t; }
   function easeInOut(t){ return t<.5?2*t*t:-1+(4-2*t)*t; }
@@ -695,12 +879,9 @@ footer {
   function animate() {
     requestAnimationFrame(animate);
     time += .006;
-
-    // Scroll-driven camera
     const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     const raw = Math.min(scrollY / maxScroll, 1);
     const p = easeInOut(raw);
-
     camera.position.x = lerp(camPath.start.px, camPath.end.px, p) + Math.sin(time*.25) * 3;
     camera.position.y = lerp(camPath.start.py, camPath.end.py, p);
     camera.position.z = lerp(camPath.start.pz, camPath.end.pz, p);
@@ -709,22 +890,14 @@ footer {
       lerp(camPath.start.ly, camPath.end.ly, p),
       lerp(camPath.start.lz, camPath.end.lz, p)
     );
-
-    // Gentle particle float (every 3rd particle to save performance)
     for (let i = 0; i < COUNT; i += 3) {
       posAttr.array[i*3+1] += Math.sin(time + phase[i]) * .015;
     }
     posAttr.needsUpdate = true;
-
-    // Very slow field drift
     particles.rotation.y += .00008;
-
-    // Sphere: update time + fade as camera flies in
     sphereUni.uTime.value = time;
-    const heroFade = 1.0 - easeInOut(Math.min(raw * 2.8, 1));
-    sphereUni.uFade.value = heroFade;
+    sphereUni.uFade.value = 1.0 - easeInOut(Math.min(raw * 2.8, 1));
     glowSphere.rotation.y += 0.00025;
-
     renderer.render(scene, camera);
   }
   animate();
@@ -750,9 +923,65 @@ footer {
     ring.style.left=rx+'px'; ring.style.top=ry+'px';
     requestAnimationFrame(lerpRing);
   })();
-  document.querySelectorAll('a,.quiz-card').forEach(el=>{
+  document.querySelectorAll('a,.quiz-card,.carousel-btn,.pip').forEach(el=>{
     el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
     el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+  });
+
+  /* ── CAROUSEL ── */
+  let activeIdx = 0;
+  const cards = Array.from(document.querySelectorAll('.quiz-card'));
+  const pips  = Array.from(document.querySelectorAll('.pip'));
+  const N = cards.length;
+
+  function setCardPos(card, offset) {
+    let tx, tz, scale, ry, opacity, zIdx, pe;
+    const ao = Math.abs(offset);
+    if (offset === 0) {
+      tx='-50%'; tz=0; scale=1; ry=0; opacity=1; zIdx=5; pe='auto';
+    } else if (ao === 1) {
+      tx=`calc(-50% + ${offset * 310}px)`;
+      tz=-90; scale=0.87; ry=offset*-9; opacity=0.42; zIdx=3; pe='none';
+    } else if (ao === 2) {
+      tx=`calc(-50% + ${offset * 280}px)`;
+      tz=-180; scale=0.74; ry=offset*-14; opacity=0.15; zIdx=1; pe='none';
+    } else {
+      tx='-50%'; tz=-300; scale=0.6; ry=0; opacity=0; zIdx=0; pe='none';
+    }
+    card.style.transform = `translateX(${tx}) translateY(-50%) translateZ(${tz}px) rotateY(${ry}deg) scale(${scale})`;
+    card.style.opacity   = opacity;
+    card.style.zIndex    = zIdx;
+    card.style.pointerEvents = pe;
+    card.classList.toggle('is-active', offset === 0);
+  }
+
+  function updateCarousel(instant) {
+    cards.forEach((card, i) => {
+      let offset = i - activeIdx;
+      if (offset >  N/2) offset -= N;
+      if (offset < -N/2) offset += N;
+      if (instant) {
+        const t = card.style.transition;
+        card.style.transition = 'none';
+        setCardPos(card, offset);
+        requestAnimationFrame(() => { card.style.transition = t; });
+      } else {
+        setCardPos(card, offset);
+      }
+    });
+    pips.forEach((pip, i) => pip.classList.toggle('active', i === activeIdx));
+  }
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    activeIdx = (activeIdx + 1) % N;
+    updateCarousel(false);
+  });
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    activeIdx = (activeIdx - 1 + N) % N;
+    updateCarousel(false);
+  });
+  pips.forEach((pip, i) => {
+    pip.addEventListener('click', () => { activeIdx = i; updateCarousel(false); });
   });
 
   /* ── PRELOADER ── */
@@ -787,55 +1016,102 @@ footer {
   }
 
   function startReveal() {
+    // Init carousel (instant, no animation)
+    updateCarousel(true);
+
     const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
     tl.to('.hero-eyebrow', { opacity:1, y:0, duration:.8 })
       .to('.hero-letter',  { opacity:1, y:0, duration:.9, stagger:.08 }, '-=.4')
       .to('.hero-sub',     { opacity:1, y:0, duration:.8 }, '-=.45')
       .to('.scroll-cue',   { opacity:1, duration:1 }, '-=.3');
 
-    // Quiz cards on scroll
-    gsap.utils.toArray('.quiz-card').forEach((card,i) => {
-      gsap.to(card, {
-        opacity:1, y:0, duration:.7, ease:'power3.out',
-        delay: (i%3)*.1,
-        scrollTrigger:{
-          trigger: card,
-          start: 'top 88%',
-          toggleActions: 'play none none none'
-        }
-      });
+    // Medallion: clip-path reveal on scroll
+    gsap.to('.medallion-disc', {
+      clipPath: 'circle(52% at 50% 50%)',
+      duration: 1.4,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: '#medallion',
+        start: 'top 72%',
+        once: true,
+      }
     });
 
-    // About text brightens on scroll
-    gsap.to('#about .about-text', {
-      color: 'rgba(240,240,240,.92)',
-      duration: 1.5,
-      scrollTrigger:{
+    // Medallion inner text fade in after disc opens
+    gsap.from('.medallion-roman, .medallion-label, .medallion-title', {
+      opacity: 0, y: 20,
+      duration: 1,
+      ease: 'power2.out',
+      stagger: .15,
+      scrollTrigger: {
+        trigger: '#medallion',
+        start: 'top 60%',
+        once: true,
+      }
+    });
+
+    // Ornaments
+    gsap.from('.ornament', {
+      opacity: 0,
+      duration: 1,
+      ease: 'power2.out',
+      stagger: .2,
+      scrollTrigger: {
+        trigger: '#medallion',
+        start: 'top 75%',
+        once: true,
+      }
+    });
+
+    // Quiz section fade
+    gsap.from('#quizzes .quizzes-header', {
+      opacity: 0, y: 30,
+      duration: .8,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: '#quizzes',
+        start: 'top 80%',
+        once: true,
+      }
+    });
+
+    gsap.from('.quiz-stage-wrap', {
+      opacity: 0, y: 40,
+      duration: 1,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: '#quizzes',
+        start: 'top 70%',
+        once: true,
+      }
+    });
+
+    gsap.from('.carousel-nav', {
+      opacity: 0,
+      duration: .8,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#quizzes',
+        start: 'top 55%',
+        once: true,
+      }
+    });
+
+    // About scrub
+    gsap.to('.about-text', {
+      color: 'rgba(237,232,223,0.82)',
+      duration: 1,
+      ease: 'none',
+      scrollTrigger: {
         trigger: '#about',
-        start: 'top 72%',
-        end: 'bottom 50%',
-        scrub: .9
+        start: 'top 70%',
+        end: 'top 20%',
+        scrub: true,
       }
     });
   }
 
-  window.addEventListener('DOMContentLoaded', () => setTimeout(initPreloader, 250));
-
-  /* ── CARD 3D TILT ── */
-  document.querySelectorAll('.quiz-card').forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const r=card.getBoundingClientRect();
-      const rx=(e.clientY-r.top -r.height/2)/r.height*2 * -7;
-      const ry=(e.clientX-r.left-r.width/2) /r.width*2  *  7;
-      card.style.transition='transform .1s, background .45s';
-      card.style.transform=`perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.015)`;
-    });
-    card.addEventListener('mouseleave', () => {
-      card.style.transition='transform .6s ease, background .45s';
-      card.style.transform='perspective(700px) rotateX(0deg) rotateY(0deg) scale(1)';
-    });
-  });
-
+  initPreloader();
   </script>
 </body>
 </html>
