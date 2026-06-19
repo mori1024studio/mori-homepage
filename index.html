@@ -8,143 +8,128 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
   <style>
 
-/* ── DESIGN TOKENS ── */
+/* ── TOKENS ── */
 :root {
-  --bg: #0A0A0F;
-  --card: #14141F;
-  --option: #1C1C2A;
+  --bg:   #0A0A0F;
   --gold: #C4A96A;
-  --gold-bright: #E8C86A;
+  --gold-b: #E8C86A;
   --text: #F0F0F0;
   --muted: #666680;
   --border: rgba(196,169,106,0.12);
-  --border-hover: rgba(196,169,106,0.3);
 }
 
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: auto; }
 body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Noto Sans TC', sans-serif;
-  font-weight: 400;
   overflow-x: hidden;
   cursor: none;
 }
 
-/* ── ANIMATED GRAIN OVERLAY ── */
+/* ── GRAIN OVERLAY ── */
 body::before {
   content: '';
   position: fixed;
   inset: -50%;
-  width: 200%;
-  height: 200%;
-  z-index: 9997;
+  width: 200%; height: 200%;
+  z-index: 9000;
   pointer-events: none;
-  opacity: 0.035;
+  opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
-  animation: grain 0.4s steps(1) infinite;
+  animation: grain .35s steps(1) infinite;
 }
 @keyframes grain {
-  0%   { transform: translate(0,0) }
-  10%  { transform: translate(-5%,-10%) }
-  20%  { transform: translate(-15%,5%) }
-  30%  { transform: translate(7%,-25%) }
-  40%  { transform: translate(-5%,25%) }
-  50%  { transform: translate(-15%,10%) }
-  60%  { transform: translate(15%,0%) }
-  70%  { transform: translate(0%,15%) }
-  80%  { transform: translate(3%,35%) }
-  90%  { transform: translate(-10%,10%) }
+  0%  { transform: translate(0,0) }
+  14% { transform: translate(-5%,-10%) }
+  28% { transform: translate(-15%,5%) }
+  42% { transform: translate(7%,-25%) }
+  57% { transform: translate(-5%,25%) }
+  71% { transform: translate(15%,0%) }
+  85% { transform: translate(0%,15%) }
 }
 
-/* ── CUSTOM CURSOR ── */
+/* ── THREE CANVAS (fixed, behind all) ── */
+#three-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  display: block;
+}
+
+/* ── CURSOR ── */
 #cursor {
   position: fixed;
-  width: 8px;
-  height: 8px;
+  width: 7px; height: 7px;
   background: var(--gold);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%,-50%);
-  transition: transform 0.1s ease, background 0.25s ease, opacity 0.25s;
+  transition: transform .1s, background .25s;
 }
 #cursor-ring {
   position: fixed;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(196,169,106,0.45);
+  width: 36px; height: 36px;
+  border: 1px solid rgba(196,169,106,.45);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
   transform: translate(-50%,-50%);
-  transition: width 0.35s ease, height 0.35s ease, border-color 0.35s ease;
+  transition: width .35s, height .35s, border-color .35s;
 }
-body.hovering #cursor {
-  transform: translate(-50%,-50%) scale(2.2);
-  background: var(--gold-bright);
-}
-body.hovering #cursor-ring {
-  width: 60px;
-  height: 60px;
-  border-color: rgba(232,200,106,0.55);
-}
+body.hovering #cursor { transform: translate(-50%,-50%) scale(2.2); background: var(--gold-b); }
+body.hovering #cursor-ring { width: 58px; height: 58px; border-color: rgba(232,200,106,.55); }
 
 /* ── PRELOADER ── */
 #preloader {
-  position: fixed;
-  inset: 0;
-  z-index: 9996;
+  position: fixed; inset: 0;
+  z-index: 9990;
   background: var(--bg);
   overflow: hidden;
 }
-.pre-half {
+#pre-top, #pre-bot {
   position: absolute;
-  left: 0;
-  width: 100%;
-  height: 50%;
+  left: 0; width: 100%; height: 50%;
   background: var(--bg);
 }
 #pre-top { top: 0; }
 #pre-bot { bottom: 0; }
 #pre-center {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
   z-index: 2;
 }
 .pre-line {
   height: 1px;
   width: 0;
-  background: rgba(196,169,106,0.35);
-  transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+  background: rgba(196,169,106,.3);
+  transition: width 1.4s cubic-bezier(.4,0,.2,1);
   flex-shrink: 0;
 }
-.pre-line.open { width: clamp(60px, 22vw, 260px); }
+.pre-line.open { width: clamp(56px, 20vw, 240px); }
 #pre-text {
   font-size: 10px;
-  letter-spacing: 0.55em;
+  letter-spacing: .6em;
   color: var(--muted);
   padding: 0 28px;
   white-space: nowrap;
   user-select: none;
-  transition: color 0.4s, letter-spacing 0.4s;
+  transition: color .4s, letter-spacing .4s;
 }
-#pre-text.ready {
-  color: var(--text);
-  letter-spacing: 0.65em;
-  cursor: none;
-}
+#pre-text.ready { color: var(--text); cursor: none; }
 #pre-text.ready:hover { color: var(--gold); }
 
-/* ── SITE ── */
-#site { opacity: 0; }
+/* ── SITE (scrollable layer) ── */
+#site {
+  position: relative;
+  z-index: 10;
+  opacity: 0;
+}
 
 /* ── NAV ── */
 nav {
@@ -157,95 +142,58 @@ nav {
   padding: 28px 52px;
 }
 .logo {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.45em;
-  color: var(--text);
-  text-transform: uppercase;
+  font-size: 12px; font-weight: 900;
+  letter-spacing: .45em;
 }
-.nav-links {
-  display: flex;
-  gap: 36px;
-}
+.nav-links { display: flex; gap: 36px; }
 .nav-links a {
-  font-size: 10px;
-  letter-spacing: 0.35em;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.3s;
-  cursor: none;
+  font-size: 10px; letter-spacing: .35em;
+  color: var(--muted); text-decoration: none;
+  transition: color .3s; cursor: none;
 }
 .nav-links a:hover { color: var(--gold); }
 
-/* ── HERO ── */
+/* ── HERO (transparent so canvas shows) ── */
 #hero {
-  position: relative;
-  height: 100vh;
+  height: 160vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-}
-#grid-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.7;
-}
-/* Radial spotlight vignette (davincii-style) */
-.vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse 55% 55% at 50% 50%,
-    rgba(10,10,15,0) 0%,
-    rgba(10,10,15,0.6) 55%,
-    rgba(10,10,15,0.97) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
+  background: transparent;
+  position: relative;
 }
 .hero-content {
-  position: relative;
-  z-index: 2;
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
   text-align: center;
   padding: 0 24px;
 }
 .hero-eyebrow {
-  font-size: 10px;
-  letter-spacing: 0.55em;
-  color: var(--gold);
-  margin-bottom: 40px;
-  opacity: 0;
-  transform: translateY(12px);
+  font-size: 10px; letter-spacing: .55em;
+  color: var(--gold); margin-bottom: 40px;
+  opacity: 0; transform: translateY(12px);
 }
 .hero-title {
-  display: flex;
-  gap: 2px;
+  display: flex; gap: 1px;
   justify-content: center;
   margin-bottom: 36px;
 }
 .hero-letter {
-  font-size: clamp(88px, 14vw, 200px);
-  font-weight: 900;
-  line-height: 0.88;
-  background: linear-gradient(175deg, #FFFFFF 0%, #D4B878 55%, var(--gold) 100%);
+  font-size: clamp(96px,15vw,210px);
+  font-weight: 900; line-height: .88;
+  background: linear-gradient(175deg, #FFF 0%, #D4B878 55%, var(--gold) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  opacity: 0;
-  transform: translateY(70px);
+  opacity: 0; transform: translateY(70px);
   display: inline-block;
 }
 .hero-sub {
-  font-size: clamp(13px, 1.4vw, 17px);
-  font-weight: 300;
-  color: var(--muted);
-  letter-spacing: 0.18em;
-  line-height: 2;
-  opacity: 0;
-  transform: translateY(18px);
+  font-size: clamp(13px,1.4vw,17px);
+  font-weight: 300; color: var(--muted);
+  letter-spacing: .18em; line-height: 2;
+  opacity: 0; transform: translateY(18px);
 }
 .hero-sub em {
   font-style: italic;
@@ -255,234 +203,166 @@ nav {
   -webkit-text-fill-color: var(--gold);
   font-weight: 300;
 }
-
-/* Scroll cue */
 .scroll-cue {
   position: absolute;
-  bottom: 52px;
-  left: 50%;
+  bottom: 5vh; left: 50%;
   transform: translateX(-50%);
-  font-size: 9px;
-  letter-spacing: 0.5em;
-  color: rgba(102,102,128,0.5);
-  white-space: nowrap;
-  opacity: 0;
+  font-size: 9px; letter-spacing: .5em;
+  color: rgba(102,102,128,.5);
+  white-space: nowrap; opacity: 0;
 }
-.scroll-cue::before,
-.scroll-cue::after {
+.scroll-cue::before, .scroll-cue::after {
   content: '';
-  position: absolute;
-  top: 50%;
-  height: 1px;
-  width: 36px;
-  background: rgba(196,169,106,0.25);
+  position: absolute; top: 50%;
+  height: 1px; width: 32px;
+  background: rgba(196,169,106,.25);
 }
-.scroll-cue::before { right: calc(100% + 14px); }
-.scroll-cue::after  { left:  calc(100% + 14px); }
+.scroll-cue::before { right: calc(100% + 12px); }
+.scroll-cue::after  { left:  calc(100% + 12px); }
 
-/* ── QUIZ SECTION ── */
+/* ── QUIZ SECTION (frosted glass so canvas bleeds through) ── */
 #quizzes {
-  padding: 140px 52px;
-  position: relative;
+  padding: 120px 52px 140px;
+  background: rgba(10,10,15,.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
 }
 .section-label {
-  font-size: 9px;
-  letter-spacing: 0.55em;
-  color: var(--gold);
-  margin-bottom: 72px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  font-size: 9px; letter-spacing: .55em;
+  color: var(--gold); margin-bottom: 72px;
+  display: flex; align-items: center; gap: 20px;
 }
 .section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
+  content: ''; flex: 1; height: 1px;
   background: var(--border);
 }
 
 /* ── QUIZ GRID ── */
 .quiz-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3,1fr);
   border: 1px solid var(--border);
-  gap: 1px;
-  background: var(--border);
+  gap: 1px; background: var(--border);
 }
-@media (max-width: 920px) { .quiz-grid { grid-template-columns: repeat(2,1fr); } }
-@media (max-width: 560px) { .quiz-grid { grid-template-columns: 1fr; } }
+@media(max-width:900px){ .quiz-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:560px){ .quiz-grid { grid-template-columns: 1fr; } }
 
 /* ── QUIZ CARD ── */
 .quiz-card {
-  background: var(--bg);
+  background: rgba(10,10,15,.85);
   padding: 44px 40px;
-  position: relative;
-  overflow: hidden;
-  transition: background 0.45s ease;
+  position: relative; overflow: hidden;
+  transition: background .45s;
   transform-style: preserve-3d;
   will-change: transform;
   cursor: none;
-  opacity: 0;
-  transform: translateY(44px);
+  opacity: 0; transform: translateY(40px);
 }
-.quiz-card:hover { background: var(--card); }
-
-/* Shimmer sweep */
+.quiz-card:hover { background: rgba(20,20,31,.95); }
 .quiz-card::after {
   content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    108deg,
-    transparent 36%,
-    rgba(196,169,106,0.07) 50%,
-    transparent 64%
-  );
-  background-size: 200%;
-  background-position: 100%;
-  transition: background-position 0.75s ease;
+  position: absolute; inset: 0;
+  background: linear-gradient(108deg,transparent 36%,rgba(196,169,106,.07) 50%,transparent 64%);
+  background-size: 200%; background-position: 100%;
+  transition: background-position .75s;
   pointer-events: none;
 }
 .quiz-card:hover::after { background-position: 0%; }
-
-/* Gold left border on hover */
 .quiz-card::before {
   content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
+  position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
   background: var(--gold);
-  transform: scaleY(0);
-  transform-origin: bottom;
-  transition: transform 0.4s ease;
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform .4s;
 }
 .quiz-card:hover::before { transform: scaleY(1); }
-
-/* Card elements */
 .card-num {
-  font-size: 10px;
-  letter-spacing: 0.35em;
-  color: var(--gold);
-  margin-bottom: 36px;
-  opacity: 0.65;
+  font-size: 10px; letter-spacing: .35em;
+  color: var(--gold); margin-bottom: 36px; opacity: .65;
 }
 .card-title {
-  font-size: clamp(18px, 1.8vw, 24px);
-  font-weight: 900;
-  line-height: 1.35;
-  margin-bottom: 16px;
-  color: var(--text);
+  font-size: clamp(18px,1.8vw,24px); font-weight: 900;
+  line-height: 1.35; margin-bottom: 16px;
 }
 .card-tag {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  color: var(--muted);
-  margin-bottom: 52px;
+  font-size: 10px; letter-spacing: .22em;
+  color: var(--muted); margin-bottom: 52px;
 }
 .card-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 9px;
-  letter-spacing: 0.4em;
-  color: var(--gold);
+  display: inline-flex; align-items: center; gap: 14px;
+  font-size: 9px; letter-spacing: .4em; color: var(--gold);
 }
 .cta-line {
-  display: block;
-  width: 24px;
-  height: 1px;
-  background: var(--gold);
-  transition: width 0.35s ease;
+  display: block; width: 24px; height: 1px;
+  background: var(--gold); transition: width .35s;
 }
 .quiz-card:hover .cta-line { width: 40px; }
+.card-link { position: absolute; inset: 0; z-index: 3; }
 
-/* Invisible full-card link */
-.card-link {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-}
-
-/* ── ABOUT SECTION ── */
+/* ── ABOUT ── */
 #about {
   padding: 160px 52px;
-  max-width: 940px;
-  margin: 0 auto;
+  background: rgba(10,10,15,.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border);
 }
+.about-inner { max-width: 920px; margin: 0 auto; }
 .about-label {
-  font-size: 9px;
-  letter-spacing: 0.55em;
-  color: var(--gold);
-  margin-bottom: 60px;
+  font-size: 9px; letter-spacing: .55em;
+  color: var(--gold); margin-bottom: 60px;
 }
 .about-text {
-  font-size: clamp(24px, 3.2vw, 42px);
-  font-weight: 300;
-  line-height: 1.75;
-  color: rgba(240,240,240,0.5);
+  font-size: clamp(26px,3.4vw,46px);
+  font-weight: 300; line-height: 1.75;
+  color: rgba(240,240,240,.45);
+  transition: color 1s;
 }
 .about-text em {
   font-style: italic;
   font-family: 'Cormorant Garamond', serif;
-  color: var(--text);
-  font-size: 1.12em;
-  -webkit-text-fill-color: var(--text);
-  font-weight: 300;
+  color: var(--text); -webkit-text-fill-color: var(--text);
+  font-size: 1.1em; font-weight: 300;
 }
 .about-text .hl {
-  color: var(--gold);
-  -webkit-text-fill-color: var(--gold);
+  color: var(--gold); -webkit-text-fill-color: var(--gold);
   font-weight: 700;
 }
 
 /* ── FOOTER ── */
 footer {
   padding: 56px 52px;
+  background: rgba(10,10,15,.92);
   border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 24px;
+  display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 24px;
 }
-.footer-logo {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.45em;
-}
-.footer-links {
-  display: flex;
-  gap: 36px;
-}
+.footer-logo { font-size: 12px; font-weight: 900; letter-spacing: .45em; }
+.footer-links { display: flex; gap: 36px; }
 .footer-links a {
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.3s;
-  cursor: none;
+  font-size: 10px; letter-spacing: .3em;
+  color: var(--muted); text-decoration: none;
+  transition: color .3s; cursor: none;
 }
 .footer-links a:hover { color: var(--gold); }
-.footer-copy {
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  color: rgba(102,102,128,0.4);
-}
+.footer-copy { font-size: 9px; letter-spacing: .15em; color: rgba(102,102,128,.4); }
 
   </style>
 </head>
 <body>
 
+  <!-- ── THREE.JS CANVAS ── -->
+  <canvas id="three-canvas"></canvas>
+
   <!-- ── PRELOADER ── -->
   <div id="preloader">
-    <div class="pre-half" id="pre-top"></div>
-    <div class="pre-half" id="pre-bot"></div>
+    <div id="pre-top"></div>
+    <div id="pre-bot"></div>
     <div id="pre-center">
-      <div class="pre-line" id="line-left"></div>
+      <div class="pre-line" id="line-l"></div>
       <span id="pre-text">LOADING</span>
-      <div class="pre-line" id="line-right"></div>
+      <div class="pre-line" id="line-r"></div>
     </div>
   </div>
 
@@ -493,7 +373,6 @@ footer {
   <!-- ── SITE ── -->
   <div id="site">
 
-    <!-- NAV -->
     <nav>
       <span class="logo">M O R I</span>
       <div class="nav-links">
@@ -504,8 +383,6 @@ footer {
 
     <!-- HERO -->
     <section id="hero">
-      <canvas id="grid-canvas"></canvas>
-      <div class="vignette"></div>
       <div class="hero-content">
         <div class="hero-eyebrow">MORI STUDIO</div>
         <div class="hero-title">
@@ -527,7 +404,7 @@ footer {
       <div class="section-label">TEST YOURSELF</div>
       <div class="quiz-grid">
 
-        <div class="quiz-card" data-href="https://mori1024studio.github.io/not-enough-quiz/">
+        <div class="quiz-card">
           <a class="card-link" href="https://mori1024studio.github.io/not-enough-quiz/" target="_blank" rel="noopener"></a>
           <div class="card-num">01 / 06</div>
           <div class="card-title">你的不夠好<br>從哪裡來？</div>
@@ -535,7 +412,7 @@ footer {
           <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
         </div>
 
-        <div class="quiz-card" data-href="https://mori1024studio.github.io/mbti-shadow-quiz/">
+        <div class="quiz-card">
           <a class="card-link" href="https://mori1024studio.github.io/mbti-shadow-quiz/" target="_blank" rel="noopener"></a>
           <div class="card-num">02 / 06</div>
           <div class="card-title">MBTI<br>壓力影子測驗</div>
@@ -543,7 +420,7 @@ footer {
           <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
         </div>
 
-        <div class="quiz-card" data-href="https://mori1024studio.github.io/mindfuck-quiz/">
+        <div class="quiz-card">
           <a class="card-link" href="https://mori1024studio.github.io/mindfuck-quiz/" target="_blank" rel="noopener"></a>
           <div class="card-num">03 / 06</div>
           <div class="card-title">你的暗黑心智<br>是哪一種？</div>
@@ -551,7 +428,7 @@ footer {
           <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
         </div>
 
-        <div class="quiz-card" data-href="https://mori1024studio.github.io/wealth-ladder/">
+        <div class="quiz-card">
           <a class="card-link" href="https://mori1024studio.github.io/wealth-ladder/" target="_blank" rel="noopener"></a>
           <div class="card-num">04 / 06</div>
           <div class="card-title">財富階梯<br>測驗</div>
@@ -559,7 +436,7 @@ footer {
           <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
         </div>
 
-        <div class="quiz-card" data-href="https://mori1024studio.github.io/atomic-habits-quiz/">
+        <div class="quiz-card">
           <a class="card-link" href="https://mori1024studio.github.io/atomic-habits-quiz/" target="_blank" rel="noopener"></a>
           <div class="card-num">05 / 06</div>
           <div class="card-title">原子習慣<br>斷點測驗</div>
@@ -567,7 +444,7 @@ footer {
           <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
         </div>
 
-        <div class="quiz-card" data-href="https://mori1024studio.github.io/sidebiz-quiz/">
+        <div class="quiz-card">
           <a class="card-link" href="https://mori1024studio.github.io/sidebiz-quiz/" target="_blank" rel="noopener"></a>
           <div class="card-num">06 / 06</div>
           <div class="card-title">副業基因<br>測驗</div>
@@ -580,13 +457,15 @@ footer {
 
     <!-- ABOUT -->
     <section id="about">
-      <div class="about-label">PHILOSOPHY</div>
-      <p class="about-text">
-        INTJ。相信<em>底層邏輯</em>比努力更重要。<br>
-        用 <span class="hl">AI 工具</span>把時間槓桿化，<br>
-        用<em>副業思維</em>把技能資本化。<br>
-        每一道測驗，都是一面讓你看見<span class="hl">自己盲點</span>的鏡子。
-      </p>
+      <div class="about-inner">
+        <div class="about-label">PHILOSOPHY</div>
+        <p class="about-text">
+          INTJ。相信<em>底層邏輯</em>比努力更重要。<br>
+          用 <span class="hl">AI 工具</span>把時間槓桿化，<br>
+          用<em>副業思維</em>把技能資本化。<br>
+          每一道測驗，都是一面讓你看見<span class="hl">自己盲點</span>的鏡子。
+        </p>
+      </div>
     </section>
 
     <!-- FOOTER -->
@@ -596,201 +475,295 @@ footer {
         <a href="https://instagram.com/mori1024_" target="_blank" rel="noopener">INSTAGRAM</a>
         <a href="https://line.me/R/ti/p/@507wvwbz" target="_blank" rel="noopener">LINE</a>
       </div>
-      <div class="footer-copy">© 2026 MORI STUDIO. ALL RIGHTS RESERVED.</div>
+      <div class="footer-copy">© 2026 MORI STUDIO</div>
     </footer>
 
   </div><!-- /#site -->
 
-  <!-- GSAP -->
+  <!-- CDN -->
+  <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
   <script>
-  /* ── CURSOR ── */
-  const cur = document.getElementById('cursor');
-  const ring = document.getElementById('cursor-ring');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    cur.style.left = mx + 'px';
-    cur.style.top  = my + 'px';
-  });
-
-  (function lerpRing() {
-    rx += (mx - rx) * 0.1;
-    ry += (my - ry) * 0.1;
-    ring.style.left = rx + 'px';
-    ring.style.top  = ry + 'px';
-    requestAnimationFrame(lerpRing);
+  /* ── SIMPLEX NOISE 2D (inline) ── */
+  const noise2D = (() => {
+    const F2 = .5*(Math.sqrt(3)-1), G2 = (3-Math.sqrt(3))/6;
+    const pRaw = new Uint8Array(256);
+    for(let i=0;i<256;i++) pRaw[i]=i;
+    for(let i=255;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pRaw[i],pRaw[j]]=[pRaw[j],pRaw[i]]; }
+    const perm = new Uint8Array(512);
+    for(let i=0;i<512;i++) perm[i]=pRaw[i&255];
+    const G=[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
+    const d=(g,x,y)=>g[0]*x+g[1]*y;
+    return (xi,yi)=>{
+      const s=(xi+yi)*F2, i=Math.floor(xi+s), j=Math.floor(yi+s);
+      const t=(i+j)*G2, x0=xi-(i-t), y0=yi-(j-t);
+      const[i1,j1]=x0>y0?[1,0]:[0,1];
+      const x1=x0-i1+G2,y1=y0-j1+G2,x2=x0-1+2*G2,y2=y0-1+2*G2;
+      const g0=perm[(i+perm[j&255])&255]%8;
+      const g1=perm[(i+i1+perm[(j+j1)&255])&255]%8;
+      const g2=perm[(i+1+perm[(j+1)&255])&255]%8;
+      let n=0,t0,t1,t2;
+      t0=.5-x0*x0-y0*y0; if(t0>=0){t0*=t0;n+=t0*t0*d(G[g0],x0,y0);}
+      t1=.5-x1*x1-y1*y1; if(t1>=0){t1*=t1;n+=t1*t1*d(G[g1],x1,y1);}
+      t2=.5-x2*x2-y2*y2; if(t2>=0){t2*=t2;n+=t2*t2*d(G[g2],x2,y2);}
+      return 70*n;
+    };
   })();
 
-  document.querySelectorAll('a, .quiz-card, .nav-links a, .footer-links a').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  /* ── SOFT CIRCLE TEXTURE ── */
+  function makeCircleTex() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 32;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(16,16,0,16,16,16);
+    g.addColorStop(0,   'rgba(255,255,255,1)');
+    g.addColorStop(0.4, 'rgba(255,255,255,0.8)');
+    g.addColorStop(1,   'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,32,32);
+    return new THREE.CanvasTexture(c);
+  }
+
+  /* ── THREE.JS SCENE ── */
+  const cvs = document.getElementById('three-canvas');
+  const W = window.innerWidth, H = window.innerHeight;
+  const scene    = new THREE.Scene();
+  scene.fog      = new THREE.FogExp2(0x0A0A0F, 0.0028);
+
+  const camera   = new THREE.PerspectiveCamera(68, W/H, 0.1, 2000);
+  camera.position.set(0, 90, 380);
+  camera.lookAt(0, 10, 0);
+
+  const renderer = new THREE.WebGLRenderer({ canvas: cvs, antialias: false });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  renderer.setSize(W, H);
+  renderer.setClearColor(0x0A0A0F, 1);
+
+  const circleTex = makeCircleTex();
+
+  /* ── PARTICLE FIELD ── */
+  const isMobile = window.innerWidth < 768;
+  const COUNT = isMobile ? 7000 : 16000;
+
+  const pos = new Float32Array(COUNT * 3);
+  const col = new Float32Array(COUNT * 3);
+  const phase = new Float32Array(COUNT);    // for float animation
+
+  for (let i = 0; i < COUNT; i++) {
+    const x = (Math.random() - .5) * 1000;
+    const z = Math.random() * 1400 - 1000; // z from -1000 to 400
+
+    // two layers of noise for terrain detail
+    const n1 = noise2D(x * .004, z * .004);
+    const n2 = noise2D(x * .012, z * .012);
+    const n3 = noise2D(x * .03,  z * .03);
+    let y = n1 * 28 + n2 * 10 + n3 * 5 - 40;
+
+    // ~12% are "atmosphere" particles floating above
+    if (Math.random() < .12) y += 60 + Math.random() * 90;
+
+    pos[i*3]   = x;
+    pos[i*3+1] = y;
+    pos[i*3+2] = z;
+
+    // gold with warm variation
+    const b = .25 + Math.random() * .75;
+    col[i*3]   = (196/255) * b;
+    col[i*3+1] = (169/255) * b * (.9 + Math.random() * .2);
+    col[i*3+2] = (106/255) * b * (.7 + Math.random() * .3);
+
+    phase[i] = Math.random() * Math.PI * 2;
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color',    new THREE.BufferAttribute(col, 3));
+
+  const mat = new THREE.PointsMaterial({
+    size: isMobile ? 2.5 : 2.0,
+    map: circleTex,
+    alphaMap: circleTex,
+    vertexColors: true,
+    transparent: true,
+    opacity: .8,
+    sizeAttenuation: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    alphaTest: .01,
   });
 
-  /* ── CIRCUIT GRID CANVAS ── */
-  const canvas = document.getElementById('grid-canvas');
-  const ctx = canvas.getContext('2d');
-  const SPACING = 54;
-  let traces = [];
-  let gridRunning = false;
+  const particles = new THREE.Points(geo, mat);
+  scene.add(particles);
 
-  function resizeCanvas() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
+  /* ── AMBIENT STAR FIELD (distant, very sparse) ── */
+  const STAR_COUNT = 1200;
+  const starPos = new Float32Array(STAR_COUNT * 3);
+  for (let i = 0; i < STAR_COUNT; i++) {
+    starPos[i*3]   = (Math.random()-.5)*2500;
+    starPos[i*3+1] = Math.random()*300-20;
+    starPos[i*3+2] = (Math.random()-.5)*2500;
   }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
+  const starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  const starMat = new THREE.PointsMaterial({
+    size: 1.2, color: 0xC4A96A, transparent: true, opacity: .25,
+    sizeAttenuation: true, depthWrite: false,
+    blending: THREE.AdditiveBlending, map: circleTex, alphaTest: .01,
+  });
+  scene.add(new THREE.Points(starGeo, starMat));
 
-  function mkTrace() {
-    const cols = Math.floor(canvas.width  / SPACING);
-    const rows = Math.floor(canvas.height / SPACING);
-    const ci = Math.floor(Math.random() * cols);
-    const ri = Math.floor(Math.random() * rows);
-    const x0 = ci * SPACING + SPACING * 0.5;
-    const y0 = ri * SPACING + SPACING * 0.5;
-    const segs = 2 + Math.floor(Math.random() * 4);
-    const horiz = Math.random() < 0.5;
-    return { x0, y0, segs, horiz, age: 0, life: 100 + Math.floor(Math.random() * 100) };
-  }
+  /* ── SCROLL → CAMERA ── */
+  let scrollY = 0;
+  window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
 
-  function drawGrid() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const camPath = {
+    start: { px:0, py:90,  pz:380, lx:0, ly:10,  lz:0   },
+    end:   { px:0, py:15,  pz:-350, lx:0, ly:5,  lz:-700 },
+  };
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function easeInOut(t){ return t<.5?2*t*t:-1+(4-2*t)*t; }
 
-    // Dot grid
-    const cols = Math.ceil(canvas.width  / SPACING) + 1;
-    const rows = Math.ceil(canvas.height / SPACING) + 1;
-    ctx.fillStyle = 'rgba(196,169,106,0.13)';
-    for (let i = 0; i < cols; i++) {
-      for (let j = 0; j < rows; j++) {
-        ctx.beginPath();
-        ctx.arc(i * SPACING + SPACING * 0.5, j * SPACING + SPACING * 0.5, 1.2, 0, Math.PI * 2);
-        ctx.fill();
-      }
+  /* ── RENDER LOOP ── */
+  let time = 0;
+  const posAttr = geo.attributes.position;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    time += .006;
+
+    // Scroll-driven camera
+    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const raw = Math.min(scrollY / maxScroll, 1);
+    const p = easeInOut(raw);
+
+    camera.position.x = lerp(camPath.start.px, camPath.end.px, p) + Math.sin(time*.25) * 3;
+    camera.position.y = lerp(camPath.start.py, camPath.end.py, p);
+    camera.position.z = lerp(camPath.start.pz, camPath.end.pz, p);
+    camera.lookAt(
+      lerp(camPath.start.lx, camPath.end.lx, p),
+      lerp(camPath.start.ly, camPath.end.ly, p),
+      lerp(camPath.start.lz, camPath.end.lz, p)
+    );
+
+    // Gentle particle float (every 3rd particle to save performance)
+    for (let i = 0; i < COUNT; i += 3) {
+      posAttr.array[i*3+1] += Math.sin(time + phase[i]) * .015;
     }
+    posAttr.needsUpdate = true;
 
-    // Circuit traces
-    traces.forEach(t => {
-      t.age++;
-      const p = t.age / t.life;
-      const alpha = p < 0.15 ? (p / 0.15) * 0.45
-                  : p < 0.7  ? 0.45
-                  : ((1 - p) / 0.3) * 0.45;
-      ctx.strokeStyle = `rgba(196,169,106,${alpha.toFixed(3)})`;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(t.x0, t.y0);
-      if (t.horiz) ctx.lineTo(t.x0 + t.segs * SPACING, t.y0);
-      else         ctx.lineTo(t.x0, t.y0 + t.segs * SPACING);
-      ctx.stroke();
-    });
+    // Very slow field drift
+    particles.rotation.y += .00008;
 
-    traces = traces.filter(t => t.age < t.life);
-    if (Math.random() < 0.07) traces.push(mkTrace());
-
-    if (gridRunning) requestAnimationFrame(drawGrid);
+    renderer.render(scene, camera);
   }
+  animate();
 
-  /* ── PRELOADER SEQUENCE ── */
+  /* ── RESIZE ── */
+  window.addEventListener('resize', () => {
+    const W = window.innerWidth, H = window.innerHeight;
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W, H);
+  });
+
+  /* ── CURSOR ── */
+  const cur  = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => {
+    mx=e.clientX; my=e.clientY;
+    cur.style.left=mx+'px'; cur.style.top=my+'px';
+  });
+  (function lerpRing(){
+    rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(lerpRing);
+  })();
+  document.querySelectorAll('a,.quiz-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+  });
+
+  /* ── PRELOADER ── */
   const preloader = document.getElementById('preloader');
   const preTop    = document.getElementById('pre-top');
   const preBot    = document.getElementById('pre-bot');
   const preText   = document.getElementById('pre-text');
-  const lineL     = document.getElementById('line-left');
-  const lineR     = document.getElementById('line-right');
+  const lineL     = document.getElementById('line-l');
+  const lineR     = document.getElementById('line-r');
   const site      = document.getElementById('site');
 
-  function reveal() {
-    gsap.registerPlugin(ScrollTrigger);
-
-    // Expand lines, then show ENTER
+  function initPreloader() {
     lineL.classList.add('open');
     lineR.classList.add('open');
-
     setTimeout(() => {
       preText.textContent = 'ENTER';
       preText.classList.add('ready');
-      preText.addEventListener('click', enterSite);
+      preText.addEventListener('click', onEnter);
     }, 1600);
   }
 
-  function enterSite() {
-    preText.removeEventListener('click', enterSite);
-    preText.style.pointerEvents = 'none';
-
+  function onEnter() {
+    preText.removeEventListener('click', onEnter);
+    gsap.registerPlugin(ScrollTrigger);
     const tl = gsap.timeline();
-    tl.to([lineL, lineR, preText], { opacity: 0, duration: 0.35, ease: 'power2.in' })
-      .to(preTop, { yPercent: -100, duration: 1.1, ease: 'power3.inOut' }, 0.2)
-      .to(preBot, { yPercent:  100, duration: 1.1, ease: 'power3.inOut' }, 0.2)
-      .to(preloader, { display: 'none', duration: 0 }, 1.2)
-      .to(site, { opacity: 1, duration: 0 }, 0.3)
-      .call(startHeroAnim, null, 0.5);
+    tl.to([lineL, lineR, preText], { opacity:0, duration:.35, ease:'power2.in' })
+      .to(preTop, { yPercent:-100, duration:1.1, ease:'power3.inOut' }, .2)
+      .to(preBot, { yPercent: 100, duration:1.1, ease:'power3.inOut' }, .2)
+      .to(preloader, { display:'none', duration:0 }, 1.2)
+      .to(site,      { opacity:1, duration:0 }, .35)
+      .call(startReveal, null, .55);
   }
 
-  function startHeroAnim() {
-    gridRunning = true;
-    requestAnimationFrame(drawGrid);
+  function startReveal() {
+    const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
+    tl.to('.hero-eyebrow', { opacity:1, y:0, duration:.8 })
+      .to('.hero-letter',  { opacity:1, y:0, duration:.9, stagger:.08 }, '-=.4')
+      .to('.hero-sub',     { opacity:1, y:0, duration:.8 }, '-=.45')
+      .to('.scroll-cue',   { opacity:1, duration:1 }, '-=.3');
 
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8 })
-      .to('.hero-letter', {
-        opacity: 1, y: 0, duration: 0.9,
-        stagger: 0.08
-      }, '-=0.4')
-      .to('.hero-sub', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
-      .to('.scroll-cue', { opacity: 1, duration: 1 }, '-=0.3');
-
-    // Scroll-triggered quiz cards
-    gsap.utils.toArray('.quiz-card').forEach((card, i) => {
+    // Quiz cards on scroll
+    gsap.utils.toArray('.quiz-card').forEach((card,i) => {
       gsap.to(card, {
-        opacity: 1, y: 0, duration: 0.7,
-        ease: 'power3.out',
-        delay: (i % 3) * 0.1,
-        scrollTrigger: {
+        opacity:1, y:0, duration:.7, ease:'power3.out',
+        delay: (i%3)*.1,
+        scrollTrigger:{
           trigger: card,
-          start: 'top 85%',
+          start: 'top 88%',
           toggleActions: 'play none none none'
         }
       });
     });
 
-    // About text scroll reveal
+    // About text brightens on scroll
     gsap.to('#about .about-text', {
-      color: 'rgba(240,240,240,0.95)',
-      duration: 1.2,
-      scrollTrigger: {
+      color: 'rgba(240,240,240,.92)',
+      duration: 1.5,
+      scrollTrigger:{
         trigger: '#about',
-        start: 'top 70%',
-        end: 'bottom 60%',
-        scrub: 0.8
+        start: 'top 72%',
+        end: 'bottom 50%',
+        scrub: .9
       }
     });
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(reveal, 300);
-  });
+  window.addEventListener('DOMContentLoaded', () => setTimeout(initPreloader, 250));
 
   /* ── CARD 3D TILT ── */
   document.querySelectorAll('.quiz-card').forEach(card => {
     card.addEventListener('mousemove', e => {
-      const r   = card.getBoundingClientRect();
-      const cx  = r.width  / 2;
-      const cy  = r.height / 2;
-      const x   = e.clientX - r.left - cx;
-      const y   = e.clientY - r.top  - cy;
-      const rx  = (y / cy) * -7;
-      const ry  = (x / cx) *  7;
-      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.015)`;
+      const r=card.getBoundingClientRect();
+      const rx=(e.clientY-r.top -r.height/2)/r.height*2 * -7;
+      const ry=(e.clientX-r.left-r.width/2) /r.width*2  *  7;
+      card.style.transition='transform .1s, background .45s';
+      card.style.transform=`perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.015)`;
     });
     card.addEventListener('mouseleave', () => {
-      card.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) scale(1)';
-      card.style.transition = 'transform 0.6s ease, background 0.45s ease';
-    });
-    card.addEventListener('mouseenter', () => {
-      card.style.transition = 'transform 0.1s ease, background 0.45s ease';
+      card.style.transition='transform .6s ease, background .45s';
+      card.style.transform='perspective(700px) rotateX(0deg) rotateY(0deg) scale(1)';
     });
   });
 
