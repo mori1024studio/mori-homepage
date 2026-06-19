@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MORI — 底層邏輯 × AI 工具 × 副業思維</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+
+/* ── DESIGN TOKENS ── */
+:root {
+  --bg: #0A0A0F;
+  --card: #14141F;
+  --option: #1C1C2A;
+  --gold: #C4A96A;
+  --gold-bright: #E8C86A;
+  --text: #F0F0F0;
+  --muted: #666680;
+  --border: rgba(196,169,106,0.12);
+  --border-hover: rgba(196,169,106,0.3);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── ANIMATED GRAIN OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: 9997;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  animation: grain 0.4s steps(1) infinite;
+}
+@keyframes grain {
+  0%   { transform: translate(0,0) }
+  10%  { transform: translate(-5%,-10%) }
+  20%  { transform: translate(-15%,5%) }
+  30%  { transform: translate(7%,-25%) }
+  40%  { transform: translate(-5%,25%) }
+  50%  { transform: translate(-15%,10%) }
+  60%  { transform: translate(15%,0%) }
+  70%  { transform: translate(0%,15%) }
+  80%  { transform: translate(3%,35%) }
+  90%  { transform: translate(-10%,10%) }
+}
+
+/* ── CUSTOM CURSOR ── */
+#cursor {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s ease, background 0.25s ease, opacity 0.25s;
+}
+#cursor-ring {
+  position: fixed;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(196,169,106,0.45);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: width 0.35s ease, height 0.35s ease, border-color 0.35s ease;
+}
+body.hovering #cursor {
+  transform: translate(-50%,-50%) scale(2.2);
+  background: var(--gold-bright);
+}
+body.hovering #cursor-ring {
+  width: 60px;
+  height: 60px;
+  border-color: rgba(232,200,106,0.55);
+}
+
+/* ── PRELOADER ── */
+#preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9996;
+  background: var(--bg);
+  overflow: hidden;
+}
+.pre-half {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: var(--bg);
+}
+#pre-top { top: 0; }
+#pre-bot { bottom: 0; }
+#pre-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  z-index: 2;
+}
+.pre-line {
+  height: 1px;
+  width: 0;
+  background: rgba(196,169,106,0.35);
+  transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+  flex-shrink: 0;
+}
+.pre-line.open { width: clamp(60px, 22vw, 260px); }
+#pre-text {
+  font-size: 10px;
+  letter-spacing: 0.55em;
+  color: var(--muted);
+  padding: 0 28px;
+  white-space: nowrap;
+  user-select: none;
+  transition: color 0.4s, letter-spacing 0.4s;
+}
+#pre-text.ready {
+  color: var(--text);
+  letter-spacing: 0.65em;
+  cursor: none;
+}
+#pre-text.ready:hover { color: var(--gold); }
+
+/* ── SITE ── */
+#site { opacity: 0; }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 52px;
+}
+.logo {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.45em;
+  color: var(--text);
+  text-transform: uppercase;
+}
+.nav-links {
+  display: flex;
+  gap: 36px;
+}
+.nav-links a {
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s;
+  cursor: none;
+}
+.nav-links a:hover { color: var(--gold); }
+
+/* ── HERO ── */
+#hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#grid-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+}
+/* Radial spotlight vignette (davincii-style) */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 55% 55% at 50% 50%,
+    rgba(10,10,15,0) 0%,
+    rgba(10,10,15,0.6) 55%,
+    rgba(10,10,15,0.97) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 24px;
+}
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.55em;
+  color: var(--gold);
+  margin-bottom: 40px;
+  opacity: 0;
+  transform: translateY(12px);
+}
+.hero-title {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+.hero-letter {
+  font-size: clamp(88px, 14vw, 200px);
+  font-weight: 900;
+  line-height: 0.88;
+  background: linear-gradient(175deg, #FFFFFF 0%, #D4B878 55%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0;
+  transform: translateY(70px);
+  display: inline-block;
+}
+.hero-sub {
+  font-size: clamp(13px, 1.4vw, 17px);
+  font-weight: 300;
+  color: var(--muted);
+  letter-spacing: 0.18em;
+  line-height: 2;
+  opacity: 0;
+  transform: translateY(18px);
+}
+.hero-sub em {
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35em;
+  color: var(--gold);
+  -webkit-text-fill-color: var(--gold);
+  font-weight: 300;
+}
+
+/* Scroll cue */
+.scroll-cue {
+  position: absolute;
+  bottom: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  letter-spacing: 0.5em;
+  color: rgba(102,102,128,0.5);
+  white-space: nowrap;
+  opacity: 0;
+}
+.scroll-cue::before,
+.scroll-cue::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  height: 1px;
+  width: 36px;
+  background: rgba(196,169,106,0.25);
+}
+.scroll-cue::before { right: calc(100% + 14px); }
+.scroll-cue::after  { left:  calc(100% + 14px); }
+
+/* ── QUIZ SECTION ── */
+#quizzes {
+  padding: 140px 52px;
+  position: relative;
+}
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.55em;
+  color: var(--gold);
+  margin-bottom: 72px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── QUIZ GRID ── */
+.quiz-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border);
+  gap: 1px;
+  background: var(--border);
+}
+@media (max-width: 920px) { .quiz-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 560px) { .quiz-grid { grid-template-columns: 1fr; } }
+
+/* ── QUIZ CARD ── */
+.quiz-card {
+  background: var(--bg);
+  padding: 44px 40px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.45s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+  cursor: none;
+  opacity: 0;
+  transform: translateY(44px);
+}
+.quiz-card:hover { background: var(--card); }
+
+/* Shimmer sweep */
+.quiz-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    108deg,
+    transparent 36%,
+    rgba(196,169,106,0.07) 50%,
+    transparent 64%
+  );
+  background-size: 200%;
+  background-position: 100%;
+  transition: background-position 0.75s ease;
+  pointer-events: none;
+}
+.quiz-card:hover::after { background-position: 0%; }
+
+/* Gold left border on hover */
+.quiz-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--gold);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.4s ease;
+}
+.quiz-card:hover::before { transform: scaleY(1); }
+
+/* Card elements */
+.card-num {
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  color: var(--gold);
+  margin-bottom: 36px;
+  opacity: 0.65;
+}
+.card-title {
+  font-size: clamp(18px, 1.8vw, 24px);
+  font-weight: 900;
+  line-height: 1.35;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.card-tag {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+  margin-bottom: 52px;
+}
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  color: var(--gold);
+}
+.cta-line {
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.35s ease;
+}
+.quiz-card:hover .cta-line { width: 40px; }
+
+/* Invisible full-card link */
+.card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+/* ── ABOUT SECTION ── */
+#about {
+  padding: 160px 52px;
+  max-width: 940px;
+  margin: 0 auto;
+}
+.about-label {
+  font-size: 9px;
+  letter-spacing: 0.55em;
+  color: var(--gold);
+  margin-bottom: 60px;
+}
+.about-text {
+  font-size: clamp(24px, 3.2vw, 42px);
+  font-weight: 300;
+  line-height: 1.75;
+  color: rgba(240,240,240,0.5);
+}
+.about-text em {
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--text);
+  font-size: 1.12em;
+  -webkit-text-fill-color: var(--text);
+  font-weight: 300;
+}
+.about-text .hl {
+  color: var(--gold);
+  -webkit-text-fill-color: var(--gold);
+  font-weight: 700;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 56px 52px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.footer-logo {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.45em;
+}
+.footer-links {
+  display: flex;
+  gap: 36px;
+}
+.footer-links a {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s;
+  cursor: none;
+}
+.footer-links a:hover { color: var(--gold); }
+.footer-copy {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: rgba(102,102,128,0.4);
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- ── PRELOADER ── -->
+  <div id="preloader">
+    <div class="pre-half" id="pre-top"></div>
+    <div class="pre-half" id="pre-bot"></div>
+    <div id="pre-center">
+      <div class="pre-line" id="line-left"></div>
+      <span id="pre-text">LOADING</span>
+      <div class="pre-line" id="line-right"></div>
+    </div>
+  </div>
+
+  <!-- ── CURSOR ── -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ── SITE ── -->
+  <div id="site">
+
+    <!-- NAV -->
+    <nav>
+      <span class="logo">M O R I</span>
+      <div class="nav-links">
+        <a href="https://instagram.com/mori1024_" target="_blank" rel="noopener">INSTAGRAM</a>
+        <a href="https://line.me/R/ti/p/@507wvwbz" target="_blank" rel="noopener">LINE</a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+      <canvas id="grid-canvas"></canvas>
+      <div class="vignette"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">MORI STUDIO</div>
+        <div class="hero-title">
+          <span class="hero-letter">M</span>
+          <span class="hero-letter">O</span>
+          <span class="hero-letter">R</span>
+          <span class="hero-letter">I</span>
+        </div>
+        <div class="hero-sub">
+          底層邏輯 × <em>AI 工具</em> × 副業思維<br>
+          重新定義你與財富的關係
+        </div>
+      </div>
+      <div class="scroll-cue">SCROLL TO EXPLORE</div>
+    </section>
+
+    <!-- QUIZZES -->
+    <section id="quizzes">
+      <div class="section-label">TEST YOURSELF</div>
+      <div class="quiz-grid">
+
+        <div class="quiz-card" data-href="https://mori1024studio.github.io/not-enough-quiz/">
+          <a class="card-link" href="https://mori1024studio.github.io/not-enough-quiz/" target="_blank" rel="noopener"></a>
+          <div class="card-num">01 / 06</div>
+          <div class="card-title">你的不夠好<br>從哪裡來？</div>
+          <div class="card-tag">心理探索 · 5 種類型</div>
+          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+        </div>
+
+        <div class="quiz-card" data-href="https://mori1024studio.github.io/mbti-shadow-quiz/">
+          <a class="card-link" href="https://mori1024studio.github.io/mbti-shadow-quiz/" target="_blank" rel="noopener"></a>
+          <div class="card-num">02 / 06</div>
+          <div class="card-title">MBTI<br>壓力影子測驗</div>
+          <div class="card-tag">人格分析 · 4 種類型</div>
+          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+        </div>
+
+        <div class="quiz-card" data-href="https://mori1024studio.github.io/mindfuck-quiz/">
+          <a class="card-link" href="https://mori1024studio.github.io/mindfuck-quiz/" target="_blank" rel="noopener"></a>
+          <div class="card-num">03 / 06</div>
+          <div class="card-title">你的暗黑心智<br>是哪一種？</div>
+          <div class="card-tag">思維模式 · 7 種類型</div>
+          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+        </div>
+
+        <div class="quiz-card" data-href="https://mori1024studio.github.io/wealth-ladder/">
+          <a class="card-link" href="https://mori1024studio.github.io/wealth-ladder/" target="_blank" rel="noopener"></a>
+          <div class="card-num">04 / 06</div>
+          <div class="card-title">財富階梯<br>測驗</div>
+          <div class="card-tag">財務意識 · 6 個層級</div>
+          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+        </div>
+
+        <div class="quiz-card" data-href="https://mori1024studio.github.io/atomic-habits-quiz/">
+          <a class="card-link" href="https://mori1024studio.github.io/atomic-habits-quiz/" target="_blank" rel="noopener"></a>
+          <div class="card-num">05 / 06</div>
+          <div class="card-title">原子習慣<br>斷點測驗</div>
+          <div class="card-tag">習慣系統 · 6 種類型</div>
+          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+        </div>
+
+        <div class="quiz-card" data-href="https://mori1024studio.github.io/sidebiz-quiz/">
+          <a class="card-link" href="https://mori1024studio.github.io/sidebiz-quiz/" target="_blank" rel="noopener"></a>
+          <div class="card-num">06 / 06</div>
+          <div class="card-title">副業基因<br>測驗</div>
+          <div class="card-tag">副業路徑 · 5 種類型</div>
+          <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="about-label">PHILOSOPHY</div>
+      <p class="about-text">
+        INTJ。相信<em>底層邏輯</em>比努力更重要。<br>
+        用 <span class="hl">AI 工具</span>把時間槓桿化，<br>
+        用<em>副業思維</em>把技能資本化。<br>
+        每一道測驗，都是一面讓你看見<span class="hl">自己盲點</span>的鏡子。
+      </p>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-logo">M O R I</div>
+      <div class="footer-links">
+        <a href="https://instagram.com/mori1024_" target="_blank" rel="noopener">INSTAGRAM</a>
+        <a href="https://line.me/R/ti/p/@507wvwbz" target="_blank" rel="noopener">LINE</a>
+      </div>
+      <div class="footer-copy">© 2026 MORI STUDIO. ALL RIGHTS RESERVED.</div>
+    </footer>
+
+  </div><!-- /#site -->
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script>
+  /* ── CURSOR ── */
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cur.style.left = mx + 'px';
+    cur.style.top  = my + 'px';
+  });
+
+  (function lerpRing() {
+    rx += (mx - rx) * 0.1;
+    ry += (my - ry) * 0.1;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(lerpRing);
+  })();
+
+  document.querySelectorAll('a, .quiz-card, .nav-links a, .footer-links a').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+
+  /* ── CIRCUIT GRID CANVAS ── */
+  const canvas = document.getElementById('grid-canvas');
+  const ctx = canvas.getContext('2d');
+  const SPACING = 54;
+  let traces = [];
+  let gridRunning = false;
+
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function mkTrace() {
+    const cols = Math.floor(canvas.width  / SPACING);
+    const rows = Math.floor(canvas.height / SPACING);
+    const ci = Math.floor(Math.random() * cols);
+    const ri = Math.floor(Math.random() * rows);
+    const x0 = ci * SPACING + SPACING * 0.5;
+    const y0 = ri * SPACING + SPACING * 0.5;
+    const segs = 2 + Math.floor(Math.random() * 4);
+    const horiz = Math.random() < 0.5;
+    return { x0, y0, segs, horiz, age: 0, life: 100 + Math.floor(Math.random() * 100) };
+  }
+
+  function drawGrid() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Dot grid
+    const cols = Math.ceil(canvas.width  / SPACING) + 1;
+    const rows = Math.ceil(canvas.height / SPACING) + 1;
+    ctx.fillStyle = 'rgba(196,169,106,0.13)';
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        ctx.beginPath();
+        ctx.arc(i * SPACING + SPACING * 0.5, j * SPACING + SPACING * 0.5, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Circuit traces
+    traces.forEach(t => {
+      t.age++;
+      const p = t.age / t.life;
+      const alpha = p < 0.15 ? (p / 0.15) * 0.45
+                  : p < 0.7  ? 0.45
+                  : ((1 - p) / 0.3) * 0.45;
+      ctx.strokeStyle = `rgba(196,169,106,${alpha.toFixed(3)})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(t.x0, t.y0);
+      if (t.horiz) ctx.lineTo(t.x0 + t.segs * SPACING, t.y0);
+      else         ctx.lineTo(t.x0, t.y0 + t.segs * SPACING);
+      ctx.stroke();
+    });
+
+    traces = traces.filter(t => t.age < t.life);
+    if (Math.random() < 0.07) traces.push(mkTrace());
+
+    if (gridRunning) requestAnimationFrame(drawGrid);
+  }
+
+  /* ── PRELOADER SEQUENCE ── */
+  const preloader = document.getElementById('preloader');
+  const preTop    = document.getElementById('pre-top');
+  const preBot    = document.getElementById('pre-bot');
+  const preText   = document.getElementById('pre-text');
+  const lineL     = document.getElementById('line-left');
+  const lineR     = document.getElementById('line-right');
+  const site      = document.getElementById('site');
+
+  function reveal() {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Expand lines, then show ENTER
+    lineL.classList.add('open');
+    lineR.classList.add('open');
+
+    setTimeout(() => {
+      preText.textContent = 'ENTER';
+      preText.classList.add('ready');
+      preText.addEventListener('click', enterSite);
+    }, 1600);
+  }
+
+  function enterSite() {
+    preText.removeEventListener('click', enterSite);
+    preText.style.pointerEvents = 'none';
+
+    const tl = gsap.timeline();
+    tl.to([lineL, lineR, preText], { opacity: 0, duration: 0.35, ease: 'power2.in' })
+      .to(preTop, { yPercent: -100, duration: 1.1, ease: 'power3.inOut' }, 0.2)
+      .to(preBot, { yPercent:  100, duration: 1.1, ease: 'power3.inOut' }, 0.2)
+      .to(preloader, { display: 'none', duration: 0 }, 1.2)
+      .to(site, { opacity: 1, duration: 0 }, 0.3)
+      .call(startHeroAnim, null, 0.5);
+  }
+
+  function startHeroAnim() {
+    gridRunning = true;
+    requestAnimationFrame(drawGrid);
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8 })
+      .to('.hero-letter', {
+        opacity: 1, y: 0, duration: 0.9,
+        stagger: 0.08
+      }, '-=0.4')
+      .to('.hero-sub', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
+      .to('.scroll-cue', { opacity: 1, duration: 1 }, '-=0.3');
+
+    // Scroll-triggered quiz cards
+    gsap.utils.toArray('.quiz-card').forEach((card, i) => {
+      gsap.to(card, {
+        opacity: 1, y: 0, duration: 0.7,
+        ease: 'power3.out',
+        delay: (i % 3) * 0.1,
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 85%',
+          toggleActions: 'play none none none'
+        }
+      });
+    });
+
+    // About text scroll reveal
+    gsap.to('#about .about-text', {
+      color: 'rgba(240,240,240,0.95)',
+      duration: 1.2,
+      scrollTrigger: {
+        trigger: '#about',
+        start: 'top 70%',
+        end: 'bottom 60%',
+        scrub: 0.8
+      }
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(reveal, 300);
+  });
+
+  /* ── CARD 3D TILT ── */
+  document.querySelectorAll('.quiz-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r   = card.getBoundingClientRect();
+      const cx  = r.width  / 2;
+      const cy  = r.height / 2;
+      const x   = e.clientX - r.left - cx;
+      const y   = e.clientY - r.top  - cy;
+      const rx  = (y / cy) * -7;
+      const ry  = (x / cx) *  7;
+      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.015)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) scale(1)';
+      card.style.transition = 'transform 0.6s ease, background 0.45s ease';
+    });
+    card.addEventListener('mouseenter', () => {
+      card.style.transition = 'transform 0.1s ease, background 0.45s ease';
+    });
+  });
+
+  </script>
+</body>
+</html>
