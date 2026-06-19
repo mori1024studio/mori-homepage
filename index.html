@@ -614,6 +614,69 @@ footer {
   });
   scene.add(new THREE.Points(starGeo, starMat));
 
+  /* ── GLOW SPHERE (DaVincii fresnel) ── */
+  const sphereVert = `
+    varying vec3 vNormal;
+    varying vec3 vViewDir;
+    void main() {
+      vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+      vNormal = normalize(normalMatrix * normal);
+      vViewDir = normalize(-mvPos.xyz);
+      gl_Position = projectionMatrix * mvPos;
+    }
+  `;
+  const sphereFrag = `
+    uniform float uTime;
+    uniform float uFade;
+    varying vec3 vNormal;
+    varying vec3 vViewDir;
+    void main() {
+      // Fresnel rim glow — softer, more diffuse (DaVincii style)
+      float cosTheta = max(dot(vViewDir, vNormal), 0.0);
+      float fresnel = 1.0 - cosTheta;
+      float rim     = pow(fresnel, 1.4);        // soft wide rim
+
+      // Slow breath pulse
+      float breath = 0.88 + 0.12 * sin(uTime * 0.72);
+
+      // Warm inner glow (center, like DaVincii orb center)
+      float core = pow(cosTheta, 3.5) * 0.45;
+
+      // Wide diffuse halo around the sphere
+      float halo = pow(fresnel, 0.6) * 0.20;
+
+      float alpha = (rim * 0.75 + core + halo) * breath * uFade;
+
+      // Gold: bright warm rim, soft amber core
+      vec3 rimCol  = vec3(0.98, 0.88, 0.52);
+      vec3 coreCol = vec3(0.82, 0.65, 0.30);
+      vec3 color = mix(rimCol, coreCol, pow(cosTheta, 0.5));
+
+      gl_FragColor = vec4(color, alpha);
+    }
+  `;
+  const sphereGeo = new THREE.SphereGeometry(200, 64, 64);
+  const sphereUni = {
+    uTime: { value: 0.0 },
+    uFade: { value: 1.0 },
+  };
+  const sphereMat = new THREE.ShaderMaterial({
+    vertexShader:   sphereVert,
+    fragmentShader: sphereFrag,
+    uniforms:       sphereUni,
+    transparent:    true,
+    side:           THREE.FrontSide,
+    depthWrite:     false,
+    blending:       THREE.AdditiveBlending,
+  });
+  const glowSphere = new THREE.Mesh(sphereGeo, sphereMat);
+  glowSphere.position.set(0, 0, -30);
+  glowSphere.renderOrder = 0;
+  scene.add(glowSphere);
+
+  // Make particles render on top of sphere
+  particles.renderOrder = 1;
+
   /* ── SCROLL → CAMERA ── */
   let scrollY = 0;
   window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
@@ -655,6 +718,12 @@ footer {
 
     // Very slow field drift
     particles.rotation.y += .00008;
+
+    // Sphere: update time + fade as camera flies in
+    sphereUni.uTime.value = time;
+    const heroFade = 1.0 - easeInOut(Math.min(raw * 2.8, 1));
+    sphereUni.uFade.value = heroFade;
+    glowSphere.rotation.y += 0.00025;
 
     renderer.render(scene, camera);
   }
