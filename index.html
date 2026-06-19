@@ -5,13 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MORI — 底層邏輯 × AI 工具 × 副業思維</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Noto+Serif+TC:wght@300;400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@300;400;600;900&display=swap" rel="stylesheet">
   <style>
 
 /* ── TOKENS ── */
 :root {
-  --bg:     #0A0807;
-  --stone:  #13100A;
+  --bg:     #090705;
   --gold:   #C4A96A;
   --gold-b: #E8C86A;
   --text:   #EDE8DF;
@@ -30,68 +29,59 @@ body {
   cursor: none;
 }
 
-/* ── GRAIN OVERLAY (warmer tint) ── */
+/* ── GRAIN ── */
 body::before {
   content: '';
-  position: fixed;
-  inset: -50%;
+  position: fixed; inset: -50%;
   width: 200%; height: 200%;
-  z-index: 9000;
-  pointer-events: none;
-  opacity: 0.06;
+  z-index: 9000; pointer-events: none; opacity: 0.065;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
   animation: grain .35s steps(1) infinite;
 }
 @keyframes grain {
-  0%  { transform: translate(0,0) }
-  14% { transform: translate(-5%,-10%) }
-  28% { transform: translate(-15%,5%) }
-  42% { transform: translate(7%,-25%) }
-  57% { transform: translate(-5%,25%) }
-  71% { transform: translate(15%,0%) }
-  85% { transform: translate(0%,15%) }
+  0%{transform:translate(0,0)} 14%{transform:translate(-5%,-10%)} 28%{transform:translate(-15%,5%)}
+  42%{transform:translate(7%,-25%)} 57%{transform:translate(-5%,25%)} 71%{transform:translate(15%,0%)} 85%{transform:translate(0%,15%)}
 }
 
-/* ── VIGNETTE (DaVincii edge frame) ── */
+/* ── VIGNETTE ── */
 #vignette {
-  position: fixed; inset: 0;
-  pointer-events: none;
-  z-index: 5;
+  position: fixed; inset: 0; pointer-events: none; z-index: 5;
   background: radial-gradient(ellipse 88% 88% at 50% 50%,
-    transparent 28%,
-    rgba(4,3,2,0.55) 68%,
-    rgba(2,1,1,0.88) 100%
-  );
+    transparent 26%, rgba(4,3,2,0.6) 66%, rgba(2,1,1,0.92) 100%);
 }
+
+/* ── GOD RAY — divine light from above ── */
+#god-ray {
+  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  background:
+    linear-gradient(179deg, rgba(196,169,106,0.10) 0%, transparent 44%),
+    linear-gradient(173deg, rgba(196,169,106,0.055) 0%, transparent 38%),
+    linear-gradient(185deg, rgba(196,169,106,0.055) 0%, transparent 38%),
+    linear-gradient(165deg, rgba(196,169,106,0.03) 0%, transparent 32%),
+    linear-gradient(193deg, rgba(196,169,106,0.03) 0%, transparent 32%);
+  animation: rayPulse 10s ease-in-out infinite;
+}
+@keyframes rayPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
 
 /* ── THREE CANVAS ── */
 #three-canvas {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 0;
-  display: block;
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%; z-index: 0;
 }
 
 /* ── CURSOR ── */
 #cursor {
-  position: fixed;
-  width: 7px; height: 7px;
-  background: var(--gold);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
+  position: fixed; width: 7px; height: 7px;
+  background: var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
   transform: translate(-50%,-50%);
   transition: transform .1s, background .25s;
 }
 #cursor-ring {
-  position: fixed;
-  width: 36px; height: 36px;
-  border: 1px solid rgba(196,169,106,.45);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(196,169,106,.45); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
   transform: translate(-50%,-50%);
   transition: width .35s, height .35s, border-color .35s;
 }
@@ -100,39 +90,35 @@ body.hovering #cursor-ring { width: 58px; height: 58px; border-color: rgba(232,2
 
 /* ── PRELOADER ── */
 #preloader {
-  position: fixed; inset: 0;
-  z-index: 9990;
-  background: var(--bg);
-  overflow: hidden;
+  position: fixed; inset: 0; z-index: 9990;
+  background: var(--bg); overflow: hidden;
 }
 #pre-top, #pre-bot {
-  position: absolute;
-  left: 0; width: 100%; height: 50%;
-  background: var(--bg);
+  position: absolute; left: 0; width: 100%; height: 50%; background: var(--bg);
 }
-#pre-top { top: 0; }
-#pre-bot { bottom: 0; }
+#pre-top { top: 0; } #pre-bot { bottom: 0; }
 #pre-center {
   position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 2;
+  display: flex; align-items: center; justify-content: center; z-index: 2;
 }
+/* Sacred corner brackets on preloader */
+#pre-corner-tl, #pre-corner-br {
+  position: absolute; width: 55px; height: 55px;
+  border: 1px solid rgba(196,169,106,.2); pointer-events: none;
+}
+#pre-corner-tl { top: 28px; left: 28px; border-right: none; border-bottom: none; }
+#pre-corner-br { bottom: 28px; right: 28px; border-left: none; border-top: none; }
 .pre-line {
-  height: 1px;
-  width: 0;
+  height: 1px; width: 0;
   background: rgba(196,169,106,.3);
-  transition: width 1.4s cubic-bezier(.4,0,.2,1);
-  flex-shrink: 0;
+  transition: width 1.4s cubic-bezier(.4,0,.2,1); flex-shrink: 0;
 }
-.pre-line.open { width: clamp(56px, 20vw, 240px); }
+.pre-line.open { width: clamp(56px,20vw,220px); }
 #pre-text {
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: .55em;
-  color: var(--muted);
-  padding: 0 28px;
-  white-space: nowrap;
-  user-select: none;
+  font-family: 'Kaushan Script', cursive;
+  font-size: 22px; letter-spacing: .05em;
+  color: var(--muted); padding: 0 28px;
+  white-space: nowrap; user-select: none;
   transition: color .4s;
 }
 #pre-text.ready { color: var(--text); cursor: none; }
@@ -143,410 +129,301 @@ body.hovering #cursor-ring { width: 58px; height: 58px; border-color: rgba(232,2
 
 /* ── NAV ── */
 nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 500;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 28px 52px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 26px 52px;
 }
 .logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 13px; font-weight: 400;
-  letter-spacing: .5em;
-  color: var(--text);
+  font-family: 'Kaushan Script', cursive;
+  font-size: 22px; color: var(--text); letter-spacing: .06em;
 }
-.nav-links { display: flex; gap: 36px; }
+.nav-links { display: flex; gap: 32px; }
 .nav-links a {
-  font-family: 'Cinzel', serif;
-  font-size: 9px; letter-spacing: .3em;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 9px; letter-spacing: .38em;
   color: var(--muted); text-decoration: none;
+  text-transform: uppercase; font-weight: 300;
   transition: color .3s; cursor: none;
-  font-weight: 400;
 }
 .nav-links a:hover { color: var(--gold); }
 
+/* ── GOTHIC ARCH ── */
+.gothic-arch {
+  position: absolute; top: 0; left: 0; right: 0;
+  width: 100%; height: 90px; pointer-events: none; overflow: hidden;
+}
+.gothic-arch svg { width: 100%; height: 100%; }
+
 /* ── HERO ── */
 #hero {
-  height: 160vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  position: relative;
+  height: 160vh; display: flex;
+  align-items: center; justify-content: center;
+  background: transparent; position: relative;
 }
 .hero-content {
-  position: sticky;
-  top: 50%;
-  transform: translateY(-50%);
-  text-align: center;
-  padding: 0 24px;
+  position: sticky; top: 50%; transform: translateY(-50%);
+  text-align: center; padding: 0 24px;
 }
 .hero-eyebrow {
-  font-family: 'Cinzel', serif;
-  font-size: 9px; letter-spacing: .55em;
-  color: var(--gold); margin-bottom: 40px;
+  font-family: 'Kaushan Script', cursive;
+  font-size: 17px; color: var(--gold); margin-bottom: 24px;
   opacity: 0; transform: translateY(12px);
-  font-weight: 400;
 }
 .hero-title {
-  display: flex; gap: 1px;
-  justify-content: center;
-  margin-bottom: 36px;
+  display: flex; gap: 0; justify-content: center; margin-bottom: 32px;
 }
 .hero-letter {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(88px,14.5vw,200px);
-  font-weight: 900; line-height: .88;
-  background: linear-gradient(175deg, #FFF 0%, #D4B878 55%, var(--gold) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  opacity: 0; transform: translateY(70px);
-  display: inline-block;
+  font-family: 'Kaushan Script', cursive;
+  font-size: clamp(90px,15vw,205px);
+  font-weight: 400; line-height: .88;
+  background: linear-gradient(172deg, #FFF 0%, #D4B878 52%, var(--gold) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  opacity: 0; transform: translateY(70px); display: inline-block;
 }
 .hero-sub {
   font-family: 'Noto Serif TC', serif;
-  font-size: clamp(13px,1.4vw,17px);
-  font-weight: 300; color: var(--muted);
-  letter-spacing: .12em; line-height: 2.2;
+  font-size: clamp(13px,1.4vw,17px); font-weight: 300;
+  color: var(--muted); letter-spacing: .12em; line-height: 2.2;
   opacity: 0; transform: translateY(18px);
 }
 .hero-sub em {
-  font-style: italic;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.35em;
-  color: var(--gold);
-  -webkit-text-fill-color: var(--gold);
-  font-weight: 300;
+  font-style: normal; color: var(--gold);
+  -webkit-text-fill-color: var(--gold); font-weight: 600;
 }
 .scroll-cue {
-  position: absolute;
-  bottom: 5vh; left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Cinzel', serif;
-  font-size: 8px; letter-spacing: .45em;
-  color: rgba(107,96,80,.5);
-  white-space: nowrap; opacity: 0;
+  position: absolute; bottom: 5vh; left: 50%; transform: translateX(-50%);
+  font-family: 'Kaushan Script', cursive; font-size: 15px;
+  color: rgba(107,96,80,.5); white-space: nowrap; opacity: 0;
 }
 .scroll-cue::before, .scroll-cue::after {
-  content: '';
-  position: absolute; top: 50%;
-  height: 1px; width: 32px;
-  background: rgba(196,169,106,.2);
+  content: ''; position: absolute; top: 50%;
+  height: 1px; width: 28px; background: rgba(196,169,106,.2);
 }
 .scroll-cue::before { right: calc(100% + 12px); }
 .scroll-cue::after  { left:  calc(100% + 12px); }
 
 /* ── ORNAMENT ── */
 .ornament {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
+  display: flex; align-items: center; justify-content: center; gap: 18px;
 }
 .orn-line { display: block; width: 80px; height: 1px; }
 .orn-line-l { background: linear-gradient(to right, transparent, rgba(196,169,106,.35)); }
 .orn-line-r { background: linear-gradient(to left,  transparent, rgba(196,169,106,.35)); }
 .orn-diamond {
-  width: 5px; height: 5px;
-  border: 1px solid rgba(196,169,106,.5);
-  transform: rotate(45deg);
-  display: block;
+  width: 5px; height: 5px; border: 1px solid rgba(196,169,106,.5);
+  transform: rotate(45deg); display: block;
 }
 
-/* ── MEDALLION SECTION ── */
+/* ── MEDALLION ── */
 #medallion {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 56px;
-  background: rgba(10,8,7,.75);
-  backdrop-filter: blur(10px);
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 52px;
+  background: rgba(9,7,5,.78); backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid var(--border);
-  padding: 80px 24px;
+  padding: 100px 24px 80px; position: relative; overflow: hidden;
 }
+.sacred-bg {
+  position: absolute; inset: 0; display: flex;
+  align-items: center; justify-content: center; pointer-events: none;
+}
+.sacred-bg svg { width: min(92vw,720px); height: min(92vw,720px); opacity: 0.7; }
 .medallion-disc {
-  width: min(65vw, 560px);
-  height: min(65vw, 560px);
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 38%, #1C1508 0%, #0E0A05 55%, #070502 100%);
+  width: min(62vw, 500px); height: min(62vw, 500px); border-radius: 50%;
+  background: radial-gradient(circle at 40% 38%, #1C1508 0%, #0E0A05 52%, #060402 100%);
   border: 1px solid rgba(196,169,106,.13);
-  box-shadow:
-    0 0 120px rgba(0,0,0,.7),
-    inset 0 0 70px rgba(0,0,0,.5),
-    0 0 0 1px rgba(196,169,106,.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  clip-path: circle(0% at 50% 50%);
-  position: relative;
+  box-shadow: 0 0 140px rgba(0,0,0,.75), inset 0 0 70px rgba(0,0,0,.55), 0 0 0 1px rgba(196,169,106,.05);
+  display: flex; align-items: center; justify-content: center;
+  clip-path: circle(0% at 50% 50%); position: relative; z-index: 1;
 }
 .medallion-disc::before {
-  content: '';
-  position: absolute; inset: 16px;
-  border-radius: 50%;
-  border: 1px solid rgba(196,169,106,.07);
+  content: ''; position: absolute; inset: 14px;
+  border-radius: 50%; border: 1px solid rgba(196,169,106,.07);
 }
 .medallion-disc::after {
-  content: '';
-  position: absolute; inset: 30px;
-  border-radius: 50%;
-  border: 1px solid rgba(196,169,106,.04);
+  content: ''; position: absolute; inset: 28px;
+  border-radius: 50%; border: 1px solid rgba(196,169,106,.04);
 }
-.medallion-inner {
-  text-align: center;
-  padding: 0 48px;
-  z-index: 1;
-}
+.medallion-inner { text-align: center; padding: 0 44px; z-index: 1; }
 .medallion-roman {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(44px,8vw,76px);
-  font-weight: 900;
-  color: rgba(196,169,106,.45);
-  line-height: 1;
-  letter-spacing: .15em;
-  margin-bottom: 6px;
+  font-family: 'Kaushan Script', cursive;
+  font-size: clamp(52px,9vw,86px);
+  color: rgba(196,169,106,.48); line-height: 1; margin-bottom: 4px;
 }
 .medallion-label {
-  font-family: 'Cinzel', serif;
-  font-size: 9px;
-  letter-spacing: .6em;
-  color: rgba(196,169,106,.38);
-  margin-bottom: 30px;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 9px; letter-spacing: .65em;
+  color: rgba(196,169,106,.32); margin-bottom: 26px;
+  text-transform: uppercase; font-weight: 300;
 }
 .medallion-title {
   font-family: 'Noto Serif TC', serif;
-  font-size: clamp(16px,2.6vw,24px);
-  font-weight: 300;
-  color: rgba(237,232,223,.65);
-  line-height: 2;
-  letter-spacing: .1em;
+  font-size: clamp(15px,2.5vw,23px); font-weight: 300;
+  color: rgba(237,232,223,.62); line-height: 2; letter-spacing: .1em;
 }
 
 /* ── SECTION LABEL ── */
 .section-label {
-  font-family: 'Cinzel', serif;
-  font-size: 9px; letter-spacing: .5em;
-  color: var(--gold); margin-bottom: 72px;
+  font-family: 'Kaushan Script', cursive;
+  font-size: 22px; color: var(--gold); margin-bottom: 60px;
   display: flex; align-items: center; gap: 20px;
 }
-.section-label::after {
-  content: ''; flex: 1; height: 1px;
-  background: var(--border);
-}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
 /* ── QUIZ SECTION ── */
 #quizzes {
-  padding: 120px 0 100px;
-  background: rgba(10,8,7,.82);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-top: 1px solid var(--border);
-  overflow: hidden;
+  padding: 100px 0; background: rgba(9,7,5,.82);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border); overflow: hidden; position: relative;
 }
 .quizzes-header { padding: 0 52px; }
 
-/* ── QUIZ STAGE (3D carousel) ── */
+/* ── CORNER BRACKETS ── */
+.corner-tl, .corner-tr, .corner-bl, .corner-br {
+  position: absolute; width: 38px; height: 38px;
+  border: 1px solid rgba(196,169,106,.18); pointer-events: none;
+}
+.corner-tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+.corner-tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+.corner-bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+.corner-br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+/* ── QUIZ STAGE ── */
 .quiz-stage-wrap {
-  position: relative;
-  height: 480px;
-  perspective: 1100px;
-  margin-bottom: 0;
+  position: relative; height: 480px; perspective: 1100px;
 }
 .quiz-stage {
-  position: relative;
-  width: 100%; height: 100%;
-  transform-style: preserve-3d;
+  position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
 }
 
 /* ── QUIZ CARD ── */
 .quiz-card {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: min(440px, 88vw);
-  background: rgba(19,16,10,.92);
-  border: 1px solid var(--border);
-  padding: 52px 48px;
-  transition:
-    transform .75s cubic-bezier(.4,0,.2,1),
-    opacity   .75s cubic-bezier(.4,0,.2,1),
-    box-shadow .4s;
-  will-change: transform, opacity;
-  cursor: none;
-  overflow: hidden;
-}
-.quiz-card::before {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
-  background: var(--gold);
-  transform: scaleY(0); transform-origin: bottom;
-  transition: transform .5s;
+  position: absolute; left: 50%; top: 50%;
+  width: min(440px,88vw);
+  background: rgba(16,12,8,.93);
+  border: 1px solid var(--border); padding: 52px 48px;
+  transition: transform .75s cubic-bezier(.4,0,.2,1), opacity .75s cubic-bezier(.4,0,.2,1), box-shadow .4s;
+  will-change: transform, opacity; cursor: none; overflow: hidden;
 }
 .quiz-card.is-active {
-  box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(196,169,106,.12);
+  box-shadow: 0 28px 90px rgba(0,0,0,.65), 0 0 0 1px rgba(196,169,106,.14);
+}
+.quiz-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+  background: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform .5s;
 }
 .quiz-card.is-active::before { transform: scaleY(1); }
 .quiz-card::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(130deg, transparent 40%, rgba(196,169,106,.065) 50%, transparent 60%);
-  background-size: 200%; background-position: 100%;
-  transition: background-position .9s;
-  pointer-events: none;
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(132deg,transparent 40%,rgba(196,169,106,.06) 50%,transparent 60%);
+  background-size: 200%; background-position: 100%; transition: background-position .9s; pointer-events: none;
 }
 .quiz-card.is-active::after { background-position: 0%; }
 .card-num {
-  font-family: 'Cinzel', serif;
-  font-size: 9px; letter-spacing: .3em;
-  color: var(--gold); margin-bottom: 40px; opacity: .5;
+  font-family: 'Kaushan Script', cursive;
+  font-size: 17px; color: var(--gold); margin-bottom: 34px; opacity: .45;
 }
 .card-title {
   font-family: 'Noto Serif TC', serif;
   font-size: clamp(20px,2vw,26px); font-weight: 600;
-  line-height: 1.55; margin-bottom: 18px;
-  color: var(--text);
+  line-height: 1.55; margin-bottom: 16px; color: var(--text);
 }
 .card-tag {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 11px; letter-spacing: .15em;
-  color: var(--muted); margin-bottom: 56px;
-  font-weight: 300;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 11px; letter-spacing: .12em;
+  color: var(--muted); margin-bottom: 50px; font-weight: 300;
 }
 .card-cta {
   display: inline-flex; align-items: center; gap: 14px;
-  font-family: 'Cinzel', serif;
-  font-size: 8px; letter-spacing: .38em; color: var(--gold);
+  font-family: 'Kaushan Script', cursive; font-size: 17px; color: var(--gold);
 }
-.cta-line {
-  display: block; width: 24px; height: 1px;
-  background: var(--gold); transition: width .35s;
-}
+.cta-line { display: block; width: 24px; height: 1px; background: var(--gold); transition: width .35s; }
 .quiz-card.is-active .cta-line { width: 40px; }
 .card-link { position: absolute; inset: 0; z-index: 3; }
 
 /* ── CAROUSEL NAV ── */
 .carousel-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 60px;
-  padding: 0 52px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 40px; margin-top: 60px; padding: 0 52px;
 }
 .carousel-btn {
-  width: 48px; height: 48px;
-  border: 1px solid rgba(196,169,106,.22);
-  border-radius: 50%;
-  background: transparent;
-  color: var(--gold);
-  font-size: 18px;
-  cursor: none;
+  width: 48px; height: 48px; border: 1px solid rgba(196,169,106,.22);
+  border-radius: 50%; background: transparent; color: var(--gold);
+  font-size: 20px; cursor: none;
   display: flex; align-items: center; justify-content: center;
   transition: border-color .3s, background .3s;
+  font-family: 'Noto Sans TC', sans-serif;
 }
 .carousel-btn:hover { border-color: var(--gold); background: rgba(196,169,106,.07); }
 .carousel-pips { display: flex; gap: 12px; align-items: center; }
-.pip {
-  width: 20px; height: 1px;
-  background: rgba(196,169,106,.2);
-  transition: background .4s, width .4s;
-  cursor: none;
-}
+.pip { width: 20px; height: 1px; background: rgba(196,169,106,.2); transition: background .4s, width .4s; cursor: none; }
 .pip.active { background: var(--gold); width: 36px; }
 
 /* ── ABOUT ── */
 #about {
-  padding: 160px 52px;
-  background: rgba(10,8,7,.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid var(--border);
+  padding: 160px 52px; background: rgba(9,7,5,.75);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border); position: relative; overflow: hidden;
 }
-.about-inner { max-width: 920px; margin: 0 auto; }
+.about-sacred { position: absolute; right: -10%; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.about-sacred svg { width: min(60vw,500px); height: min(60vw,500px); opacity: 0.35; }
+.about-inner { max-width: 920px; margin: 0 auto; position: relative; z-index: 1; }
 .about-label {
-  font-family: 'Cinzel', serif;
-  font-size: 9px; letter-spacing: .5em;
-  color: var(--gold); margin-bottom: 60px;
+  font-family: 'Kaushan Script', cursive; font-size: 22px;
+  color: var(--gold); margin-bottom: 48px;
 }
 .about-text {
   font-family: 'Noto Serif TC', serif;
-  font-size: clamp(24px,3.2vw,44px);
-  font-weight: 300; line-height: 1.9;
-  color: rgba(237,232,223,.35);
-  transition: color 1s;
+  font-size: clamp(24px,3.2vw,44px); font-weight: 300;
+  line-height: 1.9; color: rgba(237,232,223,.32); transition: color 1s;
 }
-.about-text em {
-  font-style: italic;
-  font-family: 'Cormorant Garamond', serif;
-  color: var(--text); -webkit-text-fill-color: var(--text);
-  font-size: 1.12em; font-weight: 300;
-}
-.about-text .hl {
-  color: var(--gold); -webkit-text-fill-color: var(--gold);
-  font-weight: 600;
-}
+.about-text em { font-style: normal; color: var(--text); -webkit-text-fill-color: var(--text); font-weight: 600; }
+.about-text .hl { color: var(--gold); -webkit-text-fill-color: var(--gold); font-weight: 600; }
 
 /* ── FOOTER ── */
 footer {
-  padding: 56px 52px;
-  background: rgba(10,8,7,.96);
+  padding: 52px 52px; background: rgba(9,7,5,.97);
   border-top: 1px solid var(--border);
-  display: flex; align-items: center;
-  justify-content: space-between; flex-wrap: wrap; gap: 24px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px;
 }
-.footer-logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 13px; font-weight: 400; letter-spacing: .5em;
-}
-.footer-links { display: flex; gap: 36px; }
+.footer-logo { font-family: 'Kaushan Script', cursive; font-size: 22px; }
+.footer-links { display: flex; gap: 32px; }
 .footer-links a {
-  font-family: 'Cinzel', serif;
-  font-size: 9px; letter-spacing: .25em;
-  color: var(--muted); text-decoration: none;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .32em;
+  color: var(--muted); text-decoration: none; text-transform: uppercase;
   transition: color .3s; cursor: none; font-weight: 300;
 }
 .footer-links a:hover { color: var(--gold); }
-.footer-copy {
-  font-family: 'Cinzel', serif;
-  font-size: 9px; letter-spacing: .12em;
-  color: rgba(107,96,80,.4);
-}
+.footer-copy { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .12em; color: rgba(107,96,80,.38); font-weight: 300; }
 
   </style>
 </head>
 <body>
 
-  <!-- ── THREE.JS CANVAS ── -->
   <canvas id="three-canvas"></canvas>
-
-  <!-- ── VIGNETTE ── -->
+  <div id="god-ray"></div>
   <div id="vignette"></div>
 
-  <!-- ── PRELOADER ── -->
+  <!-- PRELOADER -->
   <div id="preloader">
     <div id="pre-top"></div>
     <div id="pre-bot"></div>
+    <div id="pre-corner-tl"></div>
+    <div id="pre-corner-br"></div>
     <div id="pre-center">
       <div class="pre-line" id="line-l"></div>
-      <span id="pre-text">LOADING</span>
+      <span id="pre-text">Loading</span>
       <div class="pre-line" id="line-r"></div>
     </div>
   </div>
 
-  <!-- ── CURSOR ── -->
   <div id="cursor"></div>
   <div id="cursor-ring"></div>
 
-  <!-- ── SITE ── -->
   <div id="site">
 
     <nav>
-      <span class="logo">M O R I</span>
+      <span class="logo">Mori</span>
       <div class="nav-links">
         <a href="https://instagram.com/mori1024_" target="_blank" rel="noopener">INSTAGRAM</a>
         <a href="https://line.me/R/ti/p/@507wvwbz" target="_blank" rel="noopener">LINE</a>
@@ -556,23 +433,57 @@ footer {
     <!-- HERO -->
     <section id="hero">
       <div class="hero-content">
-        <div class="hero-eyebrow">MORI STUDIO</div>
+        <div class="hero-eyebrow">Mori Studio</div>
         <div class="hero-title">
           <span class="hero-letter">M</span>
-          <span class="hero-letter">O</span>
-          <span class="hero-letter">R</span>
-          <span class="hero-letter">I</span>
+          <span class="hero-letter">o</span>
+          <span class="hero-letter">r</span>
+          <span class="hero-letter">i</span>
         </div>
         <div class="hero-sub">
           底層邏輯 × <em>AI 工具</em> × 副業思維<br>
           重新定義你與財富的關係
         </div>
       </div>
-      <div class="scroll-cue">SCROLL TO EXPLORE</div>
+      <div class="scroll-cue">Scroll to Explore</div>
     </section>
 
     <!-- MEDALLION -->
     <section id="medallion">
+      <div class="gothic-arch">
+        <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,90 L0,52 C360,52 480,3 720,3 C960,3 1080,52 1440,52 L1440,90"
+                fill="none" stroke="rgba(196,169,106,0.13)" stroke-width="0.8"/>
+          <path d="M120,90 L120,58 C360,58 500,15 720,15 C940,15 1080,58 1320,58 L1320,90"
+                fill="none" stroke="rgba(196,169,106,0.07)" stroke-width="0.5"/>
+          <line x1="720" y1="3" x2="720" y2="24" stroke="rgba(196,169,106,0.22)" stroke-width="0.7"/>
+          <polygon points="720,3 727,10 720,17 713,10" fill="none" stroke="rgba(196,169,106,0.3)" stroke-width="0.6"/>
+        </svg>
+      </div>
+
+      <!-- Sacred geometry background -->
+      <div class="sacred-bg">
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="250" cy="250" r="238" stroke="rgba(196,169,106,0.04)" stroke-width="0.5" fill="none"/>
+          <circle cx="250" cy="250" r="195" stroke="rgba(196,169,106,0.035)" stroke-width="0.5" fill="none"/>
+          <circle cx="250" cy="250" r="152" stroke="rgba(196,169,106,0.05)" stroke-width="0.5" fill="none"/>
+          <circle cx="250" cy="250" r="100" stroke="rgba(196,169,106,0.07)" stroke-width="0.5" fill="none"/>
+          <circle cx="250" cy="250" r="58" stroke="rgba(196,169,106,0.08)" stroke-width="0.5" fill="none"/>
+          <!-- 12 radial lines -->
+          <line x1="250" y1="12" x2="250" y2="488" stroke="rgba(196,169,106,0.025)" stroke-width="0.3"/>
+          <line x1="12" y1="250" x2="488" y2="250" stroke="rgba(196,169,106,0.025)" stroke-width="0.3"/>
+          <line x1="44" y1="44" x2="456" y2="456" stroke="rgba(196,169,106,0.02)" stroke-width="0.3"/>
+          <line x1="456" y1="44" x2="44" y2="456" stroke="rgba(196,169,106,0.02)" stroke-width="0.3"/>
+          <line x1="128" y1="12" x2="372" y2="488" stroke="rgba(196,169,106,0.015)" stroke-width="0.25"/>
+          <line x1="372" y1="12" x2="128" y2="488" stroke="rgba(196,169,106,0.015)" stroke-width="0.25"/>
+          <line x1="12" y1="128" x2="488" y2="372" stroke="rgba(196,169,106,0.015)" stroke-width="0.25"/>
+          <line x1="12" y1="372" x2="488" y2="128" stroke="rgba(196,169,106,0.015)" stroke-width="0.25"/>
+          <!-- Star of David (hexagram) -->
+          <polygon points="250,50 77,350 423,350" stroke="rgba(196,169,106,0.055)" stroke-width="0.5" fill="none"/>
+          <polygon points="250,450 423,150 77,150" stroke="rgba(196,169,106,0.045)" stroke-width="0.5" fill="none"/>
+        </svg>
+      </div>
+
       <div class="ornament">
         <span class="orn-line orn-line-l"></span>
         <span class="orn-diamond"></span>
@@ -582,9 +493,7 @@ footer {
         <div class="medallion-inner">
           <div class="medallion-roman">VI</div>
           <div class="medallion-label">PATHS OF MIND</div>
-          <div class="medallion-title">
-            知曉自己<br>才能超越自己
-          </div>
+          <div class="medallion-title">知曉自己<br>才能超越自己</div>
         </div>
       </div>
       <div class="ornament">
@@ -594,10 +503,23 @@ footer {
       </div>
     </section>
 
-    <!-- QUIZZES CAROUSEL -->
+    <!-- QUIZZES -->
     <section id="quizzes">
+      <div class="gothic-arch">
+        <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,90 L0,52 C360,52 480,3 720,3 C960,3 1080,52 1440,52 L1440,90"
+                fill="none" stroke="rgba(196,169,106,0.11)" stroke-width="0.8"/>
+          <path d="M150,90 L150,59 C380,59 510,16 720,16 C930,16 1060,59 1290,59 L1290,90"
+                fill="none" stroke="rgba(196,169,106,0.06)" stroke-width="0.5"/>
+          <line x1="720" y1="3" x2="720" y2="22" stroke="rgba(196,169,106,0.2)" stroke-width="0.7"/>
+          <polygon points="720,3 727,10 720,17 713,10" fill="none" stroke="rgba(196,169,106,0.28)" stroke-width="0.6"/>
+        </svg>
+      </div>
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="corner-bl"></div><div class="corner-br"></div>
+
       <div class="quizzes-header">
-        <div class="section-label">TEST YOURSELF</div>
+        <div class="section-label">Test Yourself</div>
       </div>
       <div class="quiz-stage-wrap">
         <div class="quiz-stage" id="quiz-stage">
@@ -607,7 +529,7 @@ footer {
             <div class="card-num">01 / 06</div>
             <div class="card-title">你的不夠好<br>從哪裡來？</div>
             <div class="card-tag">心理探索 · 5 種類型</div>
-            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+            <div class="card-cta">Take Quiz <span class="cta-line"></span></div>
           </div>
 
           <div class="quiz-card" data-idx="1">
@@ -615,7 +537,7 @@ footer {
             <div class="card-num">02 / 06</div>
             <div class="card-title">MBTI<br>壓力影子測驗</div>
             <div class="card-tag">人格分析 · 4 種類型</div>
-            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+            <div class="card-cta">Take Quiz <span class="cta-line"></span></div>
           </div>
 
           <div class="quiz-card" data-idx="2">
@@ -623,7 +545,7 @@ footer {
             <div class="card-num">03 / 06</div>
             <div class="card-title">你的暗黑心智<br>是哪一種？</div>
             <div class="card-tag">思維模式 · 7 種類型</div>
-            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+            <div class="card-cta">Take Quiz <span class="cta-line"></span></div>
           </div>
 
           <div class="quiz-card" data-idx="3">
@@ -631,7 +553,7 @@ footer {
             <div class="card-num">04 / 06</div>
             <div class="card-title">財富階梯<br>測驗</div>
             <div class="card-tag">財務意識 · 6 個層級</div>
-            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+            <div class="card-cta">Take Quiz <span class="cta-line"></span></div>
           </div>
 
           <div class="quiz-card" data-idx="4">
@@ -639,7 +561,7 @@ footer {
             <div class="card-num">05 / 06</div>
             <div class="card-title">原子習慣<br>斷點測驗</div>
             <div class="card-tag">習慣系統 · 6 種類型</div>
-            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+            <div class="card-cta">Take Quiz <span class="cta-line"></span></div>
           </div>
 
           <div class="quiz-card" data-idx="5">
@@ -647,12 +569,11 @@ footer {
             <div class="card-num">06 / 06</div>
             <div class="card-title">副業基因<br>測驗</div>
             <div class="card-tag">副業路徑 · 5 種類型</div>
-            <div class="card-cta">TAKE QUIZ <span class="cta-line"></span></div>
+            <div class="card-cta">Take Quiz <span class="cta-line"></span></div>
           </div>
 
         </div>
       </div>
-
       <div class="carousel-nav">
         <button class="carousel-btn" id="prev-btn">&#8592;</button>
         <div class="carousel-pips">
@@ -669,8 +590,31 @@ footer {
 
     <!-- ABOUT -->
     <section id="about">
+      <div class="gothic-arch">
+        <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,90 L0,52 C360,52 480,3 720,3 C960,3 1080,52 1440,52 L1440,90"
+                fill="none" stroke="rgba(196,169,106,0.10)" stroke-width="0.8"/>
+          <line x1="720" y1="3" x2="720" y2="22" stroke="rgba(196,169,106,0.18)" stroke-width="0.7"/>
+          <polygon points="720,3 727,10 720,17 713,10" fill="none" stroke="rgba(196,169,106,0.25)" stroke-width="0.6"/>
+        </svg>
+      </div>
+      <!-- Sacred geometry (right side, large, faint) -->
+      <div class="about-sacred">
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="250" cy="250" r="235" stroke="rgba(196,169,106,0.04)" stroke-width="0.5" fill="none"/>
+          <circle cx="250" cy="250" r="180" stroke="rgba(196,169,106,0.03)" stroke-width="0.5" fill="none"/>
+          <circle cx="250" cy="250" r="120" stroke="rgba(196,169,106,0.05)" stroke-width="0.5" fill="none"/>
+          <circle cx="250" cy="250" r="65" stroke="rgba(196,169,106,0.07)" stroke-width="0.5" fill="none"/>
+          <line x1="250" y1="15" x2="250" y2="485" stroke="rgba(196,169,106,0.025)" stroke-width="0.3"/>
+          <line x1="15" y1="250" x2="485" y2="250" stroke="rgba(196,169,106,0.025)" stroke-width="0.3"/>
+          <line x1="48" y1="48" x2="452" y2="452" stroke="rgba(196,169,106,0.02)" stroke-width="0.3"/>
+          <line x1="452" y1="48" x2="48" y2="452" stroke="rgba(196,169,106,0.02)" stroke-width="0.3"/>
+          <polygon points="250,50 77,350 423,350" stroke="rgba(196,169,106,0.05)" stroke-width="0.5" fill="none"/>
+          <polygon points="250,450 423,150 77,150" stroke="rgba(196,169,106,0.04)" stroke-width="0.5" fill="none"/>
+        </svg>
+      </div>
       <div class="about-inner">
-        <div class="about-label">PHILOSOPHY</div>
+        <div class="about-label">Philosophy</div>
         <p class="about-text">
           INTJ。相信<em>底層邏輯</em>比努力更重要。<br>
           用 <span class="hl">AI 工具</span>把時間槓桿化，<br>
@@ -680,434 +624,242 @@ footer {
       </div>
     </section>
 
-    <!-- FOOTER -->
     <footer>
-      <div class="footer-logo">M O R I</div>
+      <div class="footer-logo">Mori</div>
       <div class="footer-links">
         <a href="https://instagram.com/mori1024_" target="_blank" rel="noopener">INSTAGRAM</a>
         <a href="https://line.me/R/ti/p/@507wvwbz" target="_blank" rel="noopener">LINE</a>
       </div>
-      <div class="footer-copy">© 2026 MORI STUDIO</div>
+      <div class="footer-copy">© 2026 Mori Studio</div>
     </footer>
 
-  </div><!-- /#site -->
+  </div>
 
-  <!-- CDN -->
   <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
   <script>
-  /* ── SIMPLEX NOISE 2D (inline) ── */
+  /* ── SIMPLEX NOISE 2D ── */
   const noise2D = (() => {
-    const F2 = .5*(Math.sqrt(3)-1), G2 = (3-Math.sqrt(3))/6;
-    const pRaw = new Uint8Array(256);
+    const F2=.5*(Math.sqrt(3)-1),G2=(3-Math.sqrt(3))/6;
+    const pRaw=new Uint8Array(256);
     for(let i=0;i<256;i++) pRaw[i]=i;
-    for(let i=255;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pRaw[i],pRaw[j]]=[pRaw[j],pRaw[i]]; }
-    const perm = new Uint8Array(512);
+    for(let i=255;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pRaw[i],pRaw[j]]=[pRaw[j],pRaw[i]];}
+    const perm=new Uint8Array(512);
     for(let i=0;i<512;i++) perm[i]=pRaw[i&255];
     const G=[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
     const d=(g,x,y)=>g[0]*x+g[1]*y;
-    return (xi,yi)=>{
-      const s=(xi+yi)*F2, i=Math.floor(xi+s), j=Math.floor(yi+s);
-      const t=(i+j)*G2, x0=xi-(i-t), y0=yi-(j-t);
+    return(xi,yi)=>{
+      const s=(xi+yi)*F2,i=Math.floor(xi+s),j=Math.floor(yi+s);
+      const t=(i+j)*G2,x0=xi-(i-t),y0=yi-(j-t);
       const[i1,j1]=x0>y0?[1,0]:[0,1];
       const x1=x0-i1+G2,y1=y0-j1+G2,x2=x0-1+2*G2,y2=y0-1+2*G2;
       const g0=perm[(i+perm[j&255])&255]%8;
       const g1=perm[(i+i1+perm[(j+j1)&255])&255]%8;
       const g2=perm[(i+1+perm[(j+1)&255])&255]%8;
       let n=0,t0,t1,t2;
-      t0=.5-x0*x0-y0*y0; if(t0>=0){t0*=t0;n+=t0*t0*d(G[g0],x0,y0);}
-      t1=.5-x1*x1-y1*y1; if(t1>=0){t1*=t1;n+=t1*t1*d(G[g1],x1,y1);}
-      t2=.5-x2*x2-y2*y2; if(t2>=0){t2*=t2;n+=t2*t2*d(G[g2],x2,y2);}
+      t0=.5-x0*x0-y0*y0;if(t0>=0){t0*=t0;n+=t0*t0*d(G[g0],x0,y0);}
+      t1=.5-x1*x1-y1*y1;if(t1>=0){t1*=t1;n+=t1*t1*d(G[g1],x1,y1);}
+      t2=.5-x2*x2-y2*y2;if(t2>=0){t2*=t2;n+=t2*t2*d(G[g2],x2,y2);}
       return 70*n;
     };
   })();
 
-  /* ── SOFT CIRCLE TEXTURE ── */
+  /* ── CIRCLE TEXTURE ── */
   function makeCircleTex() {
-    const c = document.createElement('canvas');
-    c.width = c.height = 32;
-    const ctx = c.getContext('2d');
-    const g = ctx.createRadialGradient(16,16,0,16,16,16);
-    g.addColorStop(0,   'rgba(255,255,255,1)');
-    g.addColorStop(0.4, 'rgba(255,255,255,0.8)');
-    g.addColorStop(1,   'rgba(255,255,255,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0,0,32,32);
+    const c=document.createElement('canvas'); c.width=c.height=32;
+    const ctx=c.getContext('2d');
+    const g=ctx.createRadialGradient(16,16,0,16,16,16);
+    g.addColorStop(0,'rgba(255,255,255,1)');
+    g.addColorStop(0.4,'rgba(255,255,255,0.8)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g; ctx.fillRect(0,0,32,32);
     return new THREE.CanvasTexture(c);
   }
 
   /* ── THREE.JS SCENE ── */
-  const cvs = document.getElementById('three-canvas');
-  const W = window.innerWidth, H = window.innerHeight;
-  const scene    = new THREE.Scene();
-  scene.fog      = new THREE.FogExp2(0x0A0807, 0.0028);
+  const cvs=document.getElementById('three-canvas');
+  const W=window.innerWidth,H=window.innerHeight;
+  const scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(0x090705,0.0028);
+  const camera=new THREE.PerspectiveCamera(68,W/H,0.1,2000);
+  camera.position.set(0,90,380); camera.lookAt(0,10,0);
+  const renderer=new THREE.WebGLRenderer({canvas:cvs,antialias:false});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  renderer.setSize(W,H); renderer.setClearColor(0x090705,1);
+  const circleTex=makeCircleTex();
 
-  const camera   = new THREE.PerspectiveCamera(68, W/H, 0.1, 2000);
-  camera.position.set(0, 90, 380);
-  camera.lookAt(0, 10, 0);
-
-  const renderer = new THREE.WebGLRenderer({ canvas: cvs, antialias: false });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-  renderer.setSize(W, H);
-  renderer.setClearColor(0x0A0807, 1);
-
-  const circleTex = makeCircleTex();
-
-  /* ── PARTICLE FIELD ── */
-  const isMobile = window.innerWidth < 768;
-  const COUNT = isMobile ? 7000 : 16000;
-
-  const pos   = new Float32Array(COUNT * 3);
-  const col   = new Float32Array(COUNT * 3);
-  const phase = new Float32Array(COUNT);
-
-  for (let i = 0; i < COUNT; i++) {
-    const x = (Math.random() - .5) * 1000;
-    const z = Math.random() * 1400 - 1000;
-    const n1 = noise2D(x * .004, z * .004);
-    const n2 = noise2D(x * .012, z * .012);
-    const n3 = noise2D(x * .03,  z * .03);
-    let y = n1 * 28 + n2 * 10 + n3 * 5 - 40;
-    if (Math.random() < .12) y += 60 + Math.random() * 90;
-    pos[i*3]   = x;
-    pos[i*3+1] = y;
-    pos[i*3+2] = z;
-    const b = .25 + Math.random() * .75;
-    col[i*3]   = (196/255) * b;
-    col[i*3+1] = (169/255) * b * (.9 + Math.random() * .2);
-    col[i*3+2] = (106/255) * b * (.7 + Math.random() * .3);
-    phase[i] = Math.random() * Math.PI * 2;
+  /* ── PARTICLES ── */
+  const isMobile=window.innerWidth<768;
+  const COUNT=isMobile?7000:16000;
+  const pos=new Float32Array(COUNT*3),col=new Float32Array(COUNT*3),phase=new Float32Array(COUNT);
+  for(let i=0;i<COUNT;i++){
+    const x=(Math.random()-.5)*1000,z=Math.random()*1400-1000;
+    const n1=noise2D(x*.004,z*.004),n2=noise2D(x*.012,z*.012),n3=noise2D(x*.03,z*.03);
+    let y=n1*28+n2*10+n3*5-40;
+    if(Math.random()<.12) y+=60+Math.random()*90;
+    pos[i*3]=x; pos[i*3+1]=y; pos[i*3+2]=z;
+    const b=.25+Math.random()*.75;
+    col[i*3]=(196/255)*b; col[i*3+1]=(169/255)*b*(.9+Math.random()*.2); col[i*3+2]=(106/255)*b*(.7+Math.random()*.3);
+    phase[i]=Math.random()*Math.PI*2;
   }
-
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  geo.setAttribute('color',    new THREE.BufferAttribute(col, 3));
-
-  const mat = new THREE.PointsMaterial({
-    size: isMobile ? 2.5 : 2.0,
-    map: circleTex,
-    alphaMap: circleTex,
-    vertexColors: true,
-    transparent: true,
-    opacity: .8,
-    sizeAttenuation: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    alphaTest: .01,
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const mat=new THREE.PointsMaterial({
+    size:isMobile?2.5:2.0,map:circleTex,alphaMap:circleTex,
+    vertexColors:true,transparent:true,opacity:.8,sizeAttenuation:true,
+    depthWrite:false,blending:THREE.AdditiveBlending,alphaTest:.01,
   });
-  const particles = new THREE.Points(geo, mat);
-  scene.add(particles);
+  const particles=new THREE.Points(geo,mat); scene.add(particles);
 
-  /* ── AMBIENT STAR FIELD ── */
-  const STAR_COUNT = 1200;
-  const starPos = new Float32Array(STAR_COUNT * 3);
-  for (let i = 0; i < STAR_COUNT; i++) {
-    starPos[i*3]   = (Math.random()-.5)*2500;
-    starPos[i*3+1] = Math.random()*300-20;
-    starPos[i*3+2] = (Math.random()-.5)*2500;
+  /* ── STARS ── */
+  const starPos=new Float32Array(1200*3);
+  for(let i=0;i<1200;i++){
+    starPos[i*3]=(Math.random()-.5)*2500; starPos[i*3+1]=Math.random()*300-20; starPos[i*3+2]=(Math.random()-.5)*2500;
   }
-  const starGeo = new THREE.BufferGeometry();
-  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-  const starMat = new THREE.PointsMaterial({
-    size: 1.2, color: 0xC4A96A, transparent: true, opacity: .22,
-    sizeAttenuation: true, depthWrite: false,
-    blending: THREE.AdditiveBlending, map: circleTex, alphaTest: .01,
-  });
-  scene.add(new THREE.Points(starGeo, starMat));
+  const starGeo=new THREE.BufferGeometry(); starGeo.setAttribute('position',new THREE.BufferAttribute(starPos,3));
+  scene.add(new THREE.Points(starGeo,new THREE.PointsMaterial({size:1.2,color:0xC4A96A,transparent:true,opacity:.2,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending,map:circleTex,alphaTest:.01})));
 
-  /* ── GLOW SPHERE (DaVincii fresnel) ── */
-  const sphereVert = `
-    varying vec3 vNormal;
-    varying vec3 vViewDir;
-    void main() {
-      vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-      vNormal = normalize(normalMatrix * normal);
-      vViewDir = normalize(-mvPos.xyz);
-      gl_Position = projectionMatrix * mvPos;
-    }
-  `;
-  const sphereFrag = `
-    uniform float uTime;
-    uniform float uFade;
-    varying vec3 vNormal;
-    varying vec3 vViewDir;
-    void main() {
-      float cosTheta = max(dot(vViewDir, vNormal), 0.0);
-      float fresnel  = 1.0 - cosTheta;
-      float rim      = pow(fresnel, 1.4);
-      float breath   = 0.88 + 0.12 * sin(uTime * 0.72);
-      float core     = pow(cosTheta, 3.5) * 0.45;
-      float halo     = pow(fresnel, 0.6) * 0.20;
-      float alpha    = (rim * 0.75 + core + halo) * breath * uFade;
-      vec3 rimCol    = vec3(0.98, 0.88, 0.52);
-      vec3 coreCol   = vec3(0.82, 0.65, 0.30);
-      vec3 color     = mix(rimCol, coreCol, pow(cosTheta, 0.5));
-      gl_FragColor   = vec4(color, alpha);
-    }
-  `;
-  const sphereGeo = new THREE.SphereGeometry(200, 64, 64);
-  const sphereUni = { uTime: { value: 0.0 }, uFade: { value: 1.0 } };
-  const sphereMat = new THREE.ShaderMaterial({
-    vertexShader: sphereVert, fragmentShader: sphereFrag,
-    uniforms: sphereUni, transparent: true,
-    side: THREE.FrontSide, depthWrite: false,
-    blending: THREE.AdditiveBlending,
-  });
-  const glowSphere = new THREE.Mesh(sphereGeo, sphereMat);
-  glowSphere.position.set(0, 0, -30);
-  glowSphere.renderOrder = 0;
-  scene.add(glowSphere);
-  particles.renderOrder = 1;
+  /* ── GLOW SPHERE ── */
+  const sVert=`varying vec3 vNormal,vViewDir;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vNormal=normalize(normalMatrix*normal);vViewDir=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}`;
+  const sFrag=`uniform float uTime,uFade;varying vec3 vNormal,vViewDir;void main(){float c=max(dot(vViewDir,vNormal),0.);float f=1.-c;float rim=pow(f,1.4);float b=0.88+0.12*sin(uTime*0.72);float core=pow(c,3.5)*0.45;float halo=pow(f,0.6)*0.20;float a=(rim*0.75+core+halo)*b*uFade;vec3 rc=vec3(0.98,0.88,0.52),cc=vec3(0.82,0.65,0.30);gl_FragColor=vec4(mix(rc,cc,pow(c,0.5)),a);}`;
+  const sUni={uTime:{value:0.},uFade:{value:1.}};
+  const glowSphere=new THREE.Mesh(new THREE.SphereGeometry(200,64,64),new THREE.ShaderMaterial({vertexShader:sVert,fragmentShader:sFrag,uniforms:sUni,transparent:true,side:THREE.FrontSide,depthWrite:false,blending:THREE.AdditiveBlending}));
+  glowSphere.position.set(0,0,-30); glowSphere.renderOrder=0; scene.add(glowSphere);
+  particles.renderOrder=1;
 
-  /* ── SCROLL → CAMERA ── */
-  let scrollY = 0;
-  window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+  /* ── SCROLL CAMERA ── */
+  let scrollY=0;
+  window.addEventListener('scroll',()=>{scrollY=window.scrollY;},{passive:true});
+  const camPath={start:{px:0,py:90,pz:380,lx:0,ly:10,lz:0},end:{px:0,py:15,pz:-350,lx:0,ly:5,lz:-700}};
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const ease=(t)=>t<.5?2*t*t:-1+(4-2*t)*t;
+  let time=0; const posAttr=geo.attributes.position;
 
-  const camPath = {
-    start: { px:0, py:90, pz:380,  lx:0, ly:10, lz:0    },
-    end:   { px:0, py:15, pz:-350, lx:0, ly:5,  lz:-700 },
-  };
-  function lerp(a,b,t){ return a+(b-a)*t; }
-  function easeInOut(t){ return t<.5?2*t*t:-1+(4-2*t)*t; }
-
-  /* ── RENDER LOOP ── */
-  let time = 0;
-  const posAttr = geo.attributes.position;
-
-  function animate() {
-    requestAnimationFrame(animate);
-    time += .006;
-    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    const raw = Math.min(scrollY / maxScroll, 1);
-    const p = easeInOut(raw);
-    camera.position.x = lerp(camPath.start.px, camPath.end.px, p) + Math.sin(time*.25) * 3;
-    camera.position.y = lerp(camPath.start.py, camPath.end.py, p);
-    camera.position.z = lerp(camPath.start.pz, camPath.end.pz, p);
-    camera.lookAt(
-      lerp(camPath.start.lx, camPath.end.lx, p),
-      lerp(camPath.start.ly, camPath.end.ly, p),
-      lerp(camPath.start.lz, camPath.end.lz, p)
-    );
-    for (let i = 0; i < COUNT; i += 3) {
-      posAttr.array[i*3+1] += Math.sin(time + phase[i]) * .015;
-    }
-    posAttr.needsUpdate = true;
-    particles.rotation.y += .00008;
-    sphereUni.uTime.value = time;
-    sphereUni.uFade.value = 1.0 - easeInOut(Math.min(raw * 2.8, 1));
-    glowSphere.rotation.y += 0.00025;
-    renderer.render(scene, camera);
+  function animate(){
+    requestAnimationFrame(animate); time+=.006;
+    const max=Math.max(1,document.documentElement.scrollHeight-window.innerHeight);
+    const raw=Math.min(scrollY/max,1),p=ease(raw);
+    camera.position.x=lerp(camPath.start.px,camPath.end.px,p)+Math.sin(time*.25)*3;
+    camera.position.y=lerp(camPath.start.py,camPath.end.py,p);
+    camera.position.z=lerp(camPath.start.pz,camPath.end.pz,p);
+    camera.lookAt(lerp(camPath.start.lx,camPath.end.lx,p),lerp(camPath.start.ly,camPath.end.ly,p),lerp(camPath.start.lz,camPath.end.lz,p));
+    for(let i=0;i<COUNT;i+=3) posAttr.array[i*3+1]+=Math.sin(time+phase[i])*.015;
+    posAttr.needsUpdate=true; particles.rotation.y+=.00008;
+    sUni.uTime.value=time; sUni.uFade.value=1.-ease(Math.min(raw*2.8,1));
+    glowSphere.rotation.y+=.00025;
+    renderer.render(scene,camera);
   }
   animate();
 
-  /* ── RESIZE ── */
-  window.addEventListener('resize', () => {
-    const W = window.innerWidth, H = window.innerHeight;
-    camera.aspect = W / H;
-    camera.updateProjectionMatrix();
-    renderer.setSize(W, H);
+  window.addEventListener('resize',()=>{
+    const W=window.innerWidth,H=window.innerHeight;
+    camera.aspect=W/H; camera.updateProjectionMatrix(); renderer.setSize(W,H);
   });
 
   /* ── CURSOR ── */
-  const cur  = document.getElementById('cursor');
-  const ring = document.getElementById('cursor-ring');
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
   let mx=0,my=0,rx=0,ry=0;
-  document.addEventListener('mousemove', e => {
-    mx=e.clientX; my=e.clientY;
-    cur.style.left=mx+'px'; cur.style.top=my+'px';
-  });
-  (function lerpRing(){
-    rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
-    ring.style.left=rx+'px'; ring.style.top=ry+'px';
-    requestAnimationFrame(lerpRing);
-  })();
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function lr(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(lr);})();
   document.querySelectorAll('a,.quiz-card,.carousel-btn,.pip').forEach(el=>{
     el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
     el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
   });
 
   /* ── CAROUSEL ── */
-  let activeIdx = 0;
-  const cards = Array.from(document.querySelectorAll('.quiz-card'));
-  const pips  = Array.from(document.querySelectorAll('.pip'));
-  const N = cards.length;
+  let activeIdx=0;
+  const cards=Array.from(document.querySelectorAll('.quiz-card'));
+  const pips=Array.from(document.querySelectorAll('.pip'));
+  const N=cards.length;
 
-  function setCardPos(card, offset) {
-    let tx, tz, scale, ry, opacity, zIdx, pe;
-    const ao = Math.abs(offset);
-    if (offset === 0) {
-      tx='-50%'; tz=0; scale=1; ry=0; opacity=1; zIdx=5; pe='auto';
-    } else if (ao === 1) {
-      tx=`calc(-50% + ${offset * 310}px)`;
-      tz=-90; scale=0.87; ry=offset*-9; opacity=0.42; zIdx=3; pe='none';
-    } else if (ao === 2) {
-      tx=`calc(-50% + ${offset * 280}px)`;
-      tz=-180; scale=0.74; ry=offset*-14; opacity=0.15; zIdx=1; pe='none';
-    } else {
-      tx='-50%'; tz=-300; scale=0.6; ry=0; opacity=0; zIdx=0; pe='none';
-    }
-    card.style.transform = `translateX(${tx}) translateY(-50%) translateZ(${tz}px) rotateY(${ry}deg) scale(${scale})`;
-    card.style.opacity   = opacity;
-    card.style.zIndex    = zIdx;
-    card.style.pointerEvents = pe;
-    card.classList.toggle('is-active', offset === 0);
+  function setCardPos(card,offset){
+    let tx,tz,scale,ry,opacity,zIdx,pe;
+    const ao=Math.abs(offset);
+    if(offset===0){tx='-50%';tz=0;scale=1;ry=0;opacity=1;zIdx=5;pe='auto';}
+    else if(ao===1){tx=`calc(-50% + ${offset*310}px)`;tz=-90;scale=0.87;ry=offset*-9;opacity=0.4;zIdx=3;pe='none';}
+    else if(ao===2){tx=`calc(-50% + ${offset*280}px)`;tz=-180;scale=0.74;ry=offset*-14;opacity=0.14;zIdx=1;pe='none';}
+    else{tx='-50%';tz=-300;scale=0.6;ry=0;opacity=0;zIdx=0;pe='none';}
+    card.style.transform=`translateX(${tx}) translateY(-50%) translateZ(${tz}px) rotateY(${ry}deg) scale(${scale})`;
+    card.style.opacity=opacity; card.style.zIndex=zIdx; card.style.pointerEvents=pe;
+    card.classList.toggle('is-active',offset===0);
   }
 
-  function updateCarousel(instant) {
-    cards.forEach((card, i) => {
-      let offset = i - activeIdx;
-      if (offset >  N/2) offset -= N;
-      if (offset < -N/2) offset += N;
-      if (instant) {
-        const t = card.style.transition;
-        card.style.transition = 'none';
-        setCardPos(card, offset);
-        requestAnimationFrame(() => { card.style.transition = t; });
-      } else {
-        setCardPos(card, offset);
-      }
+  function updateCarousel(instant){
+    cards.forEach((card,i)=>{
+      let off=i-activeIdx;
+      if(off>N/2) off-=N; if(off<-N/2) off+=N;
+      if(instant){const t=card.style.transition;card.style.transition='none';setCardPos(card,off);requestAnimationFrame(()=>{card.style.transition=t;});}
+      else setCardPos(card,off);
     });
-    pips.forEach((pip, i) => pip.classList.toggle('active', i === activeIdx));
+    pips.forEach((pip,i)=>pip.classList.toggle('active',i===activeIdx));
   }
 
-  document.getElementById('next-btn').addEventListener('click', () => {
-    activeIdx = (activeIdx + 1) % N;
-    updateCarousel(false);
-  });
-  document.getElementById('prev-btn').addEventListener('click', () => {
-    activeIdx = (activeIdx - 1 + N) % N;
-    updateCarousel(false);
-  });
-  pips.forEach((pip, i) => {
-    pip.addEventListener('click', () => { activeIdx = i; updateCarousel(false); });
-  });
+  document.getElementById('next-btn').addEventListener('click',()=>{activeIdx=(activeIdx+1)%N;updateCarousel(false);});
+  document.getElementById('prev-btn').addEventListener('click',()=>{activeIdx=(activeIdx-1+N)%N;updateCarousel(false);});
+  pips.forEach((pip,i)=>pip.addEventListener('click',()=>{activeIdx=i;updateCarousel(false);}));
 
   /* ── PRELOADER ── */
-  const preloader = document.getElementById('preloader');
-  const preTop    = document.getElementById('pre-top');
-  const preBot    = document.getElementById('pre-bot');
-  const preText   = document.getElementById('pre-text');
-  const lineL     = document.getElementById('line-l');
-  const lineR     = document.getElementById('line-r');
-  const site      = document.getElementById('site');
+  const preloader=document.getElementById('preloader');
+  const preTop=document.getElementById('pre-top'),preBot=document.getElementById('pre-bot');
+  const preText=document.getElementById('pre-text');
+  const lineL=document.getElementById('line-l'),lineR=document.getElementById('line-r');
+  const site=document.getElementById('site');
 
-  function initPreloader() {
-    lineL.classList.add('open');
-    lineR.classList.add('open');
-    setTimeout(() => {
-      preText.textContent = 'ENTER';
+  function initPreloader(){
+    lineL.classList.add('open'); lineR.classList.add('open');
+    setTimeout(()=>{
+      preText.textContent='Enter';
       preText.classList.add('ready');
-      preText.addEventListener('click', onEnter);
-    }, 1600);
+      preText.addEventListener('click',onEnter);
+    },1600);
   }
 
-  function onEnter() {
-    preText.removeEventListener('click', onEnter);
+  function onEnter(){
+    preText.removeEventListener('click',onEnter);
     gsap.registerPlugin(ScrollTrigger);
-    const tl = gsap.timeline();
-    tl.to([lineL, lineR, preText], { opacity:0, duration:.35, ease:'power2.in' })
-      .to(preTop, { yPercent:-100, duration:1.1, ease:'power3.inOut' }, .2)
-      .to(preBot, { yPercent: 100, duration:1.1, ease:'power3.inOut' }, .2)
-      .to(preloader, { display:'none', duration:0 }, 1.2)
-      .to(site,      { opacity:1, duration:0 }, .35)
-      .call(startReveal, null, .55);
+    const tl=gsap.timeline();
+    tl.to([lineL,lineR,preText],{opacity:0,duration:.35,ease:'power2.in'})
+      .to(preTop,{yPercent:-100,duration:1.1,ease:'power3.inOut'},.2)
+      .to(preBot,{yPercent:100,duration:1.1,ease:'power3.inOut'},.2)
+      .to(preloader,{display:'none',duration:0},1.2)
+      .to(site,{opacity:1,duration:0},.35)
+      .call(startReveal,null,.55);
   }
 
-  function startReveal() {
-    // Init carousel (instant, no animation)
+  function startReveal(){
     updateCarousel(true);
+    const tl=gsap.timeline({defaults:{ease:'power3.out'}});
+    tl.to('.hero-eyebrow',{opacity:1,y:0,duration:.8})
+      .to('.hero-letter',{opacity:1,y:0,duration:.9,stagger:.08},'-=.4')
+      .to('.hero-sub',{opacity:1,y:0,duration:.8},'-=.45')
+      .to('.scroll-cue',{opacity:1,duration:1},'-=.3');
 
-    const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
-    tl.to('.hero-eyebrow', { opacity:1, y:0, duration:.8 })
-      .to('.hero-letter',  { opacity:1, y:0, duration:.9, stagger:.08 }, '-=.4')
-      .to('.hero-sub',     { opacity:1, y:0, duration:.8 }, '-=.45')
-      .to('.scroll-cue',   { opacity:1, duration:1 }, '-=.3');
-
-    // Medallion: clip-path reveal on scroll
-    gsap.to('.medallion-disc', {
-      clipPath: 'circle(52% at 50% 50%)',
-      duration: 1.4,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: '#medallion',
-        start: 'top 72%',
-        once: true,
-      }
+    gsap.to('.medallion-disc',{
+      clipPath:'circle(52% at 50% 50%)',duration:1.4,ease:'power3.out',
+      scrollTrigger:{trigger:'#medallion',start:'top 72%',once:true}
     });
-
-    // Medallion inner text fade in after disc opens
-    gsap.from('.medallion-roman, .medallion-label, .medallion-title', {
-      opacity: 0, y: 20,
-      duration: 1,
-      ease: 'power2.out',
-      stagger: .15,
-      scrollTrigger: {
-        trigger: '#medallion',
-        start: 'top 60%',
-        once: true,
-      }
+    gsap.from('.medallion-roman,.medallion-label,.medallion-title',{
+      opacity:0,y:20,duration:1,ease:'power2.out',stagger:.15,
+      scrollTrigger:{trigger:'#medallion',start:'top 60%',once:true}
     });
-
-    // Ornaments
-    gsap.from('.ornament', {
-      opacity: 0,
-      duration: 1,
-      ease: 'power2.out',
-      stagger: .2,
-      scrollTrigger: {
-        trigger: '#medallion',
-        start: 'top 75%',
-        once: true,
-      }
+    gsap.from('.ornament',{
+      opacity:0,duration:1,ease:'power2.out',stagger:.2,
+      scrollTrigger:{trigger:'#medallion',start:'top 75%',once:true}
     });
-
-    // Quiz section fade
-    gsap.from('#quizzes .quizzes-header', {
-      opacity: 0, y: 30,
-      duration: .8,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: '#quizzes',
-        start: 'top 80%',
-        once: true,
-      }
+    gsap.from('#quizzes .quizzes-header',{
+      opacity:0,y:30,duration:.8,ease:'power3.out',
+      scrollTrigger:{trigger:'#quizzes',start:'top 80%',once:true}
     });
-
-    gsap.from('.quiz-stage-wrap', {
-      opacity: 0, y: 40,
-      duration: 1,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: '#quizzes',
-        start: 'top 70%',
-        once: true,
-      }
+    gsap.from('.quiz-stage-wrap,.carousel-nav',{
+      opacity:0,y:40,duration:1,ease:'power3.out',stagger:.15,
+      scrollTrigger:{trigger:'#quizzes',start:'top 68%',once:true}
     });
-
-    gsap.from('.carousel-nav', {
-      opacity: 0,
-      duration: .8,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '#quizzes',
-        start: 'top 55%',
-        once: true,
-      }
-    });
-
-    // About scrub
-    gsap.to('.about-text', {
-      color: 'rgba(237,232,223,0.82)',
-      duration: 1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: '#about',
-        start: 'top 70%',
-        end: 'top 20%',
-        scrub: true,
-      }
+    gsap.to('.about-text',{
+      color:'rgba(237,232,223,0.82)',ease:'none',
+      scrollTrigger:{trigger:'#about',start:'top 70%',end:'top 20%',scrub:true}
     });
   }
 
