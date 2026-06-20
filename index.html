@@ -136,12 +136,12 @@ nav {
 }
 .logo {
   font-family: 'Kaushan Script', cursive;
-  font-size: 22px; color: var(--text); letter-spacing: .06em;
+  font-size: 36px; color: var(--text); letter-spacing: .06em;
 }
-.nav-links { display: flex; gap: 32px; }
+.nav-links { display: flex; gap: 72px; }
 .nav-links a {
   font-family: 'Noto Sans TC', sans-serif;
-  font-size: 9px; letter-spacing: .38em;
+  font-size: 9.5px; letter-spacing: .4em;
   color: var(--muted); text-decoration: none;
   text-transform: uppercase; font-weight: 300;
   transition: color .3s; cursor: none;
@@ -167,7 +167,7 @@ nav {
 }
 .hero-eyebrow {
   font-family: 'Kaushan Script', cursive;
-  font-size: 17px; color: var(--gold); margin-bottom: 24px;
+  font-size: 28px; color: var(--gold); margin-bottom: 24px;
   opacity: 0; transform: translateY(12px);
 }
 .hero-title {
@@ -175,7 +175,7 @@ nav {
 }
 .hero-letter {
   font-family: 'Kaushan Script', cursive;
-  font-size: clamp(90px,15vw,205px);
+  font-size: 180px;
   font-weight: 400; line-height: .88;
   background: linear-gradient(172deg, #FFF 0%, #D4B878 52%, var(--gold) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
@@ -183,8 +183,8 @@ nav {
 }
 .hero-sub {
   font-family: 'LXGW WenKai TC', serif;
-  font-size: clamp(14px,1.5vw,18px); font-weight: 400;
-  color: rgba(180,168,148,0.82); letter-spacing: .14em; line-height: 2.4;
+  font-size: 14px; font-weight: 400;
+  color: rgba(180,168,148,0.82); letter-spacing: .4em; line-height: 1.4;
   opacity: 0; transform: translateY(18px);
 }
 .hero-sub em {
@@ -230,7 +230,7 @@ nav {
 }
 .sacred-bg svg { width: min(92vw,720px); height: min(92vw,720px); opacity: 0.7; }
 .medallion-disc {
-  width: min(62vw, 500px); height: min(62vw, 500px); border-radius: 50%;
+  width: 480px; height: 480px; border-radius: 50%;
   background: radial-gradient(circle at 40% 38%, #1C1508 0%, #0E0A05 52%, #060402 100%);
   border: 1px solid rgba(196,169,106,.13);
   box-shadow: 0 0 140px rgba(0,0,0,.75), inset 0 0 70px rgba(0,0,0,.55), 0 0 0 1px rgba(196,169,106,.05);
@@ -248,7 +248,7 @@ nav {
 .medallion-inner { text-align: center; padding: 0 44px; z-index: 1; }
 .medallion-roman {
   font-family: 'Kaushan Script', cursive;
-  font-size: clamp(52px,9vw,86px);
+  font-size: 120px;
   color: rgba(196,169,106,.48); line-height: 1; margin-bottom: 4px;
 }
 .medallion-label {
@@ -259,14 +259,14 @@ nav {
 }
 .medallion-title {
   font-family: 'LXGW WenKai TC', serif;
-  font-size: clamp(16px,2.5vw,24px); font-weight: 400;
-  color: rgba(237,232,223,.78); line-height: 2.1; letter-spacing: .06em;
+  font-size: 22px; font-weight: 400;
+  color: rgba(237,232,223,.78); line-height: 1.4; letter-spacing: .25em;
 }
 
 /* ── SECTION LABEL ── */
 .section-label {
   font-family: 'Kaushan Script', cursive;
-  font-size: 22px; color: var(--gold); margin-bottom: 60px;
+  font-size: 38px; color: var(--gold); margin-bottom: 60px;
   display: flex; align-items: center; gap: 20px;
 }
 .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
@@ -302,7 +302,7 @@ nav {
   position: absolute; left: 50%; top: 50%;
   width: min(440px,88vw);
   background: rgba(16,12,8,.93);
-  border: 1px solid var(--border); padding: 52px 48px;
+  border: 1px solid var(--border); padding: 20px;
   transition: transform .75s cubic-bezier(.4,0,.2,1), opacity .75s cubic-bezier(.4,0,.2,1), box-shadow .4s;
   will-change: transform, opacity; cursor: none; overflow: hidden;
 }
@@ -326,12 +326,12 @@ nav {
 }
 .card-title {
   font-family: 'LXGW WenKai TC', serif;
-  font-size: clamp(20px,2vw,26px); font-weight: 400;
+  font-size: 25.5px; font-weight: 400;
   line-height: 1.7; margin-bottom: 16px; color: var(--text);
 }
 .card-tag {
   font-family: 'Noto Sans TC', sans-serif;
-  font-size: 11px; letter-spacing: .12em;
+  font-size: 13.5px; letter-spacing: .3em;
   color: var(--muted); margin-bottom: 50px; font-weight: 300;
 }
 .card-cta {
@@ -370,12 +370,12 @@ nav {
 .about-sacred svg { width: min(60vw,500px); height: min(60vw,500px); opacity: 0.35; }
 .about-inner { max-width: 920px; margin: 0 auto; position: relative; z-index: 1; }
 .about-label {
-  font-family: 'Kaushan Script', cursive; font-size: 22px;
+  font-family: 'Kaushan Script', cursive; font-size: 38px;
   color: var(--gold); margin-bottom: 48px;
 }
 .about-text {
   font-family: 'LXGW WenKai TC', serif;
-  font-size: clamp(22px,3vw,40px); font-weight: 400;
+  font-size: 26px; font-weight: 400;
   line-height: 2.1; color: rgba(237,232,223,.32); transition: color 1s;
 }
 .about-text em { font-style: normal; color: var(--text); -webkit-text-fill-color: var(--text); font-weight: 600; }
@@ -383,14 +383,14 @@ nav {
 
 /* ── FOOTER ── */
 footer {
-  padding: 52px 52px; background: rgba(9,7,5,.97);
+  padding: 20px 52px; background: rgba(9,7,5,.97);
   border-top: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px;
 }
-.footer-logo { font-family: 'Kaushan Script', cursive; font-size: 22px; }
+.footer-logo { font-family: 'Kaushan Script', cursive; font-size: 36px; }
 .footer-links { display: flex; gap: 32px; }
 .footer-links a {
-  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .32em;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9.5px; letter-spacing: .4em;
   color: var(--muted); text-decoration: none; text-transform: uppercase;
   transition: color .3s; cursor: none; font-weight: 300;
 }
