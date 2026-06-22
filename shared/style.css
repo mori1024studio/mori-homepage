@@ -1,0 +1,235 @@
+/* ══════════════════════════════════════════════
+   Mori 品牌共用樣式庫 shared/style.css
+   適用：所有頁面（首頁、測驗頁、文章頁等）
+   修改顏色/字體：只需改 :root 的 Token
+   ══════════════════════════════════════════════ */
+
+/* ── TOKENS ── */
+:root {
+  --bg:           #090705;
+  --gold:         #C4A96A;
+  --gold-b:       #E8C86A;
+  --text:         #EDE8DF;
+  --muted:        #9A8C78;
+  --border:       rgba(196,169,106,0.12);
+  --font-display: 'Noto Serif TC', serif;  /* 大標字體：900 weight */
+  --font-body:    'LXGW WenKai TC', serif; /* 內文字體 */
+  --font-ui:      'Noto Sans TC', sans-serif;
+  --font-logo:    'Kaushan Script', cursive;
+}
+
+/* ── CUSTOM FONTS ── */
+@font-face {
+  font-family: 'ChenYuLuoYan';
+  src: url('../fonts/ChenYuluoyan-2.0-Thin.ttf') format('truetype');
+  font-weight: normal; font-style: normal; font-display: swap;
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: auto; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'LXGW WenKai TC', serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── GRAIN ── */
+body::before {
+  content: '';
+  position: fixed; inset: -50%;
+  width: 200%; height: 200%;
+  z-index: 9000; pointer-events: none; opacity: 0.065;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  animation: grain .35s steps(1) infinite;
+}
+@keyframes grain {
+  0%{transform:translate(0,0)} 14%{transform:translate(-5%,-10%)} 28%{transform:translate(-15%,5%)}
+  42%{transform:translate(7%,-25%)} 57%{transform:translate(-5%,25%)} 71%{transform:translate(15%,0%)} 85%{transform:translate(0%,15%)}
+}
+
+/* ── VIGNETTE ── */
+#vignette {
+  position: fixed; inset: 0; pointer-events: none; z-index: 5;
+  background: radial-gradient(ellipse 88% 88% at 50% 50%,
+    transparent 26%, rgba(4,3,2,0.6) 66%, rgba(2,1,1,0.92) 100%);
+}
+
+/* ── GOD RAY ── */
+#god-ray {
+  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  background:
+    linear-gradient(179deg, rgba(196,169,106,0.10) 0%, transparent 44%),
+    linear-gradient(173deg, rgba(196,169,106,0.055) 0%, transparent 38%),
+    linear-gradient(185deg, rgba(196,169,106,0.055) 0%, transparent 38%),
+    linear-gradient(165deg, rgba(196,169,106,0.03) 0%, transparent 32%),
+    linear-gradient(193deg, rgba(196,169,106,0.03) 0%, transparent 32%);
+  animation: rayPulse 10s ease-in-out infinite;
+}
+@keyframes rayPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+/* ── THREE CANVAS ── */
+#three-canvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%; z-index: 0;
+}
+
+/* ── CURSOR ── */
+#cursor {
+  position: fixed; width: 7px; height: 7px;
+  background: var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform .1s, background .25s;
+}
+#cursor-ring {
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(196,169,106,.45); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: width .35s, height .35s, border-color .35s;
+}
+body.hovering #cursor { transform: translate(-50%,-50%) scale(2.2); background: var(--gold-b); }
+body.hovering #cursor-ring { width: 58px; height: 58px; border-color: rgba(232,200,106,.55); }
+
+/* ── PRELOADER ── */
+#preloader {
+  position: fixed; inset: 0; z-index: 9990;
+  background: var(--bg); overflow: hidden;
+}
+#pre-top, #pre-bot {
+  position: absolute; left: 0; width: 100%; height: 50%; background: var(--bg);
+}
+#pre-top { top: 0; } #pre-bot { bottom: 0; }
+#pre-center {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center; z-index: 2;
+}
+#pre-corner-tl, #pre-corner-br {
+  position: absolute; width: 55px; height: 55px;
+  border: 1px solid rgba(196,169,106,.2); pointer-events: none;
+}
+#pre-corner-tl { top: 28px; left: 28px; border-right: none; border-bottom: none; }
+#pre-corner-br { bottom: 28px; right: 28px; border-left: none; border-top: none; }
+.pre-line {
+  height: 1px; width: 0;
+  background: rgba(196,169,106,.3);
+  transition: width 1.4s cubic-bezier(.4,0,.2,1); flex-shrink: 0;
+}
+.pre-line.open { width: clamp(56px,20vw,220px); }
+#pre-text {
+  font-family: 'Kaushan Script', cursive;
+  font-size: 22px; letter-spacing: .05em;
+  color: var(--muted); padding: 0 28px;
+  white-space: nowrap; user-select: none;
+  transition: color .4s;
+}
+#pre-text.ready { color: var(--text); cursor: none; }
+#pre-text.ready:hover { color: var(--gold); }
+
+/* ── SITE WRAPPER ── */
+#site { position: relative; z-index: 10; opacity: 0; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 26px 52px;
+}
+.logo {
+  font-family: 'Kaushan Script', cursive;
+  font-size: 36px; color: var(--text); letter-spacing: .06em;
+}
+.nav-links { display: flex; gap: 72px; }
+.nav-links a {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 9.5px; letter-spacing: .4em;
+  color: var(--muted); text-decoration: none;
+  text-transform: uppercase; font-weight: 300;
+  transition: color .3s; cursor: none;
+}
+.nav-links a:hover { color: var(--gold); }
+
+/* ── GOTHIC ARCH ── */
+.gothic-arch {
+  position: absolute; top: 0; left: 0; right: 0;
+  width: 100%; height: 90px; pointer-events: none; overflow: hidden;
+}
+.gothic-arch svg { width: 100%; height: 100%; }
+
+/* ── ORNAMENT ── */
+.ornament {
+  display: flex; align-items: center; justify-content: center; gap: 18px;
+}
+.orn-line { display: block; width: 80px; height: 1px; }
+.orn-line-l { background: linear-gradient(to right, transparent, rgba(196,169,106,.35)); }
+.orn-line-r { background: linear-gradient(to left,  transparent, rgba(196,169,106,.35)); }
+.orn-diamond {
+  width: 5px; height: 5px; border: 1px solid rgba(196,169,106,.5);
+  transform: rotate(45deg); display: block;
+}
+
+/* ── SACRED GEOMETRY BACKGROUND ── */
+.sacred-bg {
+  position: absolute; inset: 0; display: flex;
+  align-items: center; justify-content: center; pointer-events: none;
+}
+.sacred-bg svg { width: min(92vw,720px); height: min(92vw,720px); opacity: 0.7; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: 'Kaushan Script', cursive;
+  font-size: 38px; color: var(--gold); margin-bottom: 60px;
+  display: flex; align-items: center; gap: 20px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── CORNER BRACKETS ── */
+.corner-tl, .corner-tr, .corner-bl, .corner-br {
+  position: absolute; width: 38px; height: 38px;
+  border: 1px solid rgba(196,169,106,.18); pointer-events: none;
+}
+.corner-tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+.corner-tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+.corner-bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+.corner-br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+/* ── ABOUT SECTION ── */
+#about {
+  padding: 160px 52px; background: rgba(9,7,5,.75);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border); position: relative; overflow: hidden;
+}
+.about-sacred { position: absolute; right: -10%; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.about-sacred svg { width: min(60vw,500px); height: min(60vw,500px); opacity: 0.35; }
+.about-inner { max-width: 920px; margin: 0 auto; position: relative; z-index: 1; }
+.about-label {
+  font-family: 'Kaushan Script', cursive; font-size: 38px;
+  color: var(--gold); margin-bottom: 48px;
+}
+.about-text {
+  font-family: 'ChenYuLuoYan', serif;
+  font-size: 26px; font-weight: 400;
+  line-height: 2.1; color: rgba(237,232,223,.32); transition: color 1s;
+}
+.about-text em { font-style: normal; color: var(--text); -webkit-text-fill-color: var(--text); font-weight: 600; }
+.about-text .hl { color: var(--gold); -webkit-text-fill-color: var(--gold); font-weight: 600; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 20px 52px; background: rgba(9,7,5,.97);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px;
+}
+.footer-logo { font-family: 'Kaushan Script', cursive; font-size: 36px; }
+.footer-links { display: flex; gap: 32px; }
+.footer-links a {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9.5px; letter-spacing: .4em;
+  color: var(--muted); text-decoration: none; text-transform: uppercase;
+  transition: color .3s; cursor: none; font-weight: 300;
+}
+.footer-links a:hover { color: var(--gold); }
+.footer-copy { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .12em; color: rgba(107,96,80,.38); font-weight: 300; }

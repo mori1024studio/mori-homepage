@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字體整頁比較</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400&family=Noto+Serif+TC:wght@900&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: #090705; }
+
+/* ── 切換 Tab ── */
+#switcher {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+  display: flex; border-bottom: 1px solid rgba(196,169,106,.12);
+  background: rgba(9,7,5,.97);
+}
+.tab-btn {
+  flex: 1; padding: 16px; background: transparent;
+  border: none; color: rgba(196,169,106,.4); cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .3em;
+  text-transform: uppercase; transition: all .25s;
+  border-bottom: 2px solid transparent;
+}
+.tab-btn.active { color: #C4A96A; border-bottom-color: #C4A96A; }
+.tab-label { font-size: 8px; opacity: .5; display: block; margin-top: 3px; letter-spacing: .15em; }
+
+/* ── 每個全頁面板 ── */
+.page-panel {
+  display: none; min-height: 100vh;
+  flex-direction: column; padding-top: 52px;
+}
+.page-panel.visible { display: flex; }
+
+/* ── 共用元素 ── */
+.pg-nav {
+  padding: 26px 52px; display: flex; justify-content: space-between; align-items: center;
+  position: sticky; top: 52px; background: rgba(9,7,5,.85);
+  backdrop-filter: blur(12px); z-index: 10;
+  border-bottom: 1px solid rgba(196,169,106,.08);
+}
+.pg-logo { font-family: 'Kaushan Script', cursive; font-size: 32px; color: #EDE8DF; }
+.pg-links { display: flex; gap: 48px; }
+.pg-links span { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(154,140,120,.6); text-transform: uppercase; }
+
+/* ── 開始畫面 ── */
+.start-screen {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: flex-start; justify-content: center;
+  padding: 80px 52px; max-width: 740px;
+}
+.start-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 20px; }
+.start-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2.1; color: rgba(237,232,223,.5); margin-bottom: 40px; }
+.start-meta { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; color: rgba(154,140,120,.35); margin-bottom: 44px; }
+.start-btn {
+  display: inline-flex; align-items: center; gap: 16px;
+  font-family: 'Kaushan Script', cursive; font-size: 19px; color: #C4A96A;
+  border: 1px solid rgba(196,169,106,.25); padding: 13px 32px; background: transparent;
+}
+.start-btn-line { display: block; width: 28px; height: 1px; background: #C4A96A; }
+
+/* ── 作答畫面 ── */
+.quiz-screen {
+  padding: 60px 52px; max-width: 640px; width: 100%;
+}
+.pg-progress-num { font-family: 'Kaushan Script', cursive; font-size: 20px; color: #C4A96A; margin-bottom: 6px; }
+.pg-progress-bg { height: 1px; background: rgba(196,169,106,.1); margin-bottom: 40px; position: relative; }
+.pg-progress-fill { height: 1px; background: #C4A96A; width: 33%; position: relative; }
+.pg-progress-fill::after { content:''; position:absolute; right:-3px; top:-3px; width:7px; height:7px; background:#C4A96A; border-radius:50%; }
+.pg-qtag { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.35); text-transform: uppercase; margin-bottom: 18px; }
+.pg-qtext { font-family: 'LXGW WenKai TC', serif; font-size: 22px; line-height: 1.75; color: #EDE8DF; margin-bottom: 32px; }
+.pg-options { display: flex; flex-direction: column; gap: 10px; }
+.pg-opt {
+  display: flex; align-items: flex-start; gap: 14px; padding: 13px 16px;
+  background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1);
+}
+.pg-opt.sel { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); border-left: 2px solid #C4A96A; }
+.pg-opt-key { font-family: 'Kaushan Script', cursive; font-size: 17px; color: rgba(196,169,106,.4); flex-shrink: 0; width: 18px; }
+.pg-opt.sel .pg-opt-key { color: #C4A96A; }
+.pg-opt-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 1.7; color: rgba(237,232,223,.65); }
+.pg-opt.sel .pg-opt-text { color: #EDE8DF; }
+
+/* ── 結果畫面 ── */
+.result-screen {
+  padding: 80px 52px; max-width: 720px; width: 100%;
+}
+.orn { display: flex; align-items: center; gap: 18px; margin-bottom: 36px; }
+.orn-l { width: 80px; height: 1px; background: linear-gradient(to right, transparent, rgba(196,169,106,.35)); }
+.orn-r { width: 80px; height: 1px; background: linear-gradient(to left, transparent, rgba(196,169,106,.35)); }
+.orn-d { width: 5px; height: 5px; border: 1px solid rgba(196,169,106,.5); transform: rotate(45deg); }
+.r-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 14px; }
+.r-subtitle { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .55em; color: rgba(196,169,106,.5); text-transform: uppercase; margin-bottom: 28px; }
+.r-divider { width: 44px; height: 1px; background: rgba(196,169,106,.22); margin-bottom: 28px; }
+.r-desc { font-family: 'LXGW WenKai TC', serif; font-size: 17px; line-height: 2.05; color: rgba(237,232,223,.6); margin-bottom: 36px; }
+.r-actions { display: flex; gap: 14px; margin-bottom: 36px; }
+.r-btn-main { padding: 11px 26px; background: rgba(196,169,106,.1); border: 1px solid rgba(196,169,106,.3); color: #C4A96A; font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
+.r-btn-sub  { padding: 11px 26px; background: transparent; border: 1px solid rgba(196,169,106,.1); color: rgba(154,140,120,.55); font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
+.r-cta { padding: 22px 24px; border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5); }
+.r-cta-label { font-family: 'Noto Sans TC', sans-serif; font-size: 8px; letter-spacing: .4em; color: rgba(196,169,106,.35); text-transform: uppercase; margin-bottom: 10px; }
+.r-cta-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 1.8; color: rgba(237,232,223,.45); margin-bottom: 14px; }
+.r-email-row { display: flex; gap: 8px; }
+.r-email-input { flex: 1; padding: 9px 12px; background: rgba(9,7,5,.8); border: 1px solid rgba(196,169,106,.18); color: #EDE8DF; font-family: 'Noto Sans TC', sans-serif; font-size: 12px; }
+.r-email-btn { padding: 9px 18px; background: rgba(196,169,106,.1); border: 1px solid rgba(196,169,106,.28); color: #C4A96A; font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; }
+
+/* ── 分隔線 ── */
+.section-divider { width: 100%; height: 1px; background: rgba(196,169,106,.06); margin: 0 0 60px; }
+.section-tag { font-family: 'Noto Sans TC', sans-serif; font-size: 8px; letter-spacing: .4em; color: rgba(196,169,106,.2); text-transform: uppercase; padding: 0 52px; margin-bottom: 32px; }
+
+.pg-footer { padding: 20px 52px; border-top: 1px solid rgba(196,169,106,.08); display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.pg-footer-logo { font-family: 'Kaushan Script', cursive; font-size: 28px; color: #EDE8DF; }
+.pg-footer-copy { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .1em; color: rgba(107,96,80,.3); }
+
+/* ── 標題字體設定 ── */
+.f-noto .start-title { font-family: 'Noto Serif TC', serif; font-weight: 900; }
+.f-noto .r-type      { font-family: 'Noto Serif TC', serif; font-weight: 900; }
+
+.f-zcool .start-title { font-family: 'ZCOOL XiaoWei', serif; }
+.f-zcool .r-type      { font-family: 'ZCOOL XiaoWei', serif; }
+
+/* 共用漸層大標 */
+.start-title, .r-type {
+  font-size: 56px; line-height: 1.15; margin-bottom: 12px;
+  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.r-type { font-size: 60px; }
+
+/* 噪點 */
+body::before {
+  content: ''; position: fixed; inset: -50%; width: 200%; height: 200%;
+  z-index: 9000; pointer-events: none; opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px; animation: grain .35s steps(1) infinite;
+}
+@keyframes grain {
+  0%{transform:translate(0,0)}14%{transform:translate(-5%,-10%)}28%{transform:translate(-15%,5%)}
+  42%{transform:translate(7%,-25%)}57%{transform:translate(-5%,25%)}71%{transform:translate(15%,0%)}85%{transform:translate(0%,15%)}
+}
+</style>
+</head>
+<body>
+
+<!-- Tab 切換 -->
+<div id="switcher">
+  <button class="tab-btn active" onclick="showPanel('noto')">
+    ① Noto Serif TC 900
+    <span class="tab-label">粗宋體，衝擊感強</span>
+  </button>
+  <button class="tab-btn" onclick="showPanel('zcool')">
+    ③ ZCOOL XiaoWei
+    <span class="tab-label">細劃宋體，石碑感</span>
+  </button>
+</div>
+
+<!-- ════ Noto Serif TC 900 ════ -->
+<div class="page-panel f-noto visible" id="panel-noto">
+  <div class="pg-nav">
+    <div class="pg-logo">Mori</div>
+    <div class="pg-links"><span>Instagram</span><span>Line</span></div>
+  </div>
+
+  <!-- 開始畫面 -->
+  <div class="start-screen">
+    <p class="start-eyebrow">Mori Studio · 診斷測驗</p>
+    <h1 class="start-title">副業基因測驗</h1>
+    <p class="start-desc">你知道自己適合哪種副業模式嗎？<br>8 道題，讓底層邏輯替你定位副業方向。</p>
+    <p class="start-meta">共 8 題 · 約 3 分鐘</p>
+    <button class="start-btn">開始測驗 <span class="start-btn-line"></span></button>
+  </div>
+
+  <div class="section-divider"></div>
+  <p class="section-tag">作答畫面</p>
+
+  <!-- 作答畫面 -->
+  <div class="quiz-screen">
+    <div class="pg-progress-num">Q2</div>
+    <div class="pg-progress-bg"><div class="pg-progress-fill"></div></div>
+    <p class="pg-qtag">副業基因測驗</p>
+    <p class="pg-qtext">以下哪一個情境最能讓你感到有成就感？</p>
+    <div class="pg-options">
+      <div class="pg-opt"><span class="pg-opt-key">A</span><span class="pg-opt-text">用一個工具幫別人省下大量時間</span></div>
+      <div class="pg-opt sel"><span class="pg-opt-key">B</span><span class="pg-opt-text">寫出一篇讓很多人有共鳴的文章</span></div>
+      <div class="pg-opt"><span class="pg-opt-key">C</span><span class="pg-opt-text">把兩個本來不相干的人連結在一起</span></div>
+      <div class="pg-opt"><span class="pg-opt-key">D</span><span class="pg-opt-text">分析出一個沒人注意到的商業洞見</span></div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+  <p class="section-tag">結果畫面</p>
+
+  <!-- 結果畫面 -->
+  <div class="result-screen">
+    <div class="orn"><span class="orn-l"></span><span class="orn-d"></span><span class="orn-r"></span></div>
+    <p class="r-eyebrow">你的診斷結果</p>
+    <h2 class="r-type">內容創作型</h2>
+    <p class="r-subtitle">The Creator</p>
+    <div class="r-divider"></div>
+    <p class="r-desc">你有一種天生的能力：把複雜的事情變成讓人想讀下去的故事。這不只是才華，這是一種可以被系統化、可以規模化的技能——你需要的是一套能持續輸出的架構。</p>
+    <div class="r-actions">
+      <button class="r-btn-main">分享結果</button>
+      <button class="r-btn-sub">重新測驗</button>
+    </div>
+    <div class="r-cta">
+      <p class="r-cta-label">深度解析</p>
+      <p class="r-cta-text">我整理了內容創作者從零到第一筆收入的完整路線圖，留下 Email 寄給你。</p>
+      <div class="r-email-row">
+        <input class="r-email-input" type="email" placeholder="你的 Email">
+        <button class="r-email-btn">送出</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pg-footer">
+    <div class="pg-footer-logo">Mori</div>
+    <div class="pg-footer-copy">© 2025 Mori Studio</div>
+  </div>
+</div>
+
+<!-- ════ ZCOOL XiaoWei ════ -->
+<div class="page-panel f-zcool" id="panel-zcool">
+  <div class="pg-nav">
+    <div class="pg-logo">Mori</div>
+    <div class="pg-links"><span>Instagram</span><span>Line</span></div>
+  </div>
+
+  <div class="start-screen">
+    <p class="start-eyebrow">Mori Studio · 診斷測驗</p>
+    <h1 class="start-title">副業基因測驗</h1>
+    <p class="start-desc">你知道自己適合哪種副業模式嗎？<br>8 道題，讓底層邏輯替你定位副業方向。</p>
+    <p class="start-meta">共 8 題 · 約 3 分鐘</p>
+    <button class="start-btn">開始測驗 <span class="start-btn-line"></span></button>
+  </div>
+
+  <div class="section-divider"></div>
+  <p class="section-tag">作答畫面</p>
+
+  <div class="quiz-screen">
+    <div class="pg-progress-num">Q2</div>
+    <div class="pg-progress-bg"><div class="pg-progress-fill"></div></div>
+    <p class="pg-qtag">副業基因測驗</p>
+    <p class="pg-qtext">以下哪一個情境最能讓你感到有成就感？</p>
+    <div class="pg-options">
+      <div class="pg-opt"><span class="pg-opt-key">A</span><span class="pg-opt-text">用一個工具幫別人省下大量時間</span></div>
+      <div class="pg-opt sel"><span class="pg-opt-key">B</span><span class="pg-opt-text">寫出一篇讓很多人有共鳴的文章</span></div>
+      <div class="pg-opt"><span class="pg-opt-key">C</span><span class="pg-opt-text">把兩個本來不相干的人連結在一起</span></div>
+      <div class="pg-opt"><span class="pg-opt-key">D</span><span class="pg-opt-text">分析出一個沒人注意到的商業洞見</span></div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+  <p class="section-tag">結果畫面</p>
+
+  <div class="result-screen">
+    <div class="orn"><span class="orn-l"></span><span class="orn-d"></span><span class="orn-r"></span></div>
+    <p class="r-eyebrow">你的診斷結果</p>
+    <h2 class="r-type">內容創作型</h2>
+    <p class="r-subtitle">The Creator</p>
+    <div class="r-divider"></div>
+    <p class="r-desc">你有一種天生的能力：把複雜的事情變成讓人想讀下去的故事。這不只是才華，這是一種可以被系統化、可以規模化的技能——你需要的是一套能持續輸出的架構。</p>
+    <div class="r-actions">
+      <button class="r-btn-main">分享結果</button>
+      <button class="r-btn-sub">重新測驗</button>
+    </div>
+    <div class="r-cta">
+      <p class="r-cta-label">深度解析</p>
+      <p class="r-cta-text">我整理了內容創作者從零到第一筆收入的完整路線圖，留下 Email 寄給你。</p>
+      <div class="r-email-row">
+        <input class="r-email-input" type="email" placeholder="你的 Email">
+        <button class="r-email-btn">送出</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pg-footer">
+    <div class="pg-footer-logo">Mori</div>
+    <div class="pg-footer-copy">© 2025 Mori Studio</div>
+  </div>
+</div>
+
+<script>
+function showPanel(id) {
+  document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('visible');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

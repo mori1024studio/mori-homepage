@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mori — 粒子效果沙盒</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #090705; color: #EDE8DF; font-family: 'LXGW WenKai TC', serif; overflow: hidden; }
+
+/* ── 控制面板 ── */
+#panel {
+  position: fixed; right: 0; top: 0; bottom: 0; width: 300px;
+  background: rgba(14,10,6,0.97); border-left: 1px solid rgba(196,169,106,0.15);
+  z-index: 100; display: flex; flex-direction: column; overflow: hidden;
+}
+#panel-header {
+  padding: 20px 24px 16px; border-bottom: 1px solid rgba(196,169,106,0.1);
+  flex-shrink: 0;
+}
+#panel-header h2 { font-size: 13px; letter-spacing: .3em; color: #C4A96A; font-weight: 300; text-transform: uppercase; }
+#panel-header p  { font-size: 10px; color: rgba(154,140,120,0.6); margin-top: 4px; letter-spacing: .05em; }
+#panel-body { flex: 1; overflow-y: auto; padding: 16px 24px; }
+#panel-body::-webkit-scrollbar { width: 3px; }
+#panel-body::-webkit-scrollbar-track { background: transparent; }
+#panel-body::-webkit-scrollbar-thumb { background: rgba(196,169,106,0.2); }
+
+/* ── 分組 ── */
+.ctrl-group { margin-bottom: 20px; }
+.ctrl-group-title {
+  font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,0.5);
+  text-transform: uppercase; margin-bottom: 10px; font-weight: 300;
+}
+.ctrl-row { margin-bottom: 12px; }
+.ctrl-row label {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: rgba(237,232,223,0.65); margin-bottom: 5px; letter-spacing: .03em;
+}
+.ctrl-row label span { color: #C4A96A; font-size: 11px; font-variant-numeric: tabular-nums; }
+.ctrl-row input[type=range] {
+  width: 100%; appearance: none; height: 1px;
+  background: rgba(196,169,106,0.18); outline: none;
+}
+.ctrl-row input[type=range]::-webkit-slider-thumb {
+  appearance: none; width: 12px; height: 12px;
+  background: #C4A96A; border-radius: 50%; cursor: pointer;
+}
+.ctrl-row input[type=color] {
+  width: 32px; height: 20px; border: 1px solid rgba(196,169,106,0.3);
+  background: none; cursor: pointer; padding: 1px; border-radius: 2px;
+}
+.ctrl-row .color-row { display: flex; align-items: center; gap: 10px; }
+
+/* ── 模式切換 ── */
+.mode-btns { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.mode-btn {
+  flex: 1; min-width: 70px; padding: 6px 8px; font-size: 10px; letter-spacing: .08em;
+  background: transparent; border: 1px solid rgba(196,169,106,0.2); color: rgba(196,169,106,0.5);
+  cursor: pointer; text-transform: uppercase; transition: all .2s; white-space: nowrap;
+}
+.mode-btn.active { border-color: #C4A96A; color: #C4A96A; background: rgba(196,169,106,0.06); }
+
+/* ── 頁面預覽切換 ── */
+.page-btns { display: flex; gap: 6px; margin-bottom: 16px; }
+.page-btn {
+  flex: 1; padding: 5px 4px; font-size: 9px; letter-spacing: .05em;
+  background: transparent; border: 1px solid rgba(196,169,106,0.15); color: rgba(196,169,106,0.4);
+  cursor: pointer; text-transform: uppercase; transition: all .2s;
+}
+.page-btn.active { border-color: rgba(196,169,106,0.5); color: rgba(196,169,106,0.8); }
+
+/* ── 底部按鈕 ── */
+#panel-footer { padding: 16px 24px; border-top: 1px solid rgba(196,169,106,0.1); flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+.action-btn {
+  width: 100%; padding: 9px; font-size: 10px; letter-spacing: .2em;
+  text-transform: uppercase; cursor: pointer; transition: all .25s;
+}
+#btn-copy { background: rgba(196,169,106,0.08); border: 1px solid rgba(196,169,106,0.3); color: #C4A96A; }
+#btn-copy:hover { background: rgba(196,169,106,0.14); }
+#btn-reset { background: transparent; border: 1px solid rgba(196,169,106,0.1); color: rgba(154,140,120,0.5); }
+#btn-reset:hover { color: rgba(154,140,120,0.8); }
+#copy-msg { font-size: 10px; color: rgba(196,169,106,0.6); text-align: center; min-height: 14px; letter-spacing: .1em; }
+
+/* ── canvas 區 ── */
+#canvas-wrap {
+  position: fixed; inset: 0; right: 300px;
+}
+canvas { display: block; width: 100%; height: 100%; }
+
+/* ── 頁面模擬層 ── */
+#page-overlay {
+  position: fixed; inset: 0; right: 300px; pointer-events: none; z-index: 10;
+  display: flex; flex-direction: column;
+}
+.page-nav {
+  padding: 24px 48px; display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid rgba(196,169,106,0.08);
+}
+.page-nav-logo { font-size: 28px; color: #EDE8DF; font-family: 'Kaushan Script', cursive; }
+.page-nav-links { display: flex; gap: 48px; }
+.page-nav-links span { font-size: 9px; letter-spacing: .35em; color: rgba(154,140,120,0.7); text-transform: uppercase; font-family: 'Noto Sans TC', sans-serif; }
+.page-content { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
+.page-hero-title { font-size: 120px; color: #C4A96A; font-style: italic; opacity: 0.9; text-align: center; }
+.page-section-text { max-width: 560px; }
+.page-section-label { font-size: 28px; color: #C4A96A; font-family: 'Kaushan Script', cursive; margin-bottom: 32px; }
+.page-body-text { font-size: 20px; line-height: 2; color: rgba(237,232,223,0.7); }
+.page-quiz-card {
+  width: 400px; padding: 28px; border: 1px solid rgba(196,169,106,0.12);
+  background: rgba(16,12,8,0.8);
+}
+.page-quiz-label { font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,0.5); text-transform: uppercase; margin-bottom: 20px; }
+.page-quiz-title { font-size: 22px; line-height: 1.6; color: #EDE8DF; margin-bottom: 12px; }
+.page-quiz-tag { font-size: 12px; letter-spacing: .25em; color: rgba(154,140,120,0.7); }
+.page-footer { padding: 20px 48px; border-top: 1px solid rgba(196,169,106,0.08); display: flex; justify-content: space-between; }
+.page-footer-logo { font-size: 22px; color: #EDE8DF; font-family: 'Kaushan Script', cursive; }
+.page-footer-copy { font-size: 9px; letter-spacing: .1em; color: rgba(107,96,80,0.35); }
+</style>
+</head>
+<body>
+
+<!-- 粒子 Canvas -->
+<div id="canvas-wrap"><canvas id="c"></canvas></div>
+
+<!-- 頁面模擬層 -->
+<div id="page-overlay">
+  <div class="page-nav">
+    <div class="page-nav-logo">Mori</div>
+    <div class="page-nav-links">
+      <span>Instagram</span><span>Line</span>
+    </div>
+  </div>
+  <div class="page-content" id="page-content">
+    <!-- 依頁面類型切換 -->
+  </div>
+  <div class="page-footer">
+    <div class="page-footer-logo">Mori</div>
+    <div class="page-footer-copy">© 2025 Mori Studio</div>
+  </div>
+</div>
+
+<!-- 控制面板 -->
+<div id="panel">
+  <div id="panel-header">
+    <h2>粒子效果沙盒</h2>
+    <p>調整後點「複製設定」套用到正式站</p>
+  </div>
+  <div id="panel-body">
+
+    <!-- 頁面類型預覽 -->
+    <div class="ctrl-group">
+      <div class="ctrl-group-title">預覽頁面類型</div>
+      <div class="page-btns">
+        <button class="page-btn active" data-page="hero">首頁</button>
+        <button class="page-btn" data-page="quiz">測驗頁</button>
+        <button class="page-btn" data-page="article">文章頁</button>
+      </div>
+    </div>
+
+    <!-- 粒子行為模式 -->
+    <div class="ctrl-group">
+      <div class="ctrl-group-title">粒子行為</div>
+      <div class="mode-btns">
+        <button class="mode-btn active" data-mode="float">漂浮</button>
+        <button class="mode-btn" data-mode="drift">飄移</button>
+        <button class="mode-btn" data-mode="burst">爆散</button>
+        <button class="mode-btn" data-mode="ground">地面</button>
+      </div>
+    </div>
+
+    <!-- 粒子數量 -->
+    <div class="ctrl-group">
+      <div class="ctrl-group-title">粒子設定</div>
+      <div class="ctrl-row">
+        <label>粒子數量 <span id="v-count">3000</span></label>
+        <input type="range" id="r-count" min="200" max="12000" step="100" value="3000">
+      </div>
+      <div class="ctrl-row">
+        <label>粒子大小 <span id="v-size">1.2</span>px</label>
+        <input type="range" id="r-size" min="0.3" max="4" step="0.1" value="1.2">
+      </div>
+      <div class="ctrl-row">
+        <label>飄動速度 <span id="v-speed">0.4</span></label>
+        <input type="range" id="r-speed" min="0.05" max="2" step="0.05" value="0.4">
+      </div>
+      <div class="ctrl-row">
+        <label>透明度 <span id="v-alpha">0.55</span></label>
+        <input type="range" id="r-alpha" min="0.05" max="1" step="0.05" value="0.55">
+      </div>
+      <div class="ctrl-row">
+        <label>擴散範圍 <span id="v-spread">1.0</span>x</label>
+        <input type="range" id="r-spread" min="0.3" max="2" step="0.1" value="1.0">
+      </div>
+    </div>
+
+    <!-- 顏色 -->
+    <div class="ctrl-group">
+      <div class="ctrl-group-title">顏色</div>
+      <div class="ctrl-row">
+        <label>主色</label>
+        <div class="color-row">
+          <input type="color" id="c-primary" value="#C4A96A">
+          <span style="font-size:10px;color:rgba(154,140,120,0.6)" id="v-primary">#C4A96A</span>
+        </div>
+      </div>
+      <div class="ctrl-row">
+        <label>副色（混合比例 <span id="v-mix">30</span>%）</label>
+        <input type="range" id="r-mix" min="0" max="100" step="5" value="30">
+      </div>
+      <div class="ctrl-row">
+        <div class="color-row">
+          <input type="color" id="c-secondary" value="#FFFFFF">
+          <span style="font-size:10px;color:rgba(154,140,120,0.6)" id="v-secondary">#FFFFFF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 場景氛圍 -->
+    <div class="ctrl-group">
+      <div class="ctrl-group-title">場景</div>
+      <div class="ctrl-row">
+        <label>霧氣濃度 <span id="v-fog">0.6</span></label>
+        <input type="range" id="r-fog" min="0" max="1" step="0.05" value="0.6">
+      </div>
+      <div class="ctrl-row">
+        <label>中心光暈 <span id="v-glow">0.35</span></label>
+        <input type="range" id="r-glow" min="0" max="1" step="0.05" value="0.35">
+      </div>
+    </div>
+
+  </div>
+  <div id="panel-footer">
+    <div id="copy-msg"></div>
+    <button class="action-btn" id="btn-copy">複製設定</button>
+    <button class="action-btn" id="btn-reset">重設預設值</button>
+  </div>
+</div>
+
+<script>
+// ── 狀態 ──
+const S = {
+  count: 3000, size: 1.2, speed: 0.4, alpha: 0.55, spread: 1.0,
+  primaryColor: '#C4A96A', secondaryColor: '#FFFFFF', mix: 0.30,
+  fog: 0.6, glow: 0.35, mode: 'float', page: 'hero'
+};
+
+// ── Canvas 初始化 ──
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let particles = [], raf, W, H;
+
+function resize() {
+  const wrap = document.getElementById('canvas-wrap');
+  W = canvas.width  = wrap.clientWidth;
+  H = canvas.height = wrap.clientHeight;
+  initParticles();
+}
+
+// ── 顏色工具 ──
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return {r, g, b};
+}
+function mixColor(c1, c2, t) {
+  return {
+    r: Math.round(c1.r + (c2.r - c1.r) * t),
+    g: Math.round(c1.g + (c2.g - c1.g) * t),
+    b: Math.round(c1.b + (c2.b - c1.b) * t)
+  };
+}
+
+// ── 粒子初始化 ──
+function initParticles() {
+  particles = [];
+  for (let i = 0; i < S.count; i++) {
+    particles.push(makeParticle(true));
+  }
+}
+function makeParticle(init) {
+  const spread = S.spread;
+  const x = init ? Math.random() * W : (Math.random() < 0.5 ? -10 : W + 10);
+  const y = init ? Math.random() * H : Math.random() * H;
+  const baseVx = (Math.random() - 0.5) * S.speed * 0.4;
+  const baseVy = S.mode === 'ground'
+    ? -(Math.random() * S.speed * 0.8)
+    : (Math.random() - 0.5) * S.speed * 0.3;
+  return {
+    x: init ? (W/2 + (x - W/2) * spread) : x,
+    y: init ? (H/2 + (y - H/2) * spread) : y,
+    vx: baseVx + (Math.random() - 0.5) * 0.1,
+    vy: baseVy,
+    size: (0.4 + Math.random() * 0.8) * S.size,
+    alpha: 0.1 + Math.random() * 0.9,
+    phase: Math.random() * Math.PI * 2,
+    freq: 0.003 + Math.random() * 0.008,
+    mix: Math.random()
+  };
+}
+
+// ── 渲染循環 ──
+let frame = 0;
+function draw() {
+  raf = requestAnimationFrame(draw);
+  frame++;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // 背景
+  ctx.fillStyle = '#090705';
+  ctx.fillRect(0, 0, W, H);
+
+  // 中心光暈
+  if (S.glow > 0) {
+    const grd = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.min(W,H) * 0.55);
+    grd.addColorStop(0, `rgba(196,169,106,${S.glow * 0.18})`);
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // 霧氣暈染（頂部）
+  if (S.fog > 0) {
+    const fogGrd = ctx.createLinearGradient(0, 0, 0, H * 0.5);
+    fogGrd.addColorStop(0, `rgba(196,169,106,${S.fog * 0.06})`);
+    fogGrd.addColorStop(1, 'transparent');
+    ctx.fillStyle = fogGrd;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  const c1 = hexToRgb(S.primaryColor);
+  const c2 = hexToRgb(S.secondaryColor);
+
+  // 粒子繪製
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+
+    // 移動
+    const drift = S.mode === 'drift' ? Math.sin(frame * 0.008 + p.phase) * 0.3 : 0;
+    p.x += p.vx + drift;
+    p.y += p.vy;
+
+    if (S.mode === 'burst') {
+      p.vx *= 0.995;
+      p.vy *= 0.995;
+    }
+
+    // 回收
+    if (p.x < -20 || p.x > W + 20 || p.y < -20 || p.y > H + 20) {
+      const np = makeParticle(false);
+      particles[i] = np;
+      continue;
+    }
+
+    // 閃爍
+    const flicker = 0.65 + 0.35 * Math.sin(frame * p.freq * 60 + p.phase);
+    const finalAlpha = S.alpha * p.alpha * flicker;
+
+    // 顏色混合
+    const col = mixColor(c1, c2, p.mix * S.mix);
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${col.r},${col.g},${col.b},${finalAlpha})`;
+    ctx.fill();
+  }
+
+  // 暗邊遮罩
+  const vig = ctx.createRadialGradient(W/2, H/2, Math.min(W,H)*0.28, W/2, H/2, Math.min(W,H)*0.75);
+  vig.addColorStop(0, 'transparent');
+  vig.addColorStop(1, 'rgba(4,3,2,0.72)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, W, H);
+}
+
+// ── 頁面預覽內容 ──
+const pageContent = {
+  hero: `<div style="text-align:center">
+    <div style="font-size:11px;letter-spacing:.4em;color:rgba(196,169,106,0.7);margin-bottom:20px;font-family:'Kaushan Script',cursive">Mori Studio</div>
+    <div style="font-size:110px;font-family:'Kaushan Script',cursive;background:linear-gradient(172deg,#FFF 0%,#D4B878 52%,#C4A96A 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:.9">Mori</div>
+    <div style="font-size:12px;letter-spacing:.35em;color:rgba(180,168,148,0.7);margin-top:24px;font-family:'LXGW WenKai TC',serif">底層邏輯 × AI 工具 × 副業思維</div>
+  </div>`,
+  quiz: `<div class="page-quiz-card">
+    <div class="page-quiz-label">01 / 06</div>
+    <div class="page-quiz-title">你平常遇到一個新問題，第一個反應是什麼？</div>
+    <div class="page-quiz-tag">副業基因測驗</div>
+    <div style="margin-top:28px;display:flex;flex-direction:column;gap:10px">
+      <div style="padding:10px 14px;border:1px solid rgba(196,169,106,0.15);font-size:13px;color:rgba(237,232,223,0.65)">A. 先查資料，看別人怎麼解決</div>
+      <div style="padding:10px 14px;border:1px solid rgba(196,169,106,0.4);font-size:13px;color:#EDE8DF;background:rgba(196,169,106,0.05)">B. 先想底層邏輯，再找工具</div>
+      <div style="padding:10px 14px;border:1px solid rgba(196,169,106,0.15);font-size:13px;color:rgba(237,232,223,0.65)">C. 問有經驗的人</div>
+    </div>
+  </div>`,
+  article: `<div class="page-section-text">
+    <div class="page-section-label">Philosophy</div>
+    <div class="page-body-text" style="font-style:italic">INTJ。相信底層邏輯比努力更重要。<br><br>用 AI 工具把時間槓桿化，<br>用副業思維把技能資本化。<br><br>每一道測驗，都是一面讓你看見自己盲點的鏡子。</div>
+  </div>`
+};
+
+function setPage(page) {
+  S.page = page;
+  document.getElementById('page-content').innerHTML = pageContent[page];
+  document.querySelectorAll('.page-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  // 依頁面類型調整預設粒子數
+  const presets = { hero: 3000, quiz: 1500, article: 800 };
+  document.getElementById('r-count').value = presets[page];
+  updateValue('count', presets[page]);
+  S.count = presets[page];
+  initParticles();
+}
+
+// ── 控制項綁定 ──
+function updateValue(key, val) {
+  const el = document.getElementById('v-' + key);
+  if (el) el.textContent = val;
+}
+
+function bindRange(id, key, parse) {
+  const el = document.getElementById('r-' + id);
+  el.addEventListener('input', () => {
+    const val = parse ? parse(el.value) : parseFloat(el.value);
+    S[key] = val;
+    updateValue(id, val);
+    if (key === 'count' || key === 'spread') initParticles();
+  });
+}
+
+bindRange('count', 'count', v => parseInt(v));
+bindRange('size',  'size');
+bindRange('speed', 'speed');
+bindRange('alpha', 'alpha');
+bindRange('spread','spread');
+bindRange('mix',   'mix', v => { updateValue('mix', v); return parseInt(v)/100; });
+bindRange('fog',   'fog');
+bindRange('glow',  'glow');
+
+// 顏色
+document.getElementById('c-primary').addEventListener('input', e => {
+  S.primaryColor = e.target.value;
+  document.getElementById('v-primary').textContent = e.target.value;
+});
+document.getElementById('c-secondary').addEventListener('input', e => {
+  S.secondaryColor = e.target.value;
+  document.getElementById('v-secondary').textContent = e.target.value;
+});
+
+// 模式按鈕
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    S.mode = btn.dataset.mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    initParticles();
+  });
+});
+
+// 頁面按鈕
+document.querySelectorAll('.page-btn').forEach(btn => {
+  btn.addEventListener('click', () => setPage(btn.dataset.page));
+});
+
+// 複製設定
+document.getElementById('btn-copy').addEventListener('click', () => {
+  const cfg = `/* shared/particles.js 設定參數 */
+const PARTICLE_CONFIG = {
+  count:    ${S.count},
+  size:     ${S.size},
+  speed:    ${S.speed},
+  alpha:    ${S.alpha},
+  spread:   ${S.spread},
+  primary:  '${S.primaryColor}',
+  secondary:'${S.secondaryColor}',
+  mix:      ${S.mix},
+  fog:      ${S.fog},
+  glow:     ${S.glow},
+  mode:     '${S.mode}'
+};`;
+  navigator.clipboard.writeText(cfg).then(() => {
+    const msg = document.getElementById('copy-msg');
+    msg.textContent = '✓ 已複製到剪貼板';
+    setTimeout(() => { msg.textContent = ''; }, 2500);
+  });
+});
+
+// 重設
+document.getElementById('btn-reset').addEventListener('click', () => {
+  const defaults = { count:3000, size:1.2, speed:0.4, alpha:0.55, spread:1.0,
+    primaryColor:'#C4A96A', secondaryColor:'#FFFFFF', mix:0.30, fog:0.6, glow:0.35 };
+  Object.assign(S, defaults);
+  document.getElementById('r-count').value = 3000;
+  document.getElementById('r-size').value  = 1.2;
+  document.getElementById('r-speed').value = 0.4;
+  document.getElementById('r-alpha').value = 0.55;
+  document.getElementById('r-spread').value= 1.0;
+  document.getElementById('r-mix').value   = 30;
+  document.getElementById('r-fog').value   = 0.6;
+  document.getElementById('r-glow').value  = 0.35;
+  document.getElementById('c-primary').value   = '#C4A96A';
+  document.getElementById('c-secondary').value = '#FFFFFF';
+  document.getElementById('v-count').textContent  = 3000;
+  document.getElementById('v-size').textContent   = 1.2;
+  document.getElementById('v-speed').textContent  = 0.4;
+  document.getElementById('v-alpha').textContent  = 0.55;
+  document.getElementById('v-spread').textContent = 1.0;
+  document.getElementById('v-mix').textContent    = 30;
+  document.getElementById('v-fog').textContent    = 0.6;
+  document.getElementById('v-glow').textContent   = 0.35;
+  document.getElementById('v-primary').textContent   = '#C4A96A';
+  document.getElementById('v-secondary').textContent = '#FFFFFF';
+  initParticles();
+});
+
+// ── 初始化 ──
+setPage('hero');
+resize();
+window.addEventListener('resize', resize);
+draw();
+</script>
+</body>
+</html>

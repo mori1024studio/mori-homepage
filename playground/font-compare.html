@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字體比較</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@300&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #090705; color: #EDE8DF; min-height: 100vh; padding: 60px 40px; }
+
+h1 { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .4em;
+     color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 48px; text-align: center; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+
+.card {
+  padding: 48px 40px; background: rgba(14,10,6,.9);
+  border: 1px solid rgba(196,169,106,.08); position: relative;
+}
+.card-label {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em;
+  color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 28px;
+}
+.card-title {
+  font-size: 56px; line-height: 1.15; margin-bottom: 16px;
+  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.card-sub {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .45em;
+  color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 24px;
+}
+.card-body {
+  font-size: 14px; line-height: 1.9; color: rgba(237,232,223,.5);
+  font-family: 'LXGW WenKai TC', serif;
+}
+.divider { width: 36px; height: 1px; background: rgba(196,169,106,.2); margin-bottom: 20px; }
+
+/* 四種字體 */
+.f1 .card-title { font-family: 'Noto Serif TC', serif; font-weight: 900; }
+.f2 .card-title { font-family: 'Noto Serif TC', serif; font-weight: 700; }
+.f3 .card-title { font-family: 'ZCOOL XiaoWei', serif; }
+.f4 .card-title { font-family: 'Ma Shan Zheng', cursive; }
+
+.badge {
+  position: absolute; top: 16px; right: 16px;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 8px; letter-spacing: .2em;
+  color: rgba(196,169,106,.3); text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<h1>字體比較 — 結果標題效果</h1>
+
+<div class="grid">
+
+  <!-- Noto Serif TC 900 -->
+  <div class="card f1">
+    <div class="badge">①</div>
+    <div class="card-label">Noto Serif TC 900</div>
+    <div class="card-title">分析策略型</div>
+    <div class="card-sub">The Analyst</div>
+    <div class="divider"></div>
+    <div class="card-body">你的優勢在於能快速找到別人看不見的模式和漏洞。你不需要花很多力氣做很多事——你需要的是找到一個值得用腦力解決的問題。</div>
+  </div>
+
+  <!-- Noto Serif TC 700 -->
+  <div class="card f2">
+    <div class="badge">②</div>
+    <div class="card-label">Noto Serif TC 700</div>
+    <div class="card-title">內容創作型</div>
+    <div class="card-sub">The Creator</div>
+    <div class="divider"></div>
+    <div class="card-body">你有一種天生的能力：把複雜的事情變成讓人想讀下去的故事。這不只是才華，這是一種可以被系統化、可以規模化的技能。</div>
+  </div>
+
+  <!-- ZCOOL XiaoWei -->
+  <div class="card f3">
+    <div class="badge">③</div>
+    <div class="card-label">ZCOOL XiaoWei（小薇）</div>
+    <div class="card-title">工具整合型</div>
+    <div class="card-sub">The Integrator</div>
+    <div class="divider"></div>
+    <div class="card-body">你能看到工具與工具之間的空隙，並且讓它們協作產生新的可能。這種能力在 AI 工具爆炸的現在極度稀缺。</div>
+  </div>
+
+  <!-- Ma Shan Zheng -->
+  <div class="card f4">
+    <div class="badge">④</div>
+    <div class="card-label">Ma Shan Zheng（馬善政）</div>
+    <div class="card-title">媒介橋梁型</div>
+    <div class="card-sub">The Connector</div>
+    <div class="divider"></div>
+    <div class="card-body">你記得的人比你自己意識到的多，你建立的連結比你以為的有價值。你的副業不是靠技能取勝——是靠信任網絡取勝。</div>
+  </div>
+
+</div>
+
+</body>
+</html>
