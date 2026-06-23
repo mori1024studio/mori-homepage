@@ -459,10 +459,20 @@ const geo=new THREE.BufferGeometry();
 geo.setAttribute('position',new THREE.BufferAttribute(posBuf,3));
 geo.setDrawRange(0,P.count);
 
+// 建立圓形粒子 texture
+const ptCanvas=document.createElement('canvas');ptCanvas.width=ptCanvas.height=64;
+const ptCtx=ptCanvas.getContext('2d');
+const ptGrad=ptCtx.createRadialGradient(32,32,0,32,32,32);
+ptGrad.addColorStop(0,'rgba(255,255,255,1)');
+ptGrad.addColorStop(0.35,'rgba(255,255,255,0.88)');
+ptGrad.addColorStop(1,'rgba(255,255,255,0)');
+ptCtx.fillStyle=ptGrad;ptCtx.beginPath();ptCtx.arc(32,32,32,0,Math.PI*2);ptCtx.fill();
+const ptTex=new THREE.CanvasTexture(ptCanvas);
+
 const mat=new THREE.PointsMaterial({
   size:P.size,sizeAttenuation:true,transparent:true,
   opacity:.88,blending:THREE.AdditiveBlending,depthWrite:false,
-  color:new THREE.Color('#C4A96A'),
+  color:new THREE.Color('#C4A96A'),map:ptTex,alphaTest:0.001,
 });
 scene.add(new THREE.Points(geo,mat));
 
