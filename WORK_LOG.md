@@ -47,6 +47,32 @@
 ### 待辦
 - MailerLite 串接（Email 送出目前是 alert，需接上真實 API）
 - Cloudflare Pages 部署（讓 mori-homepage.pages.dev 更新）
-- 製作下一張測驗
+
+---
+
+## 2026-06-23｜Session：心理探索三部曲 #2 + #3
+
+### 完成
+- **人性法則測驗** `quiz/human-nature/index.html`
+  - 測驗標題：哪條人性一直在操縱你？
+  - 8 題情境題，6 型結果（M鏡像陷阱/C比較中毒/S短期接管/H隱性服從/L損失綁架/E資格崇拜）
+  - 三部曲導覽區加入（結果頁底部），標示「防守視角 · 你在這裡」
+  - 外部連結：暗黑心智（mori1024studio.github.io），內部連結：mbti-shadow
+
+- **MBTI 影子測驗** `quiz/mbti-shadow/index.html`
+  - 測驗標題：你最看不見自己的哪一面？
+  - 8 題情境題，4 型結果（F情緒潛流/T邏輯防護/N可能性逃逸/S當下錨定）
+  - 三部曲導覽區加入（結果頁底部），標示「自我視角 · 你在這裡」
+  - Email CTA 預留（目前 display:none）
+
+- **首頁卡片更新** `index.html`
+  - 卡片從 7 → 9 張，新增「哪條人性一直在操縱你？08/09」、「你最看不見自己的哪一面？09/09」
+  - 連結分別指向 `/quiz/human-nature/` 和 `/quiz/mbti-shadow/`
+  - pip 導覽點同步新增第 8、9 個
+
+### 待辦
+- MailerLite 串接（Email 送出目前是 alert，需接上真實 API）
+- Cloudflare Pages 部署
+- 財務思維三部曲（需先建 T2 進度階梯元件）
 
 ---

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- v1.0 | 2026-06-23 | 心理探索三部曲 #3 MBTI 壓力影子 -->
+<title>MORI — 你最看不見自己的哪一面？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+/* ══ 測驗頁專屬樣式 ══════════════════════════════════════════ */
+
+/* ── 心理探索三部曲導覽 ── */
+.trilogy {
+  margin-top: 48px; border-top: 1px solid rgba(196,169,106,.15);
+  padding-top: 32px;
+}
+.trilogy-label {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px;
+  letter-spacing: .5em; color: rgba(196,169,106,.4);
+  text-transform: uppercase; margin-bottom: 20px;
+}
+.trilogy-links { display: flex; flex-direction: column; gap: 12px; }
+.trilogy-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border: 1px solid rgba(196,169,106,.18);
+  border-radius: 10px; background: rgba(196,169,106,.04);
+  text-decoration: none; transition: background .2s, border-color .2s;
+}
+.trilogy-link:hover { background: rgba(196,169,106,.09); border-color: rgba(196,169,106,.35); }
+.trilogy-link.current {
+  border-color: rgba(196,169,106,.45); background: rgba(196,169,106,.1);
+  pointer-events: none;
+}
+.trilogy-link-title {
+  font-family: 'LXGW WenKai TC', serif; font-size: 14px;
+  color: rgba(237,232,223,.75);
+}
+.trilogy-link.current .trilogy-link-title { color: #C4A96A; }
+.trilogy-link-tag {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 10px;
+  letter-spacing: .1em; color: rgba(196,169,106,.5);
+  white-space: nowrap; margin-left: 12px;
+}
+.trilogy-link.current .trilogy-link-tag { color: #C4A96A; }
+
+/* ── 頁面骨架 ── */
+#site { min-height: 100vh; display: flex; flex-direction: column; }
+.quiz-main {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 100px 24px 80px;
+}
+
+/* ── 畫面切換動畫 ── */
+.screen {
+  width: 100%; max-width: 640px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+  pointer-events: none; position: absolute;
+}
+.screen.active {
+  opacity: 1; transform: translateY(0);
+  pointer-events: auto; position: relative;
+}
+
+/* ── 開始畫面 ── */
+.start-eyebrow {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px;
+  letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px;
+  text-transform: uppercase;
+}
+.start-title {
+  font-family: var(--font-display); font-weight: 900; font-size: 52px;
+  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1.15; margin-bottom: 28px;
+}
+.start-desc {
+  font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2;
+  color: rgba(237,232,223,.55); margin-bottom: 48px;
+}
+.start-meta {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em;
+  color: rgba(154,140,120,.4); margin-bottom: 48px;
+}
+.btn-start {
+  display: inline-flex; align-items: center; gap: 16px;
+  font-family: var(--font-body); font-size: 16px; letter-spacing: .25em; color: var(--gold);
+  background: transparent; border: 1px solid rgba(196,169,106,.25);
+  padding: 14px 36px; cursor: none; transition: all .3s;
+}
+.btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
+.btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
+.btn-start:hover .btn-start-arrow { width: 44px; }
+
+/* ── 進度條 ── */
+.progress-wrap { margin-bottom: 40px; }
+.progress-label {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.progress-num {
+  font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold);
+}
+.progress-total {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .3em;
+  color: rgba(154,140,120,.45); text-transform: uppercase;
+}
+.progress-bar-bg {
+  height: 1px; background: rgba(196,169,106,.1); position: relative; overflow: visible;
+}
+.progress-bar-fill {
+  height: 1px; background: var(--gold);
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+  position: relative;
+}
+.progress-bar-fill::after {
+  content: ''; position: absolute; right: -3px; top: -3px;
+  width: 7px; height: 7px; background: var(--gold); border-radius: 50%;
+}
+
+/* ── 問題 ── */
+.question-tag {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em;
+  color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px;
+}
+.question-text {
+  font-family: 'LXGW WenKai TC', serif; font-size: 24px; line-height: 1.75;
+  color: var(--text); margin-bottom: 36px;
+}
+
+/* ── 選項 ── */
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 14px 18px;
+  background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1);
+  cursor: none; transition: all .25s; position: relative; overflow: hidden;
+}
+.option::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: var(--gold); transform: scaleY(0); transform-origin: bottom;
+  transition: transform .3s;
+}
+.option:hover { border-color: rgba(196,169,106,.28); background: rgba(16,12,8,.85); }
+.option:hover::before { transform: scaleY(1); }
+.option.selected { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); pointer-events: none; }
+.option.selected::before { transform: scaleY(1); }
+.option.fade-out { opacity: .25; transform: translateX(-6px); }
+.option-key {
+  font-family: 'Kaushan Script', cursive; font-size: 18px;
+  color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px;
+  transition: color .25s;
+}
+.option:hover .option-key, .option.selected .option-key { color: var(--gold); }
+.option-text {
+  font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7;
+  color: rgba(237,232,223,.7); transition: color .25s;
+}
+.option:hover .option-text, .option.selected .option-text { color: var(--text); }
+
+/* ── 結果畫面 ── */
+.result-eyebrow {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em;
+  color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 16px;
+}
+.result-type {
+  font-family: var(--font-display); font-weight: 900; font-size: 64px;
+  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1.1; margin-bottom: 8px;
+}
+.result-subtitle {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em;
+  color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 32px;
+}
+.result-divider {
+  width: 48px; height: 1px; background: rgba(196,169,106,.25); margin-bottom: 32px;
+}
+.result-desc {
+  font-family: 'LXGW WenKai TC', serif; font-size: 17px; line-height: 2;
+  color: rgba(237,232,223,.65); margin-bottom: 40px;
+}
+.result-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-share, .btn-retry {
+  padding: 12px 28px; font-family: 'Noto Sans TC', sans-serif;
+  font-size: 10px; letter-spacing: .25em; text-transform: uppercase;
+  cursor: none; transition: all .25s;
+}
+.btn-share { background: rgba(196,169,106,.1); border: 1px solid rgba(196,169,106,.35); color: var(--gold); }
+.btn-share:hover { background: rgba(196,169,106,.18); }
+.btn-retry { background: transparent; border: 1px solid rgba(196,169,106,.12); color: rgba(154,140,120,.6); }
+.btn-retry:hover { color: rgba(154,140,120,.9); border-color: rgba(196,169,106,.25); }
+
+/* ── Email CTA（選用）── */
+.result-cta {
+  margin-top: 40px; padding: 24px;
+  border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5);
+}
+.result-cta-label {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em;
+  color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 12px;
+}
+.result-cta-text {
+  font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8;
+  color: rgba(237,232,223,.55); margin-bottom: 16px;
+}
+.email-form { display: flex; gap: 8px; }
+.email-input {
+  flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8);
+  border: 1px solid rgba(196,169,106,.2); color: var(--text);
+  font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none;
+  transition: border-color .25s;
+}
+.email-input:focus { border-color: rgba(196,169,106,.45); }
+.email-input::placeholder { color: rgba(154,140,120,.35); }
+.btn-email {
+  padding: 10px 20px; background: rgba(196,169,106,.12);
+  border: 1px solid rgba(196,169,106,.3); color: var(--gold);
+  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em;
+  text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s;
+}
+.btn-email:hover { background: rgba(196,169,106,.2); }
+</style>
+</head>
+<body>
+
+<!-- ── 粒子 Canvas（由 particles.js 自動建立）── -->
+<div id="god-ray"></div>
+<div id="vignette"></div>
+
+<!-- ── Preloader ── -->
+<div id="preloader">
+  <div id="pre-top"></div>
+  <div id="pre-bot"></div>
+  <div id="pre-corner-tl"></div>
+  <div id="pre-corner-br"></div>
+  <div id="pre-center">
+    <div class="pre-line" id="line-l"></div>
+    <span id="pre-text">Loading</span>
+    <div class="pre-line" id="line-r"></div>
+  </div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ── 主體 ── -->
+<div id="site">
+
+  <!-- Nav -->
+  <nav>
+    <a href="/" class="logo" style="text-decoration:none">Mori</a>
+    <div class="nav-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+  </nav>
+
+  <!-- Quiz 主內容 -->
+  <main class="quiz-main">
+
+    <!-- 開始畫面 -->
+    <div class="screen active" id="screen-start">
+      <!-- Gothic Arch -->
+      <div class="gothic-arch" style="position:relative;width:100%;height:50px;margin-bottom:8px">
+        <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,90 L0,60 Q180,0 360,40 Q540,70 720,20 Q900,-20 1080,40 Q1260,80 1440,55 L1440,90 Z" fill="rgba(196,169,106,0.04)"/>
+          <path d="M720,20 L716,0 L720,4 L724,0 Z" fill="rgba(196,169,106,0.3)"/>
+        </svg>
+      </div>
+      <div class="ornament" style="margin-bottom:36px">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+      <!-- ★ 改這裡：開始畫面文案 -->
+      <p class="start-eyebrow">Mori Studio · 診斷測驗</p>
+      <h1 class="start-title" id="quiz-title">測驗標題</h1>
+      <p class="start-desc" id="quiz-desc">測驗描述文字，說明這個測驗能讓你發現什麼。</p>
+      <p class="start-meta" id="quiz-meta">共 8 題 · 約 3 分鐘</p>
+      <button class="btn-start" onclick="startQuiz()">
+        開始測驗
+        <span class="btn-start-arrow"></span>
+      </button>
+    </div>
+
+    <!-- 作答畫面 -->
+    <div class="screen" id="screen-quiz">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-num" id="q-num">Q1</span>
+          <span class="progress-total" id="q-total">/ 8 題</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <p class="question-tag" id="q-tag">副業基因測驗</p>
+      <p class="question-text" id="q-text"></p>
+      <div class="options" id="options-wrap"></div>
+    </div>
+
+    <!-- 結果畫面 -->
+    <div class="screen" id="screen-result">
+      <div class="ornament" style="margin-bottom:32px">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+      <p class="result-eyebrow">你的診斷結果</p>
+      <h2 class="result-type" id="r-type"></h2>
+      <p class="result-subtitle" id="r-subtitle"></p>
+      <div class="result-divider"></div>
+      <p class="result-desc" id="r-desc"></p>
+      <div class="result-actions">
+        <button class="btn-share" onclick="shareResult()">分享結果</button>
+        <button class="btn-retry" onclick="retryQuiz()">重新測驗</button>
+      </div>
+      <!-- Email CTA（把 display:none 改成 block 即可啟用）-->
+      <div class="result-cta" id="result-cta" style="display:none">
+        <p class="result-cta-label">深度解析</p>
+        <p class="result-cta-text" id="r-cta-text">留下 Email，我寄給你針對你的類型的完整行動指南。</p>
+        <div class="email-form">
+          <input class="email-input" type="email" placeholder="你的 Email" id="email-input">
+          <button class="btn-email" onclick="submitEmail()">送出</button>
+        </div>
+      </div>
+
+      <!-- 心理探索三部曲導覽 -->
+      <div class="trilogy">
+        <p class="trilogy-label">心理探索三部曲</p>
+        <div class="trilogy-links">
+          <a class="trilogy-link" href="https://mori1024studio.github.io/mindfuck-quiz/" target="_blank">
+            <span class="trilogy-link-title">你的暗黑心智是哪一種？</span>
+            <span class="trilogy-link-tag">攻擊視角</span>
+          </a>
+          <a class="trilogy-link" href="/quiz/human-nature/">
+            <span class="trilogy-link-title">哪條人性一直在操縱你？</span>
+            <span class="trilogy-link-tag">防守視角</span>
+          </a>
+          <a class="trilogy-link current" href="/quiz/mbti-shadow/">
+            <span class="trilogy-link-title">你最看不見自己的哪一面？</span>
+            <span class="trilogy-link-tag">自我視角 · 你在這裡</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-logo">Mori</div>
+    <div class="footer-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+    <p class="footer-copy">© 2025 Mori Studio · 底層邏輯 × AI 工具 × 副業思維</p>
+  </footer>
+
+</div><!-- /#site -->
+
+<!-- ══ 測驗資料區（每個測驗只改這裡）══════════════════════════ -->
+<script>
+const QUIZ_INFO = {
+  title:       '你最看不見自己的哪一面？',
+  desc:        '你以為自己很了解自己——但有一部分的你，從來沒有出現在你的自我認識裡。\n8 道情境題，揭開你的心理盲點。',
+  meta:        '共 8 題 · 約 3 分鐘',
+  questionTag: 'MBTI 影子測驗'
+};
+
+const QUESTIONS = [
+  {
+    text: '你在做一個重要決定時，「讓你真正行動」的最後一步是什麼？',
+    options: [
+      { key:'A', text:'「這樣做感覺對，或讓重要的人開心」', scores:{ F:3 } },
+      { key:'B', text:'把所有選項分析完，確認邏輯上最合理', scores:{ T:3 } },
+      { key:'C', text:'這條路看起來有最多的可能性和空間', scores:{ N:3 } },
+      { key:'D', text:'這個選項現在就可以開始執行', scores:{ S:3 } }
+    ]
+  },
+  {
+    text: '你在一段關係裡，最常被自己忽視的需求是？',
+    options: [
+      { key:'A', text:'希望對方能感受到我的情緒，不只是聽我說的話', scores:{ F:3 } },
+      { key:'B', text:'希望事情說清楚講明白，不要有灰色地帶', scores:{ T:3 } },
+      { key:'C', text:'希望有空間探索和想像，不要被逼著快下決定', scores:{ N:3 } },
+      { key:'D', text:'希望有具體的承諾和行動，不只是說說而已', scores:{ S:3 } }
+    ]
+  },
+  {
+    text: '以下哪個評價，最讓你感到刺？',
+    options: [
+      { key:'A', text:'「你太感情用事了」', scores:{ F:3 } },
+      { key:'B', text:'「你冷漠，沒有溫度」', scores:{ T:3 } },
+      { key:'C', text:'「你不切實際，活在夢裡」', scores:{ N:3 } },
+      { key:'D', text:'「你太死板，缺乏想象力」', scores:{ S:3 } }
+    ]
+  },
+  {
+    text: '在以下情況裡，哪個最讓你感到不自在？',
+    options: [
+      { key:'A', text:'在大家面前情緒失控（哭泣或激動）', scores:{ F:3 } },
+      { key:'B', text:'被要求「別分析了，直接去感受就好」', scores:{ T:3 } },
+      { key:'C', text:'被要求一直執行細節，完全沒有思考空間', scores:{ N:3 } },
+      { key:'D', text:'大家討論了很多想法，但遲遲沒有任何結論', scores:{ S:3 } }
+    ]
+  },
+  {
+    text: '以下這句話，你最難對別人說出口的是？',
+    options: [
+      { key:'A', text:'「這件事讓我很受傷」', scores:{ F:3 } },
+      { key:'B', text:'「我不確定這樣對不對，感覺有點怪」', scores:{ T:3 } },
+      { key:'C', text:'「我只想一步一步做，不想想太遠」', scores:{ N:3 } },
+      { key:'D', text:'「我有一個全新的想法，可能要改變整個方向」', scores:{ S:3 } }
+    ]
+  },
+  {
+    text: '當你在追一個目標卻進度停滯時，你通常的應對方式是？',
+    options: [
+      { key:'A', text:'開始懷疑這件事對自己是不是真的重要', scores:{ F:3 } },
+      { key:'B', text:'仔細拆解，找出是哪個環節卡住了', scores:{ T:3 } },
+      { key:'C', text:'開始想：有沒有更好的方式？或更好的目標？', scores:{ N:3 } },
+      { key:'D', text:'繼續做，小步前進，等待突破', scores:{ S:3 } }
+    ]
+  },
+  {
+    text: '在一個不認識的場合，最容易消耗你能量的是？',
+    options: [
+      { key:'A', text:'不知道別人對我的印象，一直在猜測情緒和反應', scores:{ F:3 } },
+      { key:'B', text:'閒聊沒有深度，沒有值得認真思考的話題', scores:{ T:3 } },
+      { key:'C', text:'太多重複的對話，缺少新的觀點或刺激', scores:{ N:3 } },
+      { key:'D', text:'不知道接下來要做什麼，太多不確定性', scores:{ S:3 } }
+    ]
+  },
+  {
+    text: '你最常用來說服自己「這樣就好」的話是哪一句？',
+    options: [
+      { key:'A', text:'「重要的是大家都好，我自己的感受沒那麼重要」', scores:{ F:3 } },
+      { key:'B', text:'「邏輯上這樣是對的，感覺不對只是還不習慣」', scores:{ T:3 } },
+      { key:'C', text:'「等條件更好的時候，再做更大的改變」', scores:{ N:3 } },
+      { key:'D', text:'「先把眼前這件事做完，想太多沒用」', scores:{ S:3 } }
+    ]
+  }
+];
+
+const RESULTS = {
+  F: {
+    type:     '情緒潛流型',
+    subtitle: 'The Hidden Feeler',
+    desc:     '你最看不見的那一面，是你自己的情緒。你以為你的判斷很理性，但仔細看——你的決定常常是被某種感受悄悄推著走的。你壓制「太感情用事」的自己，卻不知道這讓你和自己的真實狀態之間，拉開了一段距離。你不需要變得更感性，但你需要開始承認：那股讓你不舒服的感覺，值得被好好看一眼。',
+    cta:      ''
+  },
+  T: {
+    type:     '邏輯防護型',
+    subtitle: 'The Hidden Thinker',
+    desc:     '你最看不見的那一面，是你內心那套未被審視的邏輯。你跟著感覺或直覺走，但很少真的停下來問自己：這個結論的前提對嗎？這個判斷有沒有偏誤？你害怕太過分析會讓自己失去溫度，但其實，你最需要的不是更多感受——是一個可以冷靜說「這個不對」的聲音。',
+    cta:      ''
+  },
+  N: {
+    type:     '可能性逃逸型',
+    subtitle: 'The Hidden Intuitor',
+    desc:     '你最看不見的那一面，是那個想要往更大地方走的自己。你很擅長把事情做好，但你不太允許自己去想「如果方向本身就錯了怎麼辦？」你把「不切實際」當作警戒線，卻也因此把某些真實的渴望封存起來了。你不需要放棄現實感，但偶爾讓自己問一句「我最大的可能性是什麼」，不會讓你失去立足點。',
+    cta:      ''
+  },
+  S: {
+    type:     '當下錨定型',
+    subtitle: 'The Hidden Sensor',
+    desc:     '你最看不見的那一面，是對「現在這一刻」的迴避。你擅長想大方向、看長遠，但具體的執行細節讓你感到煩躁——因為那代表你得放棄「再想想看」的空間，真的開始做一件事。你最大的盲點不是缺少想法，而是一直在用「準備」代替「行動」，不自覺地讓當下溜過去了。',
+    cta:      ''
+  }
+};
+</script>
+
+<!-- ══ 共用引擎（不需要修改）══════════════════════════════════ -->
+<script src="/shared/particles.js"></script>
+<script>
+/* ── 初始化頁面文案 ── */
+document.getElementById('quiz-title').textContent = QUIZ_INFO.title;
+document.getElementById('quiz-desc').textContent  = QUIZ_INFO.desc;
+document.getElementById('quiz-meta').textContent  = QUIZ_INFO.meta;
+document.querySelectorAll('.question-tag, #q-tag').forEach(el => { el.textContent = QUIZ_INFO.questionTag; });
+document.title = 'MORI — ' + QUIZ_INFO.title;
+
+/* ── 狀態 ── */
+let currentQ = 0;
+const scores = {};
+Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
+
+/* ── 畫面切換 ── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  setTimeout(() => document.getElementById(id).classList.add('active'), 50);
+}
+
+/* ── 開始測驗 ── */
+function startQuiz() {
+  currentQ = 0;
+  Object.keys(scores).forEach(k => { scores[k] = 0; });
+  showScreen('screen-quiz');
+  setTimeout(renderQuestion, 300);
+}
+
+/* ── 渲染題目 ── */
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const total = QUESTIONS.length;
+  const pct = (currentQ / total) * 100;
+
+  document.getElementById('q-num').textContent  = 'Q' + (currentQ + 1);
+  document.getElementById('q-total').textContent = '/ ' + total + ' 題';
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('q-text').textContent = q.text;
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="option-key">${opt.key}</span><span class="option-text">${opt.text}</span>`;
+    btn.addEventListener('click', () => selectOption(btn, opt, i));
+    wrap.appendChild(btn);
+  });
+}
+
+/* ── 選擇選項 ── */
+function selectOption(el, opt, idx) {
+  const allOpts = document.querySelectorAll('.option');
+  allOpts.forEach((o, i) => {
+    if (i === idx) o.classList.add('selected');
+    else o.classList.add('fade-out');
+  });
+
+  /* 計分 */
+  Object.entries(opt.scores).forEach(([k, v]) => { scores[k] = (scores[k] || 0) + v; });
+
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < QUESTIONS.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }, 520);
+}
+
+/* ── 顯示結果 ── */
+function showResult() {
+  const topKey = Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+  const r = RESULTS[topKey];
+
+  document.getElementById('r-type').textContent     = r.type;
+  document.getElementById('r-subtitle').textContent = r.subtitle;
+  document.getElementById('r-desc').textContent     = r.desc;
+
+  /* 進度條滿格 */
+  document.getElementById('progress-fill').style.width = '100%';
+
+  /* Email CTA（如果有設定則顯示）*/
+  if (r.cta) {
+    document.getElementById('result-cta').style.display = 'block';
+    document.getElementById('r-cta-text').textContent = r.cta;
+  }
+
+  showScreen('screen-result');
+}
+
+/* ── 動作 ── */
+function retryQuiz() { showScreen('screen-start'); }
+function shareResult() {
+  const type = document.getElementById('r-type').textContent;
+  if (navigator.share) {
+    navigator.share({ title: 'Mori 測驗結果', text: '我的測驗結果是「' + type + '」', url: location.href });
+  } else {
+    navigator.clipboard.writeText(location.href).then(() => alert('連結已複製'));
+  }
+}
+function submitEmail() {
+  const email = document.getElementById('email-input').value;
+  if (!email) return;
+  /* ★ 改這裡：接上 MailerLite API 或表單 */
+  alert('謝謝！我會寄給你：' + email);
+}
+
+/* ── Preloader ── */
+window.addEventListener('DOMContentLoaded', () => {
+  const lL = document.getElementById('line-l');
+  const lR = document.getElementById('line-r');
+  const pt = document.getElementById('pre-text');
+
+  setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
+  setTimeout(() => { pt.classList.add('ready'); pt.textContent = 'Enter'; }, 1600);
+
+  pt.addEventListener('click', () => {
+    if (!pt.classList.contains('ready')) return;
+    document.getElementById('preloader').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('preloader').style.display = 'none';
+      document.getElementById('site').style.opacity = '1';
+    }, 600);
+  });
+
+  /* 自訂游標 */
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function tick(){ rx+=(mx-rx)*.18; ry+=(my-ry)*.18;
+    cur.style.left=mx+'px'; cur.style.top=my+'px';
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(tick); })();
+  document.querySelectorAll('button,a').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+
+  /* 粒子 */
+  MoriParticles.init('quiz');
+});
+</script>
+</body>
+</html>
