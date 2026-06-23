@@ -39,9 +39,14 @@
   - 冒煙測試通過：開始畫面 → 題目 → 結果頁（複利思維型）全流程正常
 - **工作日誌** `WORK_LOG.md` 建立，本次起每次 Session 更新
 
+- **首頁卡片更新** `index.html`
+  - 卡片從 6 → 7 張，新增「你的金錢人格是哪種？07/07」
+  - 連結指向同站 `/quiz/wealth-mindset/`
+  - pip 導覽點同步新增第 7 個
+
 ### 待辦
 - MailerLite 串接（Email 送出目前是 alert，需接上真實 API）
-- 加入首頁測驗卡片（讓訪客從首頁可以點到這張測驗）
-- push 到 GitHub + Cloudflare 部署
+- Cloudflare Pages 部署（讓 mori-homepage.pages.dev 更新）
+- 製作下一張測驗
 
 ---
