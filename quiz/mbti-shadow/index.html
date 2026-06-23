@@ -340,6 +340,7 @@
           <input class="email-input" type="email" placeholder="你的 Email" id="email-input">
           <button class="btn-email" onclick="submitEmail()">送出</button>
         </div>
+        <p id="email-done" style="display:none;color:var(--gold);font-size:13px;text-align:center;margin-top:12px;">✓ 收到了，稍後寄到你的信箱。</p>
       </div>
 
       <!-- 心理探索三部曲導覽 -->
@@ -502,6 +503,17 @@ document.title = 'MORI — ' + QUIZ_INFO.title;
 let currentQ = 0;
 let answersHistory = [];
 const scores = {};
+let currentResultKey = null;
+
+/* ── MailerLite 串接設定 ── */
+/* 本機預覽無效，需在 HTTPS 真實環境才能運作 */
+const ML_KEY = 'YOUR_MAILERLITE_API_KEY';    // ← 填入 API Key
+const ML_GROUPS = {
+  F: 'GROUP_ID_F',   // mbti-shadow-F（情緒潛流型）← 填入 Group ID
+  T: 'GROUP_ID_T',   // mbti-shadow-T（邏輯防護型）← 填入 Group ID
+  N: 'GROUP_ID_N',   // mbti-shadow-N（可能性逃逸型）← 填入 Group ID
+  S: 'GROUP_ID_S',   // mbti-shadow-S（當下錨定型）← 填入 Group ID
+};
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
 /* ── 畫面切換 ── */
@@ -581,6 +593,7 @@ function showResult() {
     }
   });
   const topKey = Object.entries(computed).sort((a,b) => b[1]-a[1])[0][0];
+  currentResultKey = topKey;
   const r = RESULTS[topKey];
 
   document.getElementById('r-type').textContent     = r.type;
@@ -609,11 +622,34 @@ function shareResult() {
     navigator.clipboard.writeText(location.href).then(() => alert('連結已複製'));
   }
 }
-function submitEmail() {
-  const email = document.getElementById('email-input').value;
-  if (!email) return;
-  /* ★ 改這裡：接上 MailerLite API 或表單 */
-  alert('謝謝！我會寄給你：' + email);
+async function submitEmail() {
+  const emailEl = document.getElementById('email-input');
+  const email = emailEl.value.trim();
+  if (!email || !email.includes('@')) return;
+  const btn = document.querySelector('.btn-email');
+  btn.disabled = true;
+  btn.textContent = '送出中…';
+  try {
+    const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ML_KEY}`,
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ email, groups: ML_GROUPS[currentResultKey] ? [ML_GROUPS[currentResultKey]] : [] }),
+    });
+    if (res.ok) {
+      document.querySelector('.email-form').style.display = 'none';
+      document.getElementById('email-done').style.display = 'block';
+    } else {
+      btn.disabled = false;
+      btn.textContent = '送出';
+    }
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = '送出';
+  }
 }
 
 /* ── Preloader ── */
