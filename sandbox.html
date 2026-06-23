@@ -160,191 +160,270 @@ const noise2D=(()=>{
 })();
 
 /* ══════════════════════════════════════
-   TERRAIN GENERATORS
-   每個 fn(N, bx, by, bz) 填入 Float32Array
+   TERRAIN GENERATORS — 表面採樣版
+   核心概念：粒子貼著地形表面生成，距離越遠密度指數衰減
+   expOff(s) = 指數分布隨機距離，均值=s，大多數粒子在 s 以內
    z 範圍：-1050 ~ 450
 ══════════════════════════════════════ */
 
-/* 01 峽谷 — 高牆、地板、散落山峰 */
+/* 指數衰減距離：均值=scale，大多數粒子緊貼表面 */
+function expOff(scale){
+  return -Math.log(1-Math.random()*.9999)*scale;
+}
+
+/* 01 峽谷 — 垂直岩壁貼面採樣，地板噪聲高度 */
 function genCanyon(N,bx,by,bz){
   for(let i=0;i<N;i++){
-    const r=Math.random(),z=Math.random()*1500-1050;let x,y;
-    if(r<.30){x=-(110+Math.random()*210);y=-100+Math.random()*500;}
-    else if(r<.60){x=110+Math.random()*210;y=-100+Math.random()*500;}
-    else if(r<.78){x=(Math.random()-.5)*600;y=-200+Math.random()*110;}
-    else if(r<.90){x=(Math.random()-.5)*500+(Math.random()>.5?200:-200);y=130+Math.random()*320;}
-    else{x=(Math.random()-.5)*800;y=noise2D(x*.004,z*.004)*20;}
-    bx[i]=x;by[i]=y;bz[i]=z;
+    const z=Math.random()*1500-1050,p=Math.random();
+    if(p<.33){// 左壁：x=wallX 往外偏移
+      const y=-100+Math.random()*560;
+      const wx=-(88+noise2D(y*.012,z*.008)*44+noise2D(y*.04,z*.03)*14);
+      bx[i]=wx-expOff(10);by[i]=y;bz[i]=z;
+    }else if(p<.66){// 右壁
+      const y=-100+Math.random()*560;
+      const wx=88+noise2D(y*.012,z*.008)*44+noise2D(y*.04,z*.03)*14;
+      bx[i]=wx+expOff(10);by[i]=y;bz[i]=z;
+    }else if(p<.84){// 地板表面
+      const x=(Math.random()-.5)*200;
+      const fy=-130+noise2D(x*.02,z*.015)*22;
+      bx[i]=x;by[i]=fy+expOff(9);bz[i]=z;
+    }else{// 崖頂邊緣
+      const s=Math.random()<.5?-1:1;
+      const rx=s*(88+noise2D(z*.01,0)*44);
+      bx[i]=rx+s*expOff(20);by[i]=410+noise2D(rx*.01,z*.01)*25-expOff(22);bz[i]=z;
+    }
   }
 }
 
-/* 02 山峰 — 多峰簇、谷底、天空散落 */
+/* 02 山峰 — 高斯峰疊加高度場，粒子貼頂面 */
 function genMountain(N,bx,by,bz){
-  const peaks=[];
-  for(let p=0;p<8;p++)peaks.push({x:(Math.random()-.5)*280,r:28+Math.random()*55,h:180+Math.random()*320});
+  const pks=Array.from({length:7},()=>({
+    px:(Math.random()-.5)*380,pz:Math.random()*1500-1050,
+    H:120+Math.random()*300,sg:38+Math.random()*70
+  }));
+  function H(x,z){
+    let h=noise2D(x*.005,z*.005)*55+noise2D(x*.018,z*.018)*20;
+    for(const p of pks){const dx=x-p.px,dz=z-p.pz;h+=p.H*Math.exp(-(dx*dx+dz*dz)/(2*p.sg*p.sg));}
+    return h-65;
+  }
   for(let i=0;i<N;i++){
-    const z=Math.random()*1500-1050,r=Math.random();let x,y;
-    if(r<.52){
-      const pk=peaks[i%peaks.length];
-      const ang=Math.random()*Math.PI*2,dr=pk.r*(0.3+Math.random()*0.7);
-      x=pk.x+Math.cos(ang)*dr;
-      y=-150+Math.random()*(pk.h+150);
-    }else if(r<.80){x=(Math.random()-.5)*700;y=-220+Math.random()*80;}
-    else{x=(Math.random()-.5)*1000;y=250+Math.random()*380;}
-    bx[i]=x;by[i]=y;bz[i]=z;
+    const x=(Math.random()-.5)*720,z=Math.random()*1500-1050;
+    bx[i]=x;by[i]=H(x,z)+expOff(18);bz[i]=z;
   }
 }
 
-/* 03 峽灣 — U 型曲面、底部密集、頂部開放 */
+/* 03 峽灣 — U 型曲壁，幅度隨高度增加，底部緊縮 */
 function genFjord(N,bx,by,bz){
   for(let i=0;i<N;i++){
-    const z=Math.random()*1500-1050,r=Math.random();let x,y;
-    if(r<.35){
-      y=-50+Math.random()*500;
-      const w=Math.pow(Math.max(0,(y+50)/500),1.4);
-      x=-(55+w*240)*(1+(Math.random()-.5)*.08);
-    }else if(r<.70){
-      y=-50+Math.random()*500;
-      const w=Math.pow(Math.max(0,(y+50)/500),1.4);
-      x=(55+w*240)*(1+(Math.random()-.5)*.08);
-    }else if(r<.88){x=(Math.random()-.5)*180;y=-170+Math.random()*120;}
-    else{x=(Math.random()-.5)*800;y=320+Math.random()*200;}
-    bx[i]=x;by[i]=y;bz[i]=z;
+    const z=Math.random()*1500-1050,p=Math.random();
+    if(p<.38){// 左壁 — U型曲面
+      const y=-80+Math.random()*540;
+      const t=Math.max(0,(y+80)/540);
+      const wx=-(52+Math.pow(t,1.3)*210+noise2D(y*.014,z*.01)*18);
+      bx[i]=wx-expOff(11);by[i]=y;bz[i]=z;
+    }else if(p<.76){// 右壁
+      const y=-80+Math.random()*540;
+      const t=Math.max(0,(y+80)/540);
+      const wx=52+Math.pow(t,1.3)*210+noise2D(y*.014,z*.01)*18;
+      bx[i]=wx+expOff(11);by[i]=y;bz[i]=z;
+    }else if(p<.91){// 水面/底
+      const x=(Math.random()-.5)*110;
+      bx[i]=x;by[i]=-90+expOff(11);bz[i]=z;
+    }else{// 崖頂
+      const s=Math.random()<.5?-1:1;
+      bx[i]=s*(260+expOff(28));by[i]=440+noise2D(z*.01,0)*25-expOff(18);bz[i]=z;
+    }
   }
 }
 
-/* 04 喀斯特 — 不規則石柱群（桂林風格）*/
+/* 04 喀斯特/桂林 — 尖錐石峰群，陡壁+頂面雙重採樣 */
 function genKarst(N,bx,by,bz){
-  const pls=[];
-  for(let p=0;p<60;p++)pls.push({x:(Math.random()-.5)*680,z:Math.random()*1500-1050,r:7+Math.random()*38,h:60+Math.random()*480});
+  const pks=Array.from({length:28},()=>({
+    px:(Math.random()-.5)*650,pz:Math.random()*1500-1050,
+    H:70+Math.random()*400,sg:12+Math.random()*32
+  }));
+  function H(x,z){
+    let h=0;
+    for(const p of pks){const dx=x-p.px,dz=z-p.pz;h=Math.max(h,p.H*Math.exp(-(dx*dx+dz*dz)/(2*p.sg*p.sg)*1.8));}
+    return h;
+  }
   for(let i=0;i<N;i++){
-    const pk=pls[Math.floor(Math.random()*pls.length)];
-    const ang=Math.random()*Math.PI*2,dr=Math.random()*pk.r;
-    const jz=Math.random()<.85?pk.z+(Math.random()-.5)*25:Math.random()*1500-1050;
-    bx[i]=pk.x+Math.cos(ang)*dr;
-    by[i]=-220+Math.random()*(pk.h+220);
-    bz[i]=jz;
+    const z=Math.random()*1500-1050,p=Math.random();
+    if(p<.55){// 頂面（高度場貼面）
+      const x=(Math.random()-.5)*720;
+      bx[i]=x;by[i]=H(x,z)+expOff(11);bz[i]=z;
+    }else if(p<.85){// 陡壁側面：沿石峰輪廓取樣
+      const pk=pks[Math.floor(Math.random()*pks.length)];
+      const t=Math.random(),y=t*pk.H;
+      const logV=-Math.log(Math.max(y/pk.H,.001))/(1.8);
+      const r=pk.sg*Math.sqrt(Math.max(logV,0));
+      const ang=Math.random()*Math.PI*2,off=expOff(9);
+      bx[i]=pk.px+Math.cos(ang)*(r+off);by[i]=y;bz[i]=pk.pz+Math.sin(ang)*(r+off);
+    }else{// 水面/平地
+      const x=(Math.random()-.5)*720;
+      bx[i]=x;by[i]=expOff(6);bz[i]=z;
+    }
   }
 }
 
-/* 05 海蝕洞 — 橢圓拱形隧道截面 */
+/* 05 卡帕多奇亞 — 蘑菇形石柱群（fairy chimneys）*/
+function genCappadocia(N,bx,by,bz){
+  const ch=Array.from({length:18},()=>({
+    cx:(Math.random()-.5)*520,cz:Math.random()*1500-1050,
+    H:65+Math.random()*240,rN:11+Math.random()*20,rC:20+Math.random()*38
+  }));
+  function pr(t,c){// 輪廓半徑：下窄上寬，頂端圓帽
+    if(t<.55)return c.rN*(1+t*.25);
+    if(t<.80)return c.rN+(c.rC-c.rN)*((t-.55)/.25);
+    return c.rC*Math.cos(((t-.80)/.20)*Math.PI*.5);
+  }
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.78){// 石柱側面
+      const c=ch[Math.floor(Math.random()*ch.length)];
+      const t=Math.random(),y=t*c.H;
+      const r=Math.max(pr(t,c),1),ang=Math.random()*Math.PI*2,off=expOff(8);
+      bx[i]=c.cx+Math.cos(ang)*(r+off);by[i]=y;bz[i]=c.cz+Math.sin(ang)*(r+off);
+    }else if(p<.92){// 圓帽頂面
+      const c=ch[Math.floor(Math.random()*ch.length)];
+      const ang=Math.random()*Math.PI*2,r=c.rC*Math.random();
+      bx[i]=c.cx+Math.cos(ang)*r;by[i]=c.H-expOff(7);bz[i]=c.cz+Math.sin(ang)*r;
+    }else{// 地面高原
+      const x=(Math.random()-.5)*620,z=Math.random()*1500-1050;
+      bx[i]=x;by[i]=noise2D(x*.01,z*.01)*28+expOff(14);bz[i]=z;
+    }
+  }
+}
+
+/* 06 海蝕洞 — 橢圓拱截面，洞頂洞壁貼面 */
 function genSeaCave(N,bx,by,bz){
   for(let i=0;i<N;i++){
-    const z=Math.random()*1500-1050,r=Math.random();let x,y;
-    if(r<.62){
+    const z=Math.random()*1500-1050,p=Math.random();
+    if(p<.68){// 拱形洞壁（橢圓截面）
       const ang=Math.random()*Math.PI*2;
-      const rx=115+Math.random()*28,ry=85+Math.random()*22;
-      const jitter=(Math.random()-.5)*.14;
-      x=Math.cos(ang)*rx*(1+jitter);
-      y=35+Math.sin(ang)*ry*(1+jitter);
-    }else if(r<.84){x=(Math.random()-.5)*320;y=-70+Math.random()*55;}
-    else{x=(Math.random()-.5)*250;y=120+Math.random()*25;}
-    bx[i]=x;by[i]=y;bz[i]=z;
+      const rx=108+noise2D(ang*2,z*.008)*16,ry=78+noise2D(ang*3+1,z*.008)*13;
+      const off=expOff(8);
+      bx[i]=Math.cos(ang)*(rx+off*Math.abs(Math.cos(ang)));
+      by[i]=28+Math.sin(ang)*(ry+off*Math.abs(Math.sin(ang)));
+      bz[i]=z;
+    }else if(p<.87){// 海底
+      const x=(Math.random()-.5)*290;
+      bx[i]=x;by[i]=-72+noise2D(x*.02,z*.015)*14+expOff(9);bz[i]=z;
+    }else{// 頂面滴鐘乳石
+      const x=(Math.random()-.5)*180;
+      bx[i]=x;by[i]=106+noise2D(x*.03,z*.02)*11-expOff(8);bz[i]=z;
+    }
   }
 }
 
-/* 06 冰川裂縫 — 極窄垂直深縫 */
+/* 07 冰川裂縫 — 平坦冰面 + 深縫垂直壁 */
 function genGlacier(N,bx,by,bz){
+  const cr=Array.from({length:7},()=>({
+    cx:(Math.random()-.5)*320,cz:Math.random()*1500-1050,
+    w:7+Math.random()*14,depth:100+Math.random()*260
+  }));
   for(let i=0;i<N;i++){
-    const z=Math.random()*1500-1050,r=Math.random();let x,y;
-    const dent=noise2D(z*.008,0)*15;// 壁面起伏
-    if(r<.38){x=-(16+Math.random()*48)+dent;y=-350+Math.random()*750;}
-    else if(r<.76){x=(16+Math.random()*48)+dent;y=-350+Math.random()*750;}
-    else if(r<.90){x=(Math.random()-.5)*30;y=-350+Math.random()*60;}
-    else{x=(Math.random()-.5)*550;y=280+Math.random()*220;}
-    bx[i]=x;by[i]=y;bz[i]=z;
+    const p=Math.random();
+    if(p<.34){// 冰面（頂部平面）
+      const x=(Math.random()-.5)*620,z=Math.random()*1500-1050;
+      bx[i]=x;by[i]=195+noise2D(x*.008,z*.006)*38+expOff(11);bz[i]=z;
+    }else if(p<.75){// 裂縫壁面
+      const c=cr[Math.floor(Math.random()*cr.length)];
+      const y=195-Math.random()*c.depth;
+      const s=Math.random()<.5?-1:1,off=expOff(7);
+      bx[i]=c.cx+s*(c.w+off);by[i]=y;bz[i]=c.cz+(Math.random()-.5)*80;
+    }else{// 裂縫底部
+      const c=cr[Math.floor(Math.random()*cr.length)];
+      bx[i]=c.cx+(Math.random()-.5)*c.w*2;
+      by[i]=195-c.depth+expOff(14);
+      bz[i]=c.cz+(Math.random()-.5)*100;
+    }
   }
 }
 
-/* 07 沙漠沙丘 — 噪聲正弦丘陵 */
+/* 08 沙漠沙丘 — 多倍頻噪聲丘面，粒子貼面 */
 function genDunes(N,bx,by,bz){
+  function H(x,z){return noise2D(x*.005,z*.004)*185+noise2D(x*.014,z*.013)*62+noise2D(x*.036,z*.031)*21;}
   for(let i=0;i<N;i++){
-    const z=Math.random()*1500-1050,x=(Math.random()-.5)*900;
-    const h=noise2D(x*.005,z*.005)*200+noise2D(x*.016,z*.016)*70;
-    const r=Math.random();let y;
-    if(r<.68)y=h+(Math.random()-.5)*35;
-    else if(r<.88)y=h-70+Math.random()*70;
-    else y=h+100+Math.random()*140;
-    bx[i]=x;by[i]=y;bz[i]=z;
+    const x=(Math.random()-.5)*900,z=Math.random()*1500-1050;
+    bx[i]=x;by[i]=H(x,z)+expOff(13);bz[i]=z;
   }
 }
 
-/* 08 深海溝 — V 形下沉，邊緣密集 */
+/* 09 深海溝 — V 形斜壁貼面，溝底黑暗 */
 function genTrench(N,bx,by,bz){
   for(let i=0;i<N;i++){
-    const z=Math.random()*1500-1050,r=Math.random();let x,y;
-    if(r<.36){x=-(90+Math.random()*220);y=(-Math.abs(x))*1.4-80+Math.random()*80;}
-    else if(r<.72){x=90+Math.random()*220;y=(-x)*1.4-80+Math.random()*80;}
-    else if(r<.85){x=(Math.random()-.5)*80;y=-480+Math.random()*70;}
-    else{x=(Math.random()-.5)*900;y=80+Math.random()*220;}
-    bx[i]=x;by[i]=y;bz[i]=z;
+    const z=Math.random()*1500-1050,p=Math.random();
+    if(p<.38){// 左斜壁
+      const y=-50-Math.random()*390;
+      const sx=-(Math.abs(y+50)*.58+noise2D(y*.014,z*.01)*18);
+      bx[i]=sx-expOff(10);by[i]=y;bz[i]=z;
+    }else if(p<.76){// 右斜壁
+      const y=-50-Math.random()*390;
+      const sx=Math.abs(y+50)*.58+noise2D(y*.014,z*.01)*18;
+      bx[i]=sx+expOff(10);by[i]=y;bz[i]=z;
+    }else if(p<.88){// 溝底
+      const x=(Math.random()-.5)*55;
+      bx[i]=x;by[i]=-445+expOff(14);bz[i]=z;
+    }else{// 海面
+      const x=(Math.random()-.5)*820;
+      bx[i]=x;by[i]=-52+noise2D(x*.02,z*.015)*8+expOff(9);bz[i]=z;
+    }
   }
 }
 
-/* 09 火山口 — 碗形，唇緣 + 內壁 + 噴發柱 */
+/* 10 火山口 — 圓形唇緣 + 碗型內壁貼面 */
 function genCrater(N,bx,by,bz){
+  const RIM=175,RH=118,RS=32;
+  function H(r){return RH*Math.exp(-((r-RIM)*(r-RIM))/(2*RS*RS))-80*Math.exp(-(r*r)/(2*(RIM*.48)*(RIM*.48)));}
   for(let i=0;i<N;i++){
-    const z=Math.random()*1500-1050,r=Math.random();let x,y;
-    if(r<.44){
-      const ang=Math.random()*Math.PI*2,h=Math.random();
-      const rad=45+h*185;
-      x=Math.cos(ang)*rad*(1+(Math.random()-.5)*.09);
-      y=-120+h*300;
-    }else if(r<.68){
-      const ang=Math.random()*Math.PI*2,rad=185+Math.random()*45;
-      x=Math.cos(ang)*rad;y=165+Math.random()*70;
-    }else if(r<.82){
-      const ang=Math.random()*Math.PI*2,rad=Math.random()*48;
-      x=Math.cos(ang)*rad;y=-120+Math.random()*35;
-    }else{x=(Math.random()-.5)*140;y=220+Math.random()*350;}
-    bx[i]=x;by[i]=y;bz[i]=z;
+    const z=Math.random()*1500-1050,p=Math.random();
+    if(p<.72){// 碗面（極坐標採樣）
+      const ang=Math.random()*Math.PI*2,r=Math.random()*290;
+      const sy=H(r),off=expOff(11);
+      bx[i]=Math.cos(ang)*r;by[i]=sy+off;bz[i]=z+Math.sin(ang)*r;
+    }else if(p<.90){// 唇緣密集採樣
+      const ang=Math.random()*Math.PI*2,r=RIM+(Math.random()-.5)*55;
+      bx[i]=Math.cos(ang)*r;by[i]=H(r)+expOff(9);bz[i]=z+Math.sin(ang)*r;
+    }else{// 噴發柱
+      bx[i]=(Math.random()-.5)*75;by[i]=RH+expOff(38);bz[i]=z;
+    }
   }
 }
 
-/* 10 熔岩隧道 — 圓筒形管壁 */
+/* 11 熔岩隧道 — 圓筒管壁噪聲起伏 */
 function genLavaTube(N,bx,by,bz){
   for(let i=0;i<N;i++){
-    const z=Math.random()*1500-1050;
-    const ang=Math.random()*Math.PI*2;
-    const r=85+noise2D(ang*2.5,z*.012)*22+Math.random()*18;
-    bx[i]=Math.cos(ang)*r;by[i]=Math.sin(ang)*r;bz[i]=z;
+    const z=Math.random()*1500-1050,ang=Math.random()*Math.PI*2;
+    const r=88+noise2D(ang*2.5,z*.012)*26;
+    const off=expOff(8);
+    bx[i]=Math.cos(ang)*(r+off);by[i]=Math.sin(ang)*(r+off);bz[i]=z;
   }
 }
 
-/* 11 星雲 — 3D 體積噪聲雲，無固定地形 */
-function genNebula(N,bx,by,bz){
-  for(let i=0;i<N;i++){
-    const z=Math.random()*1500-1050,x=(Math.random()-.5)*800,y=(Math.random()-.5)*600;
-    const n1=noise2D(x*.005+z*.002,y*.007),n2=noise2D(x*.012+z*.006,y*.015);
-    bx[i]=x+n1*55;by[i]=y+n2*38;bz[i]=z;
-  }
-}
-
-/* 12 竹林 — 垂直莖幹叢 */
+/* 12 竹林 — 細圓柱貼面，全高覆蓋 */
 function genBamboo(N,bx,by,bz){
-  const stems=[];for(let s=0;s<140;s++)stems.push({x:(Math.random()-.5)*650,z:Math.random()*1500-1050,r:3+Math.random()*9});
+  const st=Array.from({length:130},()=>({sx:(Math.random()-.5)*660,sz:Math.random()*1500-1050,r:3+Math.random()*8}));
   for(let i=0;i<N;i++){
-    const st=stems[Math.floor(Math.random()*stems.length)];
-    const ang=Math.random()*Math.PI*2,dr=Math.random()*st.r;
-    bx[i]=st.x+Math.cos(ang)*dr;
-    by[i]=-220+Math.random()*750;
-    bz[i]=st.z+(Math.random()-.5)*18;
+    const s=st[Math.floor(Math.random()*st.length)];
+    const y=-200+Math.random()*720,ang=Math.random()*Math.PI*2,off=expOff(5);
+    bx[i]=s.sx+Math.cos(ang)*(s.r+off);by[i]=y;bz[i]=s.sz+Math.sin(ang)*(s.r+off);
   }
 }
 
 const TERRAINS=[
-  {id:'canyon',   name:'峽谷',   emoji:'🏔', fn:genCanyon,   hint:'峽谷飛越：兩側高牆，深谷地板'},
-  {id:'mountain', name:'山峰',   emoji:'⛰', fn:genMountain, hint:'山峰穿越：多峰簇，天空散落'},
-  {id:'fjord',    name:'峽灣',   emoji:'🌊', fn:genFjord,    hint:'峽灣：U 型曲面，底部緊縮'},
-  {id:'karst',    name:'喀斯特', emoji:'🗿', fn:genKarst,    hint:'喀斯特：桂林式不規則石柱群'},
-  {id:'seacave',  name:'海蝕洞', emoji:'🕳', fn:genSeaCave,  hint:'海蝕洞：橢圓拱形隧道截面'},
-  {id:'glacier',  name:'冰川',   emoji:'🧊', fn:genGlacier,  hint:'冰川裂縫：極窄垂直深縫'},
-  {id:'dunes',    name:'沙丘',   emoji:'🏜', fn:genDunes,    hint:'沙漠沙丘：噪聲丘陵起伏'},
-  {id:'trench',   name:'海溝',   emoji:'🌀', fn:genTrench,   hint:'深海溝：V 形下沉，底部幽暗'},
-  {id:'crater',   name:'火山口', emoji:'🌋', fn:genCrater,   hint:'火山口：碗形唇緣，噴發柱'},
-  {id:'lavatube', name:'熔岩隧', emoji:'🔥', fn:genLavaTube, hint:'熔岩隧道：圓筒管壁穿越'},
-  {id:'nebula',   name:'星雲',   emoji:'✨', fn:genNebula,   hint:'星雲：三維體積雲，無固定地形'},
-  {id:'bamboo',   name:'竹林',   emoji:'🎋', fn:genBamboo,   hint:'竹林：垂直莖幹密林'},
+  {id:'canyon',      name:'峽谷',     emoji:'🏔', fn:genCanyon,      hint:'峽谷：垂直岩壁貼面，地板清晰邊界'},
+  {id:'mountain',    name:'山峰',     emoji:'⛰', fn:genMountain,    hint:'山峰：高斯峰疊加，粒子貼頂面連續起伏'},
+  {id:'fjord',       name:'峽灣',     emoji:'🌊', fn:genFjord,       hint:'峽灣：U 型曲壁貼面，底部緊縮'},
+  {id:'karst',       name:'桂林喀斯特',emoji:'🗿', fn:genKarst,       hint:'桂林喀斯特：尖錐石峰，陡壁+頂面雙採樣'},
+  {id:'cappadocia',  name:'卡帕多奇亞',emoji:'🍄', fn:genCappadocia,  hint:'卡帕多奇亞：蘑菇形石柱，輪廓貼面'},
+  {id:'seacave',     name:'海蝕洞',   emoji:'🕳', fn:genSeaCave,     hint:'海蝕洞：橢圓拱截面，洞壁貼面'},
+  {id:'glacier',     name:'冰川裂縫', emoji:'🧊', fn:genGlacier,     hint:'冰川：平坦冰面 + 深縫垂直壁貼面'},
+  {id:'dunes',       name:'沙漠沙丘', emoji:'🏜', fn:genDunes,       hint:'沙丘：多倍頻噪聲曲面，粒子緊貼丘面'},
+  {id:'trench',      name:'深海溝',   emoji:'🌀', fn:genTrench,      hint:'海溝：V 形斜壁貼面，溝底幽暗'},
+  {id:'crater',      name:'火山口',   emoji:'🌋', fn:genCrater,      hint:'火山口：圓唇緣 + 碗型內壁，極坐標採樣'},
+  {id:'lavatube',    name:'熔岩隧道', emoji:'🔥', fn:genLavaTube,    hint:'熔岩隧道：圓筒噪聲管壁，完整截面'},
+  {id:'bamboo',      name:'竹林',     emoji:'🎋', fn:genBamboo,      hint:'竹林：細圓柱貼面，全高覆蓋'},
 ];
 
 /* ══════════════════════════════════════
