@@ -127,6 +127,16 @@
 }
 .option:hover .option-text, .option.selected .option-text { color: var(--text); }
 
+/* ── 返回按鈕 ── */
+.quiz-nav { display: flex; align-items: center; margin-top: 24px; }
+.btn-prev-q {
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 100px; padding: 10px 22px;
+  font-size: 13px; color: var(--muted); cursor: none;
+  font-family: var(--font-ui); transition: border-color .3s, color .3s;
+}
+.btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+
 /* ── 結果畫面 ── */
 .result-eyebrow {
   font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em;
@@ -328,6 +338,9 @@
       <p class="question-tag" id="q-tag">底層邏輯測驗</p>
       <p class="question-text" id="q-text"></p>
       <div class="options" id="options-wrap"></div>
+      <div class="quiz-nav">
+        <button class="btn-prev-q" id="btnPrev" onclick="prevQ()">← 返回首頁</button>
+      </div>
     </div>
 
     <!-- 結果畫面 -->
@@ -546,6 +559,7 @@ document.querySelectorAll('.question-tag, #q-tag').forEach(el => { el.textConten
 document.title = 'MORI — ' + QUIZ_INFO.title;
 
 let currentQ = 0;
+let answersHistory = [];
 const scores = {};
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
@@ -556,6 +570,7 @@ function showScreen(id) {
 
 function startQuiz() {
   currentQ = 0;
+  answersHistory = [];
   Object.keys(scores).forEach(k => { scores[k] = 0; });
   showScreen('screen-quiz');
   setTimeout(renderQuestion, 300);
@@ -578,15 +593,22 @@ function renderQuestion() {
     btn.addEventListener('click', () => selectOption(btn, opt, i));
     wrap.appendChild(btn);
   });
+  const prevIdx = answersHistory[currentQ];
+  if (prevIdx !== undefined) {
+    const opts = document.querySelectorAll('.option');
+    if (opts[prevIdx]) opts[prevIdx].classList.add('selected');
+  }
+  const pb = document.getElementById('btnPrev');
+  if (pb) pb.textContent = currentQ === 0 ? '← 返回首頁' : '← 上一題';
 }
 
 function selectOption(el, opt, idx) {
+  answersHistory[currentQ] = idx;
   const allOpts = document.querySelectorAll('.option');
   allOpts.forEach((o, i) => {
     if (i === idx) o.classList.add('selected');
     else o.classList.add('fade-out');
   });
-  Object.entries(opt.scores).forEach(([k, v]) => { scores[k] = (scores[k] || 0) + v; });
   setTimeout(() => {
     currentQ++;
     if (currentQ < QUESTIONS.length) renderQuestion();
@@ -594,8 +616,23 @@ function selectOption(el, opt, idx) {
   }, 520);
 }
 
+function prevQ() {
+  if (currentQ === 0) { showScreen('screen-start'); return; }
+  currentQ--;
+  renderQuestion();
+}
+
 function showResult() {
-  const topKey = Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+  const computed = {};
+  Object.keys(RESULTS).forEach(k => { computed[k] = 0; });
+  answersHistory.forEach((optIdx, qIdx) => {
+    if (optIdx !== undefined && QUESTIONS[qIdx]) {
+      Object.entries(QUESTIONS[qIdx].options[optIdx].scores).forEach(([k,v]) => {
+        computed[k] = (computed[k] || 0) + v;
+      });
+    }
+  });
+  const topKey = Object.entries(computed).sort((a,b) => b[1]-a[1])[0][0];
   const r = RESULTS[topKey];
   document.getElementById('r-type').textContent     = r.type;
   document.getElementById('r-subtitle').textContent = r.subtitle;
