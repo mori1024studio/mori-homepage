@@ -228,6 +228,13 @@
 .btn-ghost-full:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
 .btn-ghost-full:disabled { opacity: .4; pointer-events: none; }
 #pdf-target { position: fixed; top: -9999px; left: -9999px; width: 390px; display: none; }
+/* ── 深度分析區塊 ── */
+.result-analysis-block { margin-bottom: 32px; }
+.result-analysis-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 14px; }
+.result-analysis-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 2; color: rgba(237,232,223,.62); white-space: pre-line; }
+.result-morview-block { margin-bottom: 32px; padding: 20px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); }
+.result-morview-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
+.result-morview-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); white-space: pre-line; }
 
 /* ── Email CTA（選用）── */
 .result-cta {
@@ -391,6 +398,14 @@
       <p class="result-subtitle" id="r-subtitle"></p>
       <div class="result-divider"></div>
       <p class="result-desc" id="r-desc"></p>
+      <div class="result-analysis-block">
+        <p class="result-analysis-label">行為分析</p>
+        <p class="result-analysis-text" id="r-analysis"></p>
+      </div>
+      <div class="result-morview-block">
+        <p class="result-morview-label">Mori 觀點</p>
+        <p class="result-morview-text" id="r-morview"></p>
+      </div>
       <!-- ── 社群按鈕 ── -->
       <div class="btn-row">
         <button class="btn-line" onclick="openLine()">
@@ -543,25 +558,33 @@ const RESULTS = {
   F: {
     type:     '情緒潛流型',
     subtitle: 'The Hidden Feeler',
-    desc:     '你最看不見的那一面，是你自己的情緒。你以為你的判斷很理性，但仔細看——你的決定常常是被某種感受悄悄推著走的。你壓制「太感情用事」的自己，卻不知道這讓你和自己的真實狀態之間，拉開了一段距離。你不需要變得更感性，但你需要開始承認：那股讓你不舒服的感覺，值得被好好看一眼。',
+    desc:     '你最看不見的那一面，是你自己的情緒。你以為你的判斷很理性，但仔細看——你的決定常常是被某種感受悄悄推著走的。你壓制「太感情用事」的自己，卻讓你和自己的真實狀態之間，拉開了一段距離。那股讓你不舒服的感覺，值得被好好看一眼。',
+    analysis: '情緒潛流型最有意思的地方是：你的情緒不是不存在，它只是在你的意識雷達下方運行。你以為你的決策是理性的，但仔細追蹤你的行為模式，你會發現很多決定背後有一股說不清楚的感受在推動它們。\n\n這種「感受在意識下方」的狀態有一個代價：當情緒沒有被有意識地處理，它不會消失，它會找到其他出口——身體不適、莫名的煩躁、對某件本來不大的事突然強烈的反應。這些都是你的情緒在你沒有看它的時候，用別的方式試圖被看見。\n\n在壓力下，你的情緒潛流會增加流速。你會做出一些平時不會做的決定，說出一些平時不會說的話，然後在情緒退去後感到困惑——「我怎麼會那樣做？」其實你的感受一直都在，只是在那個時刻突破了。',
+    morview:  '我作為傾向理性思考的人，其實也花了一段時間才承認：情緒不只是「干擾」，它是信息。你身體感受到的不舒服、你對某件事的本能排斥——這些都是你的感知系統在處理你的邏輯系統還沒分析到的信息。\n\n開始給你的感受一個定期的「檢核時間」：每天問自己一次「現在感覺怎麼樣」，不是要解決它，只是要看見它。',
     cta:      '留下 Email，我寄給你針對「情緒潛流型」的自我整合練習。'
   },
   T: {
     type:     '邏輯防護型',
     subtitle: 'The Hidden Thinker',
-    desc:     '你最看不見的那一面，是你內心那套未被審視的邏輯。你跟著感覺或直覺走，但很少真的停下來問自己：這個結論的前提對嗎？這個判斷有沒有偏誤？你害怕太過分析會讓自己失去溫度，但其實，你最需要的不是更多感受——是一個可以冷靜說「這個不對」的聲音。',
+    desc:     '你最看不見的那一面，是你內心那套未被審視的邏輯。你跟著感覺或直覺走，但很少真的停下來問自己：這個結論的前提對嗎？你害怕太過分析會讓自己失去溫度，但其實，你最需要的不是更多感受——是一個可以冷靜說「這個不對」的聲音。',
+    analysis: '邏輯防護型的核心模式是：你用感受和直覺作為主要的導航系統，但你很少去檢視這個系統的底層邏輯。你的感受讓你快速做決定，但它不一定讓你做出正確的決定——因為感受是個整合系統，它把很多東西打包在一起，包括過去的傷、偏見、對某人的好惡，這些都會影響你的判斷，而你可能不知道。\n\n在壓力下，邏輯防護型會出現一種特殊的模式：你開始用「邏輯」來防護，但那個邏輯通常是服務於你已有的情緒結論的，而不是真正在質疑它。你會找到所有支持你感受的理由，同時忽略反對的證據。\n\n最難的部分：你的感受通常是對的。這讓你更難意識到有時候它們是錯的——因為你有太多次經驗證明了直覺的準確性。',
+    morview:  '邏輯防護不是說你不理性，而是說你的理性是有選擇性的——它在你感覺確定的事情上不太工作。真正的分析能力是對你最確定的結論也願意問：「這個前提對嗎？」\n\n找一個信任的人，讓他在你做重要決定的時候問你這個問題：「你的結論的假設前提是什麼？」這個對話比你自己問自己要有效得多。',
     cta:      '留下 Email，我寄給你針對「邏輯防護型」的情感開放練習。'
   },
   N: {
     type:     '可能性逃逸型',
     subtitle: 'The Hidden Intuitor',
-    desc:     '你最看不見的那一面，是那個想要往更大地方走的自己。你很擅長把事情做好，但你不太允許自己去想「如果方向本身就錯了怎麼辦？」你把「不切實際」當作警戒線，卻也因此把某些真實的渴望封存起來了。你不需要放棄現實感，但偶爾讓自己問一句「我最大的可能性是什麼」，不會讓你失去立足點。',
+    desc:     '你最看不見的那一面，是那個想要往更大地方走的自己。你很擅長把事情做好，但你不太允許自己去想「如果方向本身就錯了怎麼辦？」你把「不切實際」當作警戒線，卻也因此把某些真實的渴望封存起來了。',
+    analysis: '可能性逃逸型有一個很矛盾的現象：你是一個很有執行力的人，但你把執行力用在讓事情「做好」，而不是讓事情「做對」。「做好」是效率問題，「做對」是方向問題。你非常擅長提高效率，但你很少停下來問方向。\n\n「不切實際」是你的警戒詞。只要一件事被這個標籤貼上，你就很難繼續去想它。但問題是，誰決定了「切實際」的邊界？通常是你過去的經驗，你見過的最大的可能性。如果你見過的最大可能性本來就不夠大，那你的「切實際」的邊界可能比你真正的天花板要低很多。\n\n在壓力下，可能性逃逸型會出現一種封閉傾向：你變得更依賴已知的方法，更不願意嘗試沒有先例的事。這讓你的解決方案清單變窄，面對新問題的時候效率反而下降。',
+    morview:  '我自己是一個偏向大視野思考的人，所以我對可能性逃逸型有一種特別的想法：你最大的可能性，不在你目前的「切實際」框架裡。它在那個框架的外面一點。\n\n你不需要一次跳到「瘋狂的可能性」，但你可以定期問自己：「如果我沒有現在這些限制，我會怎麼做？」這個問題不是讓你馬上去做，而是讓你看見那個邊界在哪裡——以及它真的是限制，還是只是習慣。',
     cta:      '留下 Email，我寄給你針對「可能性逃逸型」的落地實踐練習。'
   },
   S: {
     type:     '當下錨定型',
     subtitle: 'The Hidden Sensor',
-    desc:     '你最看不見的那一面，是對「現在這一刻」的迴避。你擅長想大方向、看長遠，但具體的執行細節讓你感到煩躁——因為那代表你得放棄「再想想看」的空間，真的開始做一件事。你最大的盲點不是缺少想法，而是一直在用「準備」代替「行動」，不自覺地讓當下溜過去了。',
+    desc:     '你最看不見的那一面，是對「現在這一刻」的迴避。你擅長想大方向、看長遠，但具體的執行細節讓你感到煩躁——因為那代表你得放棄「再想想看」的空間，真的開始做一件事。你最大的盲點不是缺少想法，而是一直在用「準備」代替「行動」。',
+    analysis: '當下錨定型有一個你可能自己也感受到的張力：你對未來有清晰的願景，但你很難讓自己在當下的具體任務中「定下來」。細節讓你煩躁，執行讓你覺得侷限，因為執行意味著你必須從「所有可能性」縮小到「這一個選擇」。\n\n這讓你有很多未完成的計劃。不是因為計劃不好，而是因為計劃在概念階段的時候最讓你興奮，在執行階段就開始感覺沈悶。你習慣在事情還在「可能」的狀態，而不是「正在做」的狀態。\n\n在壓力下，當下錨定型的盲點會更明顯：你反而更想找到一個更好的框架、一個更完整的計劃——而這些「再等等」的理由，讓你在壓力時期反而更難行動。',
+    morview:  '我理解你喜歡在高空飛行——看見系統，看見模式，看見大方向。但高空飛行的問題是，你看不見你腳下是否有地面。\n\n試著強迫自己每週選一件「具體的小事」完成它，不是計劃完成，是真的完成。感受一下「這件事做完了，結果在這裡」的感覺。那個感覺，是你最缺少的也是你最需要的。',
     cta:      '留下 Email，我寄給你針對「當下錨定型」的視野擴展練習。'
   }
 };
@@ -741,6 +764,8 @@ function renderFullResult() {
   document.getElementById('r-type').textContent     = r.type;
   document.getElementById('r-subtitle').textContent = r.subtitle;
   document.getElementById('r-desc').textContent     = r.desc;
+  document.getElementById('r-analysis').textContent = r.analysis || '';
+  document.getElementById('r-morview').textContent  = r.morview  || '';
   if (r.cta) {
     document.getElementById('result-cta').style.display = 'block';
     document.getElementById('r-cta-text').textContent = r.cta;

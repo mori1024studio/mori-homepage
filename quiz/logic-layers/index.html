@@ -194,6 +194,13 @@
 .btn-ghost-full:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
 .btn-ghost-full:disabled { opacity: .4; pointer-events: none; }
 #pdf-target { position: fixed; top: -9999px; left: -9999px; width: 390px; display: none; }
+/* ── 深度分析區塊 ── */
+.result-analysis-block { margin-bottom: 32px; }
+.result-analysis-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 14px; }
+.result-analysis-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 2; color: rgba(237,232,223,.62); white-space: pre-line; }
+.result-morview-block { margin-bottom: 32px; padding: 20px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); }
+.result-morview-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
+.result-morview-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); white-space: pre-line; }
 
 /* ── Email CTA（選用）── */
 .result-cta {
@@ -448,6 +455,14 @@
 
       <div class="result-divider"></div>
       <p class="result-desc" id="r-desc"></p>
+      <div class="result-analysis-block">
+        <p class="result-analysis-label">行為分析</p>
+        <p class="result-analysis-text" id="r-analysis"></p>
+      </div>
+      <div class="result-morview-block">
+        <p class="result-morview-label">Mori 觀點</p>
+        <p class="result-morview-text" id="r-morview"></p>
+      </div>
       <!-- ── 社群按鈕 ── -->
       <div class="btn-row">
         <button class="btn-line" onclick="openLine()">
@@ -599,30 +614,40 @@ const RESULTS = {
     type:     '現象接收層',
     subtitle: 'Pattern Reader · T1',
     desc:     '你習慣快速接收眼前的現象，靠感受和直覺做出反應。這在很多日常情境下是高效的，但它也讓你容易把「症狀」當成「問題」來解決。你看到的是發生了什麼，還沒有開始問「為什麼」。下一個突破點：把「這件事怎麼了？」換成「這件事為什麼會這樣？」',
+    analysis: 'L1 的思維模式有一個特別的效率：快。你的反應速度很快，你對現象的感知能力很強，你可以在很短的時間內判斷「有沒有問題」。在需要快速反應的場景，這是一個優勢。\n\n但它的限制也很清楚：你解決的是你看到的問題，而不一定是真正的問題。當你的解法沒有效果，你的第一反應通常是「試另一個解法」，而不是「也許我問的問題本身就不對」。這讓你在面對複雜問題時，可能投入了大量能量在錯誤的方向上。\n\n從 L1 到 L2 的升級，不是變得更聰明，而是養成一個習慣：在每次「看到問題、想到解法」的中間，插入一個問號。「等等，這真的是問題嗎？還是這只是症狀？」這個問號，是所有更深層思維的起點。',
+    morview:  'L1 思維有一個很大的資產：直覺。你對現象的感知是快速且敏銳的。很多系統思維者反而失去了這個能力，因為他們想太多了。\n\n你的升級路徑不是拋棄直覺，而是在直覺之後加一步：「我的直覺說 X，但 X 背後的原因是什麼？」把直覺當成入口，而不是終點。',
     cta:      '留下 Email，我寄給你從 L1 升到 L3 的思維升級路徑。'
   },
   L2: {
     type:     '規則依賴層',
     subtitle: 'Rule Follower · T2',
     desc:     '你擅長找到既有的方法、流程和權威，並且忠實地執行。這讓你能穩定產出，但你的進步天花板是「方法」本身的邊界。你知道「怎麼做」，但還沒開始思考「為什麼這個方法有效」。下一個突破點：在執行每個方法之前，先問自己：這個方法的底層邏輯是什麼？',
+    analysis: 'L2 是一個非常有價值的層次：你可以找到已被驗證的方法並正確執行它們。這讓你能穩定產出，在有成熟 SOP 的環境裡表現出色。大多數組織都非常需要 L2 思維的人，因為執行力本身就是稀缺的。\n\n但 L2 的局限在新問題上顯現出來。當你面對的情況沒有現成的規則或方法時，你的第一反應是「找一個方法」而不是「設計一個解法」。你善於選擇，但還不太善於創造。\n\n從 L2 到 L3 的關鍵，是開始問「為什麼」：為什麼這個方法有效？它的底層邏輯是什麼？如果你理解了邏輯，你就可以在新情境下自己推導出適合的方法，而不只是套用現成的。',
+    morview:  'L2 思維者有一個很重要的特質：你知道自己不知道，所以你願意找方法、找專家、找規則。這種謙遜是真正學習的基礎。\n\n你的下一步不是「更努力找更好的方法」，而是「開始質疑你正在用的方法」。不是為了否定它，而是為了理解它。理解了之後，你就開始擁有那個方法，而不只是使用它。',
     cta:      '留下 Email，我寄給你從 L2 升到 L4 的底層邏輯深化練習。'
   },
   L3: {
     type:     '因果分析層',
     subtitle: 'Causal Thinker · T3',
     desc:     '你自然地會問「為什麼」，而且你問得比大多數人更深。你看到的不只是現象，而是現象背後的因果鏈。這讓你能找到別人找不到的根本原因，也讓你在解決問題時比多數人更準確。下一個突破點：從「找原因」升級到「理解系統」——很多問題的根源不是單一原因，而是整個結構在強化它。',
+    analysis: 'L3 是一個非常稀缺的能力層次——大多數人停在 L1 或 L2，因為「問為什麼」需要時間和認知能量，很多環境也不鼓勵這樣做。你有這個能力，而且你比多數人用得更自然。\n\nL3 的強項在線性因果鏈上：A 導致 B，B 導致 C，C 是根本原因，解決 C 就解決了問題。這在很多情況下是正確的。但有一類問題，L3 的分析會失效：當問題不是由單一原因造成的，而是由一個系統性結構在不斷再生產的時候。\n\n例如：你找到了根本原因，解決了它，但問題一段時間後又出現了。這通常意味著你解決的是原因，但沒有動到產生這個原因的結構。從 L3 到 L4，就是開始看「什麼樣的結構在不斷產生這個原因」。',
+    morview:  '我自己在 L3 到 L4 的過渡點上花了不少時間。L3 讓我能找到根本原因，但我發現有些問題即使找到了根本原因也解決不了——因為那個「原因」是被某個更大的結構生產出來的。\n\n一個實際的練習：當你找到根本原因之後，再問一次：「是什麼在讓這個原因一直存在？」那個答案，就是你的系統視角的起點。',
     cta:      '留下 Email，我寄給你從 L3 晉升 L4 的系統思維訓練。'
   },
   L4: {
     type:     '結構重組層',
     subtitle: 'System Designer · T4',
-    desc:     '你看到的不只是「事件為什麼發生」，而是「什麼樣的底層架構在產生這類事件」。你有能力把複雜情況拆解成系統，看到激勵結構、角色關係和反饋迴路。這讓你能解決別人解決不了的問題。下一個突破點：把你的系統洞察「模型化」——讓它成為可遷移的框架，而不只是一次性的診斷。',
+    desc:     '你看到的不只是「事件為什麼發生」，而是「什麼樣的底層架構在產生這類事件」。你有能力把複雜情況拆解成系統，看到激勵結構、角色關係和反饋迴路。這讓你能解決別人解決不了的問題。下一個突破點：把你的系統洞察「模型化」——讓它成為可遷移的框架。',
+    analysis: 'L4 是一個在大多數組織裡極為稀缺的視角。你能看到的不只是問題和原因，而是整個系統的架構——誰在激勵誰、什麼在強化什麼、哪個回饋迴路在讓問題持續。這讓你能提出別人看不到的解法，也讓你在解決問題後能評估「這個解法會不會產生副作用」。\n\nL4 的挑戰在於溝通。你看到的東西，別人很難快速理解——不是因為他們不聰明，而是因為系統視角需要一定的概念框架才能接收。你可能有過「我解釋了半天，對方還是不理解我在說什麼」的經驗。\n\n從 L4 到 L5，是把你對系統的直觀理解提煉成可以被教授、被傳遞、被他人使用的框架。這不只是整理，而是把「感覺」變成「工具」。',
+    morview:  'L4 是我最喜歡工作的層次——因為在這裡，問題的答案通常不是「更努力」，而是「改變結構」。改變結構比努力工作更有槓桿。\n\n你現在的課題是：把你的系統洞察寫下來。不是為了給別人看，而是為了讓自己看清楚「我真正理解的是什麼」。寫作是測試理解深度最好的方式。',
     cta:      '留下 Email，我寄給你 L4 進階到 L5 的模型建構框架。'
   },
   L5: {
     type:     '模型建構層',
     subtitle: 'Model Builder · T5',
-    desc:     '你從原理出發，構建可以跨領域遷移的思維框架。你不是在解決「這個問題」，你是在建立一套可以解決「這類問題」的思考工具。這種思維方式讓你的洞察具有複利效應——每解決一個問題，你的框架就更完整。你現在面對的挑戰，往往不是「怎麼想得更深」，而是「怎麼把這個思維方式傳遞給別人」。',
+    desc:     '你從原理出發，構建可以跨領域遷移的思維框架。你不是在解決「這個問題」，你是在建立一套可以解決「這類問題」的思考工具。這種思維方式讓你的洞察具有複利效應——每解決一個問題，你的框架就更完整。你現在的挑戰，往往不是「怎麼想得更深」，而是「怎麼把這個思維方式傳遞給別人」。',
+    analysis: 'L5 是一個罕見的思維層次。你不只在解決問題，你在建立解決問題的工具。你的洞察具有跨領域的可遷移性——你在 A 領域學到的東西，你能抽取出底層原理，應用到 B 領域。這讓你的每一次思考都不只是一次性的，而是在累積你的認知資產。\n\nL5 的挑戰不是思維能力，而是傳遞和影響。你的框架在你腦子裡可能非常清晰，但把它傳遞給還在 L1-L3 的人，需要極度的轉譯能力。你需要找到對方能接收的入口，而不是直接輸出你的框架。\n\n另一個 L5 的挑戰：保持謙遜。當你能在任何情況下快速找到框架，有時候你會過早地結論化——「我已經知道這個結構了」——而錯過了這個具體情況的獨特性。最好的 L5 思維者，能在框架和開放之間切換。',
+    morview:  '能到達 L5 的人，通常對知識有一種接近愉悅的態度——你喜歡把事情想透，你享受「啊，原來是這樣」的時刻。這是一種很好的驅動力。\n\n你現在最重要的事是：找到能匹配你思維層次的對話對象，以及找到一個可以讓你的框架產生真實影響的場域。L5 思維在真空中是浪費的；它在遇到真實問題和真實受眾的時候，才能發揮它全部的複利效應。',
     cta:      '留下 Email，我寄給你 L5 思維者的應用框架與下一步挑戰。'
   }
 };
@@ -794,6 +819,8 @@ function renderFullResult() {
   document.getElementById('r-type').textContent     = r.type;
   document.getElementById('r-subtitle').textContent = r.subtitle;
   document.getElementById('r-desc').textContent     = r.desc;
+  document.getElementById('r-analysis').textContent = r.analysis || '';
+  document.getElementById('r-morview').textContent  = r.morview  || '';
   if (r.cta) {
     document.getElementById('result-cta').style.display = 'block';
     document.getElementById('r-cta-text').textContent = r.cta;

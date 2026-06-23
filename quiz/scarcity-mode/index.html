@@ -170,6 +170,13 @@
 .btn-ghost-full:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
 .btn-ghost-full:disabled { opacity: .4; pointer-events: none; }
 #pdf-target { position: fixed; top: -9999px; left: -9999px; width: 390px; display: none; }
+/* ── 深度分析區塊 ── */
+.result-analysis-block { margin-bottom: 32px; }
+.result-analysis-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 14px; }
+.result-analysis-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 2; color: rgba(237,232,223,.62); white-space: pre-line; }
+.result-morview-block { margin-bottom: 32px; padding: 20px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); }
+.result-morview-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
+.result-morview-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); white-space: pre-line; }
 .result-cta {
   margin-top: 40px; padding: 24px;
   border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5);
@@ -408,6 +415,14 @@
 
       <div class="result-divider"></div>
       <p class="result-desc" id="r-desc"></p>
+      <div class="result-analysis-block">
+        <p class="result-analysis-label">行為分析</p>
+        <p class="result-analysis-text" id="r-analysis"></p>
+      </div>
+      <div class="result-morview-block">
+        <p class="result-morview-label">Mori 觀點</p>
+        <p class="result-morview-text" id="r-morview"></p>
+      </div>
       <!-- ── 社群按鈕 ── -->
       <div class="btn-row">
         <button class="btn-line" onclick="openLine()">
@@ -558,25 +573,33 @@ const RESULTS = {
   S1: {
     type:     '隧道視野型',
     subtitle: 'Tunnel Vision',
-    desc:     '你的注意力幾乎完全被眼前最緊迫的問題佔據，其他一切都進不來。這不是性格問題——這是稀缺感最深的狀態，大腦為了應對「不夠」自動啟動了緊急模式。當人處於隧道視野時，長遠規劃和創意思考都被大幅壓縮。你最需要的第一步不是「更努力」，而是創造一個讓自己喘息的空間，哪怕很小。',
+    desc:     '你的注意力幾乎完全被眼前最緊迫的問題佔據，其他一切都進不來。這不是性格問題——這是稀缺感最深的狀態，大腦為了應對「不夠」自動啟動了緊急模式。當人處於隧道視野時，長遠規劃和創意思考都被大幅壓縮。你最需要的第一步不是「更努力」，而是創造一個讓自己喘息的空間。',
+    analysis: '隧道視野型是稀缺心態最極端的表現。普林斯頓大學的研究發現，當人們感到資源極度匱乏時，大腦會自動產生「隧道效應」——把所有認知資源集中到眼前最緊迫的問題，代價是視野大幅縮窄，長遠思考和創意問題解決能力幾乎關閉。\n\n這讓你陷入一個惡性循環：因為只能看見眼前，你只能做眼前的決策；因為只做眼前的決策，你永遠沒有機會解決根本問題；因為根本問題沒解決，稀缺感繼續存在；因為稀缺感繼續，隧道繼續窄下去。\n\n最重要的認識：這不是你的意志力問題，也不是你的能力問題。這是一個心理狀態在消耗你的認知資源。你需要的不是「更努力」，是先找到任何一個可以讓自己暫時喘息的方式，哪怕很小——因為你的大腦需要一點空間才能開始看見隧道以外的地方。',
+    morview:  '我對隧道視野型有一個直接的觀察：你現在很難相信有出路，因為你的視野被限制在隧道裡，所以你看不見隧道外面。這不是悲觀，這是現狀。\n\n從最小的一件事開始：找到一件你可以「不做」的事，讓自己的時間表出現一個空格。不是要你放棄重要的事，而是讓你體驗到「我有一點點空間」的感覺。那個感覺，是打開視野的起點。',
     cta:      '留下 Email，我寄給你針對「隧道視野型」的稀缺解套第一步練習。'
   },
   S2: {
     type:     '頻寬壓縮型',
     subtitle: 'Bandwidth Compressed',
     desc:     '你大部分的認知能量都被「擔心不夠」這件事悄悄消耗著。你知道自己應該做更長遠的規劃，也知道有些擔心是多餘的，但那種隱隱的焦慮感會持續佔用你的決策頻寬。結果是：你比自己真實的能力稍微差一點地在生活和工作。你不缺資源，你缺的是能放鬆的那一塊空間。',
+    analysis: '頻寬壓縮型和隧道視野型的差別在於：你有足夠的資源，但你的大腦不相信你有。那種隱性的焦慮感——對未來的隱憂、「萬一不夠怎麼辦」的念頭——是一個持續運行的背景程序，它佔用了你的認知頻寬，讓你在所有事情上都有點分心、有點保留、有點無法全力投入。\n\n這讓你的表現出現一種奇特的樣貌：你看起來很有能力，但你知道自己沒有發揮到最好。你做事比應有的更費力，因為你的注意力永遠有一部分放在「萬一」上。你的決策比應有的更保守，因為你預設了最壞的情況。\n\n最弔詭的是：頻寬壓縮本身就是消耗資源的，所以它創造了部分它所恐懼的稀缺。你擔心不夠，這個擔心消耗了你，讓你變得真的「不夠好」，然後這個「不夠好」的結果強化了你的擔心。',
+    morview:  '頻寬壓縮型讓我想到一個比喻：你的電腦在高速運算，但背景有一堆你沒有關掉的程式在偷用 CPU。你的「擔心」就是那些程式。\n\n解法不是強迫自己不擔心，而是定期做一個「擔心清單」——把你擔心的事寫出來，然後問：「這件事我能控制嗎？現在能做什麼？」分類之後，那些你無法控制的事就可以暫時「關掉」，等有新資訊的時候再打開。',
     cta:      '留下 Email，我寄給你針對「頻寬壓縮型」的認知空間釋放練習。'
   },
   S3: {
     type:     '邊界警戒型',
     subtitle: 'Boundary Alert',
-    desc:     '你有基本的安全感，但你對資源的流向保持高度的警覺。你不一定缺乏，但你的決策預設是「先保護再擴張」。這讓你避開了很多風險，但也讓你在某些值得的機會面前本能地踩了煞車。你現在的核心課題不是學更多技能，而是練習在有充分資訊的情況下，允許自己「夠大膽地往前走」。',
+    desc:     '你有基本的安全感，但你對資源的流向保持高度的警覺。你不一定缺乏，但你的決策預設是「先保護再擴張」。這讓你避開了很多風險，但也讓你在某些值得的機會面前本能地踩了煞車。你現在的核心課題不是學更多技能，而是練習允許自己「夠大膽地往前走」。',
+    analysis: '邊界警戒型的核心模式是：你有足夠的資源，但你的決策模型預設了稀缺。你的第一反應是評估「我能守住多少」，而不是「我能擴展多少」。這讓你成為一個很謹慎的人，在很多情況下這是優點——你避開了別人踩到的坑。\n\n但這個模式也有它的成本：在真正值得的機會面前，你的警戒反應在你完成評估之前就已經讓你踩了煞車。你需要更多的資訊才能感到「夠安全」，但有時候市場不等人，機會窗口不等你收集完所有資訊。\n\n長期下來，邊界警戒型有一個你可能注意到的模式：你很少有「真正後悔做了某件事」的經歷（因為你很謹慎），但你有不少「現在想起來，當初應該要做」的遺憾。',
+    morview:  '我是一個對風險評估很認真的人，所以我理解邊界警戒型的邏輯。但我也觀察到一件事：真正好的機會，往往在信息不完整的時候就必須決定。等到信息完整，機會通常已經被不那麼謹慎的人拿走了。\n\n試著區分「真正的風險」和「不確定性帶來的不舒適感」。很多時候你踩煞車，不是因為風險真的很高，而是因為「不確定」的感覺讓你不舒適。這兩件事的解法是不同的。',
     cta:      '留下 Email，我寄給你針對「邊界警戒型」的充裕思維轉換練習。'
   },
   S4: {
     type:     '資源充裕型',
     subtitle: 'Resource Abundant',
-    desc:     '你傾向看見資源和可能性，而不是缺口。這不是因為你的外在條件比別人好——而是你有一套稀缺以外的視角，讓你在決策時更能看到選項而不只是限制。這種心態本身就是一種複利資產：它讓你更容易做出好的決定，而好的決定又強化了這種心態。你現在的課題是，把這個視角帶給你身邊的人。',
+    desc:     '你傾向看見資源和可能性，而不是缺口。這不是因為你的外在條件比別人好——而是你有一套稀缺以外的視角，讓你在決策時更能看到選項而不只是限制。這種心態本身就是一種複利資產：它讓你更容易做出好的決定，而好的決定又強化了這種心態。',
+    analysis: '資源充裕型不代表你的外在條件最好，而是代表你的內在框架在「可能性」上有默認偏向。這讓你在相同的客觀條件下，比其他人看到更多的選項，更願意嘗試，更能從失敗中提取學習而不是把失敗當作「我不夠好」的證據。\n\n充裕心態有一個很重要的機制：它是自我強化的。當你預設資源足夠，你做出的決策品質更高；高品質決策帶來更好的結果；更好的結果進一步強化了「資源足夠」的感知。這是一個正向循環，和稀缺心態的惡性循環方向相反。\n\n但資源充裕型也有它的盲點：你可能對真正需要謹慎的風險評估不夠仔細，因為你的預設是「會沒問題」。在某些需要嚴格風險管理的場景，過度充裕的心態可能讓你低估了真實的危險。',
+    morview:  '充裕型是我自己傾向的心態，所以我對它的優點和限制都很清楚。充裕心態最珍貴的地方，是它讓你在壓力下仍然能看見選項——這在大多數人視野縮窄的時候，給了你一個清晰的優勢。\n\n你現在的課題是：帶著這個視角幫助你身邊的人。不是說教，而是在他們陷入隧道視野的時候，提出一個他們沒看到的選項。這本身就是一種影響力，也是充裕型最自然的表達方式。',
     cta:      '留下 Email，我寄給你充裕思維的進階應用框架。'
   }
 };
@@ -747,6 +770,8 @@ function renderFullResult() {
   document.getElementById('r-type').textContent     = r.type;
   document.getElementById('r-subtitle').textContent = r.subtitle;
   document.getElementById('r-desc').textContent     = r.desc;
+  document.getElementById('r-analysis').textContent = r.analysis || '';
+  document.getElementById('r-morview').textContent  = r.morview  || '';
   if (r.cta) {
     document.getElementById('result-cta').style.display = 'block';
     document.getElementById('r-cta-text').textContent = r.cta;

@@ -507,7 +507,7 @@
   /* ── SCROLL CAMERA ── */
   let scrollY=0;
   window.addEventListener('scroll',()=>{scrollY=window.scrollY;},{passive:true});
-  const camPath={start:{px:0,py:90,pz:380,lx:0,ly:10,lz:0},end:{px:0,py:15,pz:-350,lx:0,ly:5,lz:-700}};
+  const camPath={start:{px:0,py:90,pz:380,lx:0,ly:10,lz:0},end:{px:22,py:52,pz:295,lx:0,ly:0,lz:-90}};
   const lerp=(a,b,t)=>a+(b-a)*t;
   const ease=(t)=>t<.5?2*t*t:-1+(4-2*t)*t;
   let time=0; const posAttr=geo.attributes.position;
