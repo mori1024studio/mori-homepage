@@ -3,14 +3,201 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- v1.0 | 2026-06-23 | 新建：金錢人格測驗（致富心態）| T1 類型卡片，6型 -->
-<title>MORI — 你的金錢人格是哪種？</title>
+<!-- v1.0 | 2026-06-23 | 財務思維三部曲 #3 稀缺 T4 光譜 -->
+<title>MORI — 你是在「不夠」的感覺中活著嗎？</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
 <link rel="stylesheet" href="/shared/style.css">
 <style>
 /* ══ 測驗頁專屬樣式 ══════════════════════════════════════════ */
+
+#site { min-height: 100vh; display: flex; flex-direction: column; }
+.quiz-main {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 100px 24px 80px;
+}
+.screen {
+  width: 100%; max-width: 640px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+  pointer-events: none; position: absolute;
+}
+.screen.active {
+  opacity: 1; transform: translateY(0);
+  pointer-events: auto; position: relative;
+}
+.start-eyebrow {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px;
+  letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px;
+  text-transform: uppercase;
+}
+.start-title {
+  font-family: var(--font-display); font-weight: 900; font-size: 48px;
+  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1.2; margin-bottom: 28px;
+}
+.start-desc {
+  font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2;
+  color: rgba(237,232,223,.55); margin-bottom: 48px;
+}
+.start-meta {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em;
+  color: rgba(154,140,120,.4); margin-bottom: 48px;
+}
+.btn-start {
+  display: inline-flex; align-items: center; gap: 16px;
+  font-family: var(--font-body); font-size: 16px; letter-spacing: .25em; color: var(--gold);
+  background: transparent; border: 1px solid rgba(196,169,106,.25);
+  padding: 14px 36px; cursor: none; transition: all .3s;
+}
+.btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
+.btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
+.btn-start:hover .btn-start-arrow { width: 44px; }
+.progress-wrap { margin-bottom: 40px; }
+.progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
+.progress-total {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .3em;
+  color: rgba(154,140,120,.45); text-transform: uppercase;
+}
+.progress-bar-bg { height: 1px; background: rgba(196,169,106,.1); position: relative; overflow: visible; }
+.progress-bar-fill {
+  height: 1px; background: var(--gold);
+  transition: width .6s cubic-bezier(.4,0,.2,1); position: relative;
+}
+.progress-bar-fill::after {
+  content: ''; position: absolute; right: -3px; top: -3px;
+  width: 7px; height: 7px; background: var(--gold); border-radius: 50%;
+}
+.question-tag {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em;
+  color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px;
+}
+.question-text {
+  font-family: 'LXGW WenKai TC', serif; font-size: 24px; line-height: 1.75;
+  color: var(--text); margin-bottom: 36px;
+}
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+  display: flex; align-items: flex-start; gap: 16px; padding: 14px 18px;
+  background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1);
+  cursor: none; transition: all .25s; position: relative; overflow: hidden;
+}
+.option::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform .3s;
+}
+.option:hover { border-color: rgba(196,169,106,.28); background: rgba(16,12,8,.85); }
+.option:hover::before { transform: scaleY(1); }
+.option.selected { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); pointer-events: none; }
+.option.selected::before { transform: scaleY(1); }
+.option.fade-out { opacity: .25; transform: translateX(-6px); }
+.option-key {
+  font-family: 'Kaushan Script', cursive; font-size: 18px;
+  color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px; transition: color .25s;
+}
+.option:hover .option-key, .option.selected .option-key { color: var(--gold); }
+.option-text {
+  font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7;
+  color: rgba(237,232,223,.7); transition: color .25s;
+}
+.option:hover .option-text, .option.selected .option-text { color: var(--text); }
+
+/* ── 結果畫面 ── */
+.result-eyebrow {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em;
+  color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 16px;
+}
+.result-type {
+  font-family: var(--font-display); font-weight: 900; font-size: 56px;
+  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1.1; margin-bottom: 8px;
+}
+.result-subtitle {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em;
+  color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 32px;
+}
+.result-divider { width: 48px; height: 1px; background: rgba(196,169,106,.25); margin-bottom: 32px; }
+.result-desc {
+  font-family: 'LXGW WenKai TC', serif; font-size: 17px; line-height: 2;
+  color: rgba(237,232,223,.65); margin-bottom: 40px;
+}
+.result-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-share, .btn-retry {
+  padding: 12px 28px; font-family: 'Noto Sans TC', sans-serif;
+  font-size: 10px; letter-spacing: .25em; text-transform: uppercase;
+  cursor: none; transition: all .25s;
+}
+.btn-share { background: rgba(196,169,106,.1); border: 1px solid rgba(196,169,106,.35); color: var(--gold); }
+.btn-share:hover { background: rgba(196,169,106,.18); }
+.btn-retry { background: transparent; border: 1px solid rgba(196,169,106,.12); color: rgba(154,140,120,.6); }
+.btn-retry:hover { color: rgba(154,140,120,.9); border-color: rgba(196,169,106,.25); }
+.result-cta {
+  margin-top: 40px; padding: 24px;
+  border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5);
+}
+.result-cta-label {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em;
+  color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 12px;
+}
+.result-cta-text {
+  font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8;
+  color: rgba(237,232,223,.55); margin-bottom: 16px;
+}
+.email-form { display: flex; gap: 8px; }
+.email-input {
+  flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8);
+  border: 1px solid rgba(196,169,106,.2); color: var(--text);
+  font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none;
+  transition: border-color .25s;
+}
+.email-input:focus { border-color: rgba(196,169,106,.45); }
+.email-input::placeholder { color: rgba(154,140,120,.35); }
+.btn-email {
+  padding: 10px 20px; background: rgba(196,169,106,.12);
+  border: 1px solid rgba(196,169,106,.3); color: var(--gold);
+  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em;
+  text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s;
+}
+.btn-email:hover { background: rgba(196,169,106,.2); }
+
+/* ── T4 稀缺光譜 ── */
+.spectrum-wrap { margin: 40px 0 32px; }
+.spectrum-labels-top {
+  display: flex; justify-content: space-between; margin-bottom: 16px;
+}
+.spectrum-zone-label {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .15em;
+  color: rgba(196,169,106,.3); text-align: center; flex: 1;
+}
+.spectrum-zone-label.active-zone { color: #C4A96A; }
+.spectrum-track {
+  position: relative; height: 6px;
+  background: linear-gradient(90deg,
+    rgba(60,40,20,.6) 0%,
+    rgba(120,80,30,.5) 33%,
+    rgba(180,140,60,.4) 66%,
+    rgba(196,169,106,.7) 100%
+  );
+  border-radius: 3px; margin-bottom: 10px;
+}
+.spectrum-marker {
+  position: absolute; top: 50%; transform: translate(-50%,-50%);
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #C4A96A; border: 3px solid #0A0A0F;
+  box-shadow: 0 0 16px rgba(196,169,106,.6), 0 0 32px rgba(196,169,106,.2);
+  left: 50%; /* overridden by JS */
+  transition: left 1s cubic-bezier(.34,1.56,.64,1);
+}
+.spectrum-tick-row {
+  display: flex; justify-content: space-between; padding: 0 1px;
+}
+.spectrum-tick {
+  width: 1px; height: 6px; background: rgba(196,169,106,.2);
+}
 
 /* ── 財務思維三部曲導覽 ── */
 .trilogy { margin-top: 48px; border-top: 1px solid rgba(196,169,106,.15); padding-top: 32px; }
@@ -40,193 +227,13 @@
   letter-spacing: .1em; color: rgba(196,169,106,.5); white-space: nowrap; margin-left: 12px;
 }
 .trilogy-link.current .trilogy-link-tag { color: #C4A96A; }
-
-/* ── 頁面骨架 ── */
-#site { min-height: 100vh; display: flex; flex-direction: column; }
-.quiz-main {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  padding: 100px 24px 80px;
-}
-
-/* ── 畫面切換動畫 ── */
-.screen {
-  width: 100%; max-width: 640px;
-  opacity: 0; transform: translateY(20px);
-  transition: opacity .5s ease, transform .5s ease;
-  pointer-events: none; position: absolute;
-}
-.screen.active {
-  opacity: 1; transform: translateY(0);
-  pointer-events: auto; position: relative;
-}
-
-/* ── 開始畫面 ── */
-.start-eyebrow {
-  font-family: 'Noto Sans TC', sans-serif; font-size: 9px;
-  letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px;
-  text-transform: uppercase;
-}
-.start-title {
-  font-family: var(--font-display); font-weight: 900; font-size: 52px;
-  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  line-height: 1.15; margin-bottom: 28px;
-}
-.start-desc {
-  font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2;
-  color: rgba(237,232,223,.55); margin-bottom: 48px;
-}
-.start-meta {
-  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em;
-  color: rgba(154,140,120,.4); margin-bottom: 48px;
-}
-.btn-start {
-  display: inline-flex; align-items: center; gap: 16px;
-  font-family: var(--font-body); font-size: 16px; letter-spacing: .25em; color: var(--gold);
-  background: transparent; border: 1px solid rgba(196,169,106,.25);
-  padding: 14px 36px; cursor: none; transition: all .3s;
-}
-.btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
-.btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
-.btn-start:hover .btn-start-arrow { width: 44px; }
-
-/* ── 進度條 ── */
-.progress-wrap { margin-bottom: 40px; }
-.progress-label {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 10px;
-}
-.progress-num {
-  font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold);
-}
-.progress-total {
-  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .3em;
-  color: rgba(154,140,120,.45); text-transform: uppercase;
-}
-.progress-bar-bg {
-  height: 1px; background: rgba(196,169,106,.1); position: relative; overflow: visible;
-}
-.progress-bar-fill {
-  height: 1px; background: var(--gold);
-  transition: width .6s cubic-bezier(.4,0,.2,1);
-  position: relative;
-}
-.progress-bar-fill::after {
-  content: ''; position: absolute; right: -3px; top: -3px;
-  width: 7px; height: 7px; background: var(--gold); border-radius: 50%;
-}
-
-/* ── 問題 ── */
-.question-tag {
-  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em;
-  color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px;
-}
-.question-text {
-  font-family: 'LXGW WenKai TC', serif; font-size: 24px; line-height: 1.75;
-  color: var(--text); margin-bottom: 36px;
-}
-
-/* ── 選項 ── */
-.options { display: flex; flex-direction: column; gap: 10px; }
-.option {
-  display: flex; align-items: flex-start; gap: 16px;
-  padding: 14px 18px;
-  background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1);
-  cursor: none; transition: all .25s; position: relative; overflow: hidden;
-}
-.option::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
-  background: var(--gold); transform: scaleY(0); transform-origin: bottom;
-  transition: transform .3s;
-}
-.option:hover { border-color: rgba(196,169,106,.28); background: rgba(16,12,8,.85); }
-.option:hover::before { transform: scaleY(1); }
-.option.selected { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); pointer-events: none; }
-.option.selected::before { transform: scaleY(1); }
-.option.fade-out { opacity: .25; transform: translateX(-6px); }
-.option-key {
-  font-family: 'Kaushan Script', cursive; font-size: 18px;
-  color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px;
-  transition: color .25s;
-}
-.option:hover .option-key, .option.selected .option-key { color: var(--gold); }
-.option-text {
-  font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7;
-  color: rgba(237,232,223,.7); transition: color .25s;
-}
-.option:hover .option-text, .option.selected .option-text { color: var(--text); }
-
-/* ── 結果畫面 ── */
-.result-eyebrow {
-  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em;
-  color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 16px;
-}
-.result-type {
-  font-family: var(--font-display); font-weight: 900; font-size: 64px;
-  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  line-height: 1.1; margin-bottom: 8px;
-}
-.result-subtitle {
-  font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em;
-  color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 32px;
-}
-.result-divider {
-  width: 48px; height: 1px; background: rgba(196,169,106,.25); margin-bottom: 32px;
-}
-.result-desc {
-  font-family: 'LXGW WenKai TC', serif; font-size: 17px; line-height: 2;
-  color: rgba(237,232,223,.65); margin-bottom: 40px;
-}
-.result-actions { display: flex; gap: 16px; flex-wrap: wrap; }
-.btn-share, .btn-retry {
-  padding: 12px 28px; font-family: 'Noto Sans TC', sans-serif;
-  font-size: 10px; letter-spacing: .25em; text-transform: uppercase;
-  cursor: none; transition: all .25s;
-}
-.btn-share { background: rgba(196,169,106,.1); border: 1px solid rgba(196,169,106,.35); color: var(--gold); }
-.btn-share:hover { background: rgba(196,169,106,.18); }
-.btn-retry { background: transparent; border: 1px solid rgba(196,169,106,.12); color: rgba(154,140,120,.6); }
-.btn-retry:hover { color: rgba(154,140,120,.9); border-color: rgba(196,169,106,.25); }
-
-/* ── Email CTA（選用）── */
-.result-cta {
-  margin-top: 40px; padding: 24px;
-  border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5);
-}
-.result-cta-label {
-  font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em;
-  color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 12px;
-}
-.result-cta-text {
-  font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8;
-  color: rgba(237,232,223,.55); margin-bottom: 16px;
-}
-.email-form { display: flex; gap: 8px; }
-.email-input {
-  flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8);
-  border: 1px solid rgba(196,169,106,.2); color: var(--text);
-  font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none;
-  transition: border-color .25s;
-}
-.email-input:focus { border-color: rgba(196,169,106,.45); }
-.email-input::placeholder { color: rgba(154,140,120,.35); }
-.btn-email {
-  padding: 10px 20px; background: rgba(196,169,106,.12);
-  border: 1px solid rgba(196,169,106,.3); color: var(--gold);
-  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em;
-  text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s;
-}
-.btn-email:hover { background: rgba(196,169,106,.2); }
 </style>
 </head>
 <body>
 
-<!-- ── 粒子 Canvas（由 particles.js 自動建立）── -->
 <div id="god-ray"></div>
 <div id="vignette"></div>
 
-<!-- ── Preloader ── -->
 <div id="preloader">
   <div id="pre-top"></div>
   <div id="pre-bot"></div>
@@ -242,10 +249,8 @@
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
-<!-- ── 主體 ── -->
 <div id="site">
 
-  <!-- Nav -->
   <nav>
     <a href="/" class="logo" style="text-decoration:none">Mori</a>
     <div class="nav-links">
@@ -254,12 +259,10 @@
     </div>
   </nav>
 
-  <!-- Quiz 主內容 -->
   <main class="quiz-main">
 
     <!-- 開始畫面 -->
     <div class="screen active" id="screen-start">
-      <!-- Gothic Arch -->
       <div class="gothic-arch" style="position:relative;width:100%;height:50px;margin-bottom:8px">
         <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0,90 L0,60 Q180,0 360,40 Q540,70 720,20 Q900,-20 1080,40 Q1260,80 1440,55 L1440,90 Z" fill="rgba(196,169,106,0.04)"/>
@@ -271,10 +274,9 @@
         <span class="orn-diamond"></span>
         <span class="orn-line orn-line-r"></span>
       </div>
-      <!-- ★ 改這裡：開始畫面文案 -->
-      <p class="start-eyebrow">Mori Studio · 診斷測驗</p>
-      <h1 class="start-title" id="quiz-title">測驗標題</h1>
-      <p class="start-desc" id="quiz-desc">測驗描述文字，說明這個測驗能讓你發現什麼。</p>
+      <p class="start-eyebrow">Mori Studio · 財務心態診斷</p>
+      <h1 class="start-title" id="quiz-title">你是在「不夠」的感覺中活著嗎？</h1>
+      <p class="start-desc" id="quiz-desc">稀缺感不只關於錢。它決定了你怎麼思考、怎麼決策、以及你對未來的想像空間有多大。\n8 道情境題，找出你的稀缺模式。</p>
       <p class="start-meta" id="quiz-meta">共 8 題 · 約 3 分鐘</p>
       <button class="btn-start" onclick="startQuiz()">
         開始測驗
@@ -293,7 +295,7 @@
           <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
         </div>
       </div>
-      <p class="question-tag" id="q-tag">副業基因測驗</p>
+      <p class="question-tag" id="q-tag">稀缺模式測驗</p>
       <p class="question-text" id="q-text"></p>
       <div class="options" id="options-wrap"></div>
     </div>
@@ -305,19 +307,38 @@
         <span class="orn-diamond"></span>
         <span class="orn-line orn-line-r"></span>
       </div>
-      <p class="result-eyebrow">你的診斷結果</p>
+      <p class="result-eyebrow">你的稀缺模式</p>
       <h2 class="result-type" id="r-type"></h2>
       <p class="result-subtitle" id="r-subtitle"></p>
+
+      <!-- T4 光譜 -->
+      <div class="spectrum-wrap">
+        <div class="spectrum-labels-top">
+          <span class="spectrum-zone-label" data-zone="S1">隧道視野型</span>
+          <span class="spectrum-zone-label" data-zone="S2">頻寬壓縮型</span>
+          <span class="spectrum-zone-label" data-zone="S3">邊界警戒型</span>
+          <span class="spectrum-zone-label" data-zone="S4">資源充裕型</span>
+        </div>
+        <div class="spectrum-track">
+          <div class="spectrum-marker" id="spectrum-marker"></div>
+        </div>
+        <div class="spectrum-tick-row">
+          <div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div>
+        </div>
+      </div>
+
       <div class="result-divider"></div>
       <p class="result-desc" id="r-desc"></p>
       <div class="result-actions">
         <button class="btn-share" onclick="shareResult()">分享結果</button>
         <button class="btn-retry" onclick="retryQuiz()">重新測驗</button>
       </div>
-      <!-- Email CTA：已啟用 -->
-      <div class="result-cta" id="result-cta" style="display:block">
+      <div class="result-cta" id="result-cta" style="display:none">
         <p class="result-cta-label">深度解析</p>
-        <p class="result-cta-text" id="r-cta-text">留下 Email，我寄給你針對你的類型的完整行動指南。</p>
+        <p class="result-cta-text" id="r-cta-text"></p>
         <div class="email-form">
           <input class="email-input" type="email" placeholder="你的 Email" id="email-input">
           <button class="btn-email" onclick="submitEmail()">送出</button>
@@ -328,17 +349,17 @@
       <div class="trilogy">
         <p class="trilogy-label">財務思維三部曲</p>
         <div class="trilogy-links">
-          <a class="trilogy-link current" href="/quiz/wealth-mindset/">
+          <a class="trilogy-link" href="/quiz/wealth-mindset/">
             <span class="trilogy-link-title">你的金錢人格是哪種？</span>
-            <span class="trilogy-link-tag">心態視角 · 你在這裡</span>
+            <span class="trilogy-link-tag">心態視角</span>
           </a>
           <a class="trilogy-link" href="/quiz/logic-layers/">
             <span class="trilogy-link-title">你在用哪個層次思考？</span>
             <span class="trilogy-link-tag">思維視角</span>
           </a>
-          <a class="trilogy-link" href="/quiz/scarcity-mode/">
+          <a class="trilogy-link current" href="/quiz/scarcity-mode/">
             <span class="trilogy-link-title">你是在「不夠」的感覺中活著嗎？</span>
-            <span class="trilogy-link-tag">稀缺視角</span>
+            <span class="trilogy-link-tag">稀缺視角 · 你在這裡</span>
           </a>
         </div>
       </div>
@@ -346,7 +367,6 @@
 
   </main>
 
-  <!-- Footer -->
   <footer>
     <div class="footer-logo">Mori</div>
     <div class="footer-links">
@@ -356,154 +376,138 @@
     <p class="footer-copy">© 2025 Mori Studio · 底層邏輯 × AI 工具 × 副業思維</p>
   </footer>
 
-</div><!-- /#site -->
+</div>
 
-<!-- ══ 測驗資料區（金錢人格測驗 · 致富心態）══════════════════ -->
+<!-- ══ 測驗資料區 ══════════════════════════════════════════════ -->
 <script>
 const QUIZ_INFO = {
-  title:       '你的金錢人格是哪種？',
-  desc:        '你對金錢的直覺反應，暴露了你和財富之間最真實的關係模式。\n8 道情境題，找出你的金錢人格。',
+  title:       '你是在「不夠」的感覺中活著嗎？',
+  desc:        '稀缺感不只關於錢。它決定了你怎麼思考、怎麼決策、以及你對未來的想像空間有多大。\n8 道情境題，找出你的稀缺模式。',
   meta:        '共 8 題 · 約 3 分鐘',
-  questionTag: '金錢人格測驗'
+  questionTag: '稀缺模式測驗'
 };
 
 const QUESTIONS = [
   {
-    text: '你帳戶裡有一筆緊急備用金，朋友邀你一起投資一個機會，報酬率看起來不錯。你的第一個念頭是？',
+    text: '你意識到這個月支出可能超過收入。你的第一個反應是？',
     options: [
-      { key:'A', text:'絕對不動這筆錢，萬一真的有緊急情況呢？', scores:{ F:3 } },
-      { key:'B', text:'試試看，金額不大的話投一點沒差', scores:{ B:3 } },
-      { key:'C', text:'先看清楚這個機會的風險報酬比再說', scores:{ S:2, P:1 } },
-      { key:'D', text:'評估這個方向的長期潛力，值得就深入', scores:{ P:3 } }
+      { key:'A', text:'馬上停掉所有非必要的花費，先把這個月撐過去', scores:{ S1:3 } },
+      { key:'B', text:'開始反覆計算，不停擔心萬一再出什麼意外怎麼辦', scores:{ S2:3 } },
+      { key:'C', text:'算出缺口的數字，決定哪些要調整、哪些要保留', scores:{ S3:3 } },
+      { key:'D', text:'同時看有沒有機會增加這個月的收入，再配合調整支出', scores:{ S4:3 } }
     ]
   },
   {
-    text: '你突然收到一筆意外獎金，大約一個月的薪水，你的直覺是？',
+    text: '有一個機會可以讓你收入增加，但需要先投入時間和精力。你的直覺反應是？',
     options: [
-      { key:'A', text:'先存起來，以防萬一，不亂動', scores:{ F:3 } },
-      { key:'B', text:'買一個心儀已久的東西，好好犒賞自己', scores:{ B:3 } },
-      { key:'C', text:'讓這筆錢去產生更多錢', scores:{ P:3 } },
-      { key:'D', text:'這點錢其實也沒多大用，感覺還是不安心', scores:{ K:3 } }
+      { key:'A', text:'現在時間就不夠了，哪有多餘的力氣去做額外的事', scores:{ S1:3 } },
+      { key:'B', text:'萬一投入了卻沒有結果，那怎麼辦？現在不是冒險的時候', scores:{ S2:3 } },
+      { key:'C', text:'先評估一下投入和回報，再決定要不要進', scores:{ S3:3 } },
+      { key:'D', text:'這看起來值得研究，先了解看看要怎麼做', scores:{ S4:3 } }
     ]
   },
   {
-    text: '朋友圈裡有人剛換了一台新車，你心裡最真實的反應是什麼？',
+    text: '面對一個不確定的未來，你最常有的感受是？',
     options: [
-      { key:'A', text:'他這樣花，萬一哪天收入出問題怎麼辦？', scores:{ F:3 } },
-      { key:'B', text:'我的車好像也開始顯得落後了', scores:{ C:3 } },
-      { key:'C', text:'他財務允許就好，各人各的規劃', scores:{ S:3 } },
-      { key:'D', text:'感覺大家都比我過得好', scores:{ K:3 } }
+      { key:'A', text:'焦慮——現在就要做最壞打算，萬全準備才安心', scores:{ S1:3 } },
+      { key:'B', text:'擔心——怕有某個我沒有預測到的風險會衝擊我', scores:{ S2:3 } },
+      { key:'C', text:'謹慎——先把已知的風險管理好，其他走一步看一步', scores:{ S3:3 } },
+      { key:'D', text:'好奇——不知道會發生什麼，但我相信自己可以應對', scores:{ S4:3 } }
     ]
   },
   {
-    text: '你想嘗試一個副業，但需要先花時間學習、投入少量資金，你的態度是？',
+    text: '你的一段重要關係出現了裂痕。你最先想的是？',
     options: [
-      { key:'A', text:'萬一失敗了，時間和錢不就白費了？', scores:{ F:3 } },
-      { key:'B', text:'要多久才能回本？太慢我可能撐不住', scores:{ B:3 } },
-      { key:'C', text:'這個副業能讓我在圈子裡顯得不一樣嗎？', scores:{ C:3 } },
-      { key:'D', text:'這個方向的長期潛力如何？值不值得深耕？', scores:{ P:3 } }
+      { key:'A', text:'我不能失去這段關係，我要想辦法把它修補回去', scores:{ S1:3 } },
+      { key:'B', text:'是不是我做錯了什麼？萬一修補不了怎麼辦？', scores:{ S2:3 } },
+      { key:'C', text:'我們之間的問題出在哪？要怎麼解決才能讓兩個人都好？', scores:{ S3:3 } },
+      { key:'D', text:'不管結果如何，我要誠實地面對這段關係的現狀', scores:{ S4:3 } }
     ]
   },
   {
-    text: '你滑到一篇「如何用 AI 讓副業月入 3 萬」的文章，你的直覺反應是？',
+    text: '你有一個一直想做但還沒開始的事情，主要是因為？',
     options: [
-      { key:'A', text:'聽起來太美好了，這種事一定有陷阱', scores:{ F:2, K:1 } },
-      { key:'B', text:'如果真的這麼簡單就好了，馬上點進去看看', scores:{ B:3 } },
-      { key:'C', text:'先查這個人的背景和資歷可不可信', scores:{ S:3 } },
-      { key:'D', text:'分析一下這個模式有沒有商業邏輯支撐', scores:{ P:3 } }
+      { key:'A', text:'現在根本沒有時間、金錢或能量，條件完全不夠', scores:{ S1:3 } },
+      { key:'B', text:'萬一開始了卻做不好，反而更難面對', scores:{ S2:3 } },
+      { key:'C', text:'還沒想清楚怎麼做，想等準備好一點再說', scores:{ S3:2, S2:1 } },
+      { key:'D', text:'一直有其他事情插進來，還沒找到正確的切入點', scores:{ S3:2, S4:1 } }
     ]
   },
   {
-    text: '同學聚會，發現有人靠投資賺了不少錢，你心裡在想什麼？',
+    text: '你看到身邊有人做得很好，你最常有的感受是？',
     options: [
-      { key:'A', text:'他這樣冒險，萬一市場崩了呢？', scores:{ F:3 } },
-      { key:'B', text:'好羨慕，我在同學中好像已經落後了', scores:{ C:3 } },
-      { key:'C', text:'他用的是什麼策略？長期能持續嗎？', scores:{ P:2, S:1 } },
-      { key:'D', text:'感覺大家都比我懂，我永遠學不來', scores:{ K:3 } }
+      { key:'A', text:'他做得到，是因為他有我沒有的條件或資源', scores:{ S1:3 } },
+      { key:'B', text:'感到有一點壓力，開始懷疑自己是不是落後了', scores:{ S2:3 } },
+      { key:'C', text:'這讓我想知道他是怎麼做到的，可以學什麼', scores:{ S3:3 } },
+      { key:'D', text:'這讓我想到自己可以用類似的方式做什麼', scores:{ S4:3 } }
     ]
   },
   {
-    text: '有一份薪水更高但更不穩定的工作機會擺在你面前，你的傾向是？',
+    text: '你一天的時間感覺永遠不夠用，事情一直做不完。你對這件事的反應通常是？',
     options: [
-      { key:'A', text:'穩定比較重要，萬一撐不住被裁呢？', scores:{ F:2, S:1 } },
-      { key:'B', text:'薪水高的聽起來很爽，先試試看', scores:{ B:3 } },
-      { key:'C', text:'這個職位聽起來很有份量，值得轉', scores:{ C:3 } },
-      { key:'D', text:'評估哪邊的長期財務成長空間更大', scores:{ P:3 } }
+      { key:'A', text:'極度焦慮，不知道什麼時候才能把所有事情做完', scores:{ S1:3 } },
+      { key:'B', text:'有點沮喪，感覺自己一直在趕，但不知道哪裡出了問題', scores:{ S2:3 } },
+      { key:'C', text:'開始篩選——什麼真的重要，什麼可以不做或推遲', scores:{ S3:3 } },
+      { key:'D', text:'把這當成一個訊號，回頭看自己的方向和優先順序', scores:{ S4:3 } }
     ]
   },
   {
-    text: '「財務自由」這個詞對你來說意味著什麼？',
+    text: '有人邀請你參加一個需要投入時間但充滿不確定的計畫。你的第一想法？',
     options: [
-      { key:'A', text:'一輩子不用擔心突然沒了錢', scores:{ F:2, K:1 } },
-      { key:'B', text:'想買什麼就買什麼，不用看價格', scores:{ B:3 } },
-      { key:'C', text:'退休後生活有穩定保障，不用靠人', scores:{ S:3 } },
-      { key:'D', text:'被動收入超過支出，時間完全是自己的', scores:{ P:3 } }
+      { key:'A', text:'現在的時間和精力都不夠，不能分心', scores:{ S1:3 } },
+      { key:'B', text:'怕承諾了卻無法履行，還是算了', scores:{ S2:3 } },
+      { key:'C', text:'先了解清楚要投入多少、可能的回報是什麼，再決定', scores:{ S3:3 } },
+      { key:'D', text:'這聽起來有意思，先去了解一下，機會可以邊走邊評估', scores:{ S4:3 } }
     ]
   }
 ];
 
 const RESULTS = {
-  F: {
-    type:     '恐懼守門型',
-    subtitle: 'The Guardian',
-    desc:     '你的財務決策被「失去」的恐懼所主導。你努力工作、認真存錢，但每一個需要花錢的決定都讓你焦慮。這不是謹慎——這是一種保護機制，在無聲地讓你錯過讓錢成長的機會。真正的財務安全感，不是靠存更多錢建立的，而是靠理解風險建立的。',
-    cta:      '我整理了一份「從恐懼到主動」的財務思維轉換框架，留下 Email 我寄給你。'
+  S1: {
+    type:     '隧道視野型',
+    subtitle: 'Tunnel Vision',
+    desc:     '你的注意力幾乎完全被眼前最緊迫的問題佔據，其他一切都進不來。這不是性格問題——這是稀缺感最深的狀態，大腦為了應對「不夠」自動啟動了緊急模式。當人處於隧道視野時，長遠規劃和創意思考都被大幅壓縮。你最需要的第一步不是「更努力」，而是創造一個讓自己喘息的空間，哪怕很小。',
+    cta:      ''
   },
-  B: {
-    type:     '活在當下型',
-    subtitle: 'The Impulsive',
-    desc:     '你活在當下，這是一種天賦——但對財務來說代價很高。你的消費帶給你即時的滿足感，帳戶裡的數字卻從來沒讓你感到踏實過。財務自由的核心不是賺更多，而是學會讓今天的你，替三年後的你做一個決定。',
-    cta:      '我整理了「延遲享樂」的最小切入點，三個月就能感受到差別，留下 Email 我寄給你。'
+  S2: {
+    type:     '頻寬壓縮型',
+    subtitle: 'Bandwidth Compressed',
+    desc:     '你大部分的認知能量都被「擔心不夠」這件事悄悄消耗著。你知道自己應該做更長遠的規劃，也知道有些擔心是多餘的，但那種隱隱的焦慮感會持續佔用你的決策頻寬。結果是：你比自己真實的能力稍微差一點地在生活和工作。你不缺資源，你缺的是能放鬆的那一塊空間。',
+    cta:      ''
   },
-  C: {
-    type:     '社會比較型',
-    subtitle: 'The Status Seeker',
-    desc:     '你的金錢是社會地位的符號，而不是工具。你的消費決策受他人眼光影響，讓你在意「看起來如何」多於「實際擁有什麼」。財富是從內部建立的，不是從外部比較而來的——當你停止為別人的眼光付費，你的資產才會真正開始成長。',
-    cta:      '我整理了如何分辨「為自己花」和「為他人花」的判斷框架，留下 Email 我寄給你。'
+  S3: {
+    type:     '邊界警戒型',
+    subtitle: 'Boundary Alert',
+    desc:     '你有基本的安全感，但你對資源的流向保持高度的警覺。你不一定缺乏，但你的決策預設是「先保護再擴張」。這讓你避開了很多風險，但也讓你在某些值得的機會面前本能地踩了煞車。你現在的核心課題不是學更多技能，而是練習在有充分資訊的情況下，允許自己「夠大膽地往前走」。',
+    cta:      ''
   },
-  S: {
-    type:     '穩健規劃型',
-    subtitle: 'The Protector',
-    desc:     '你有紀律、有計劃，是財務管理上少見的認真玩家。但「穩健」也可能成為一個隱性上限——過度保守讓資產增長慢於通膨，長期來看反而是一種悄悄在發生的損失。你已經建好了地基，現在缺的是讓地基上長出東西的勇氣。',
-    cta:      '我整理了穩健型如何在不改變風險偏好的前提下提高報酬的三個策略，留下 Email 我寄給你。'
-  },
-  P: {
-    type:     '複利思維型',
-    subtitle: 'The Builder',
-    desc:     '你理解時間是最強大的財務工具。你願意犧牲短期享受來換取長期成長，這讓你走在財務自由的正確軌道上。大多數人需要用十年才能體會你已經內建的邏輯。你現在需要的不是更多知識——是找到一個能讓複利思維發揮的具體行動場域。',
-    cta:      '我整理了複利思維型如何結合副業加速財務自由的路線圖，留下 Email 我寄給你。'
-  },
-  K: {
-    type:     '匱乏信念型',
-    subtitle: 'The Worrier',
-    desc:     '不管你賺多少，內心深處始終有個聲音說「這樣不夠」。這不是理性判斷——這是一種深層的匱乏信念，讓你即使財務狀況不差，也無法感到安全。改變這個信念，比改變帳戶數字更重要，也更有效。財務焦慮不是靠存更多錢解決的，是靠重新理解「夠」是什麼解決的。',
-    cta:      '我整理了一份協助「匱乏信念型」重建財務認知的練習清單，留下 Email 我寄給你。'
+  S4: {
+    type:     '資源充裕型',
+    subtitle: 'Resource Abundant',
+    desc:     '你傾向看見資源和可能性，而不是缺口。這不是因為你的外在條件比別人好——而是你有一套稀缺以外的視角，讓你在決策時更能看到選項而不只是限制。這種心態本身就是一種複利資產：它讓你更容易做出好的決定，而好的決定又強化了這種心態。你現在的課題是，把這個視角帶給你身邊的人。',
+    cta:      ''
   }
 };
 </script>
 
-<!-- ══ 共用引擎（不需要修改）══════════════════════════════════ -->
+<!-- ══ 共用引擎 ══════════════════════════════════════════════ -->
 <script src="/shared/particles.js"></script>
 <script>
-/* ── 初始化頁面文案 ── */
 document.getElementById('quiz-title').textContent = QUIZ_INFO.title;
 document.getElementById('quiz-desc').textContent  = QUIZ_INFO.desc;
 document.getElementById('quiz-meta').textContent  = QUIZ_INFO.meta;
 document.querySelectorAll('.question-tag, #q-tag').forEach(el => { el.textContent = QUIZ_INFO.questionTag; });
 document.title = 'MORI — ' + QUIZ_INFO.title;
 
-/* ── 狀態 ── */
 let currentQ = 0;
 const scores = {};
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
-/* ── 畫面切換 ── */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   setTimeout(() => document.getElementById(id).classList.add('active'), 50);
 }
 
-/* ── 開始測驗 ── */
 function startQuiz() {
   currentQ = 0;
   Object.keys(scores).forEach(k => { scores[k] = 0; });
@@ -511,17 +515,14 @@ function startQuiz() {
   setTimeout(renderQuestion, 300);
 }
 
-/* ── 渲染題目 ── */
 function renderQuestion() {
   const q = QUESTIONS[currentQ];
   const total = QUESTIONS.length;
   const pct = (currentQ / total) * 100;
-
   document.getElementById('q-num').textContent  = 'Q' + (currentQ + 1);
   document.getElementById('q-total').textContent = '/ ' + total + ' 題';
   document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('q-text').textContent = q.text;
-
   const wrap = document.getElementById('options-wrap');
   wrap.innerHTML = '';
   q.options.forEach((opt, i) => {
@@ -533,54 +534,51 @@ function renderQuestion() {
   });
 }
 
-/* ── 選擇選項 ── */
 function selectOption(el, opt, idx) {
   const allOpts = document.querySelectorAll('.option');
   allOpts.forEach((o, i) => {
     if (i === idx) o.classList.add('selected');
     else o.classList.add('fade-out');
   });
-
-  /* 計分 */
   Object.entries(opt.scores).forEach(([k, v]) => { scores[k] = (scores[k] || 0) + v; });
-
   setTimeout(() => {
     currentQ++;
-    if (currentQ < QUESTIONS.length) {
-      renderQuestion();
-    } else {
-      showResult();
-    }
+    if (currentQ < QUESTIONS.length) renderQuestion();
+    else showResult();
   }, 520);
 }
 
-/* ── 顯示結果 ── */
 function showResult() {
   const topKey = Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
   const r = RESULTS[topKey];
-
   document.getElementById('r-type').textContent     = r.type;
   document.getElementById('r-subtitle').textContent = r.subtitle;
   document.getElementById('r-desc').textContent     = r.desc;
-
-  /* 進度條滿格 */
   document.getElementById('progress-fill').style.width = '100%';
-
-  /* Email CTA（如果有設定則顯示）*/
   if (r.cta) {
     document.getElementById('result-cta').style.display = 'block';
     document.getElementById('r-cta-text').textContent = r.cta;
   }
 
+  /* T4 光譜標記 */
+  const pctMap = { S1: 12.5, S2: 37.5, S3: 62.5, S4: 87.5 };
+  const marker = document.getElementById('spectrum-marker');
+  if (marker) {
+    setTimeout(() => { marker.style.left = pctMap[topKey] + '%'; }, 300);
+  }
+  /* 高亮對應區域標籤 */
+  document.querySelectorAll('.spectrum-zone-label').forEach(el => {
+    el.classList.toggle('active-zone', el.dataset.zone === topKey);
+  });
+
   showScreen('screen-result');
 }
 
-/* ── 動作 ── */
 function retryQuiz() { showScreen('screen-start'); }
 function shareResult() {
   const type = document.getElementById('r-type').textContent;
   if (navigator.share) {
-    navigator.share({ title: 'Mori 測驗結果', text: '我的測驗結果是「' + type + '」', url: location.href });
+    navigator.share({ title: 'Mori 測驗結果', text: '我的稀缺模式是「' + type + '」', url: location.href });
   } else {
     navigator.clipboard.writeText(location.href).then(() => alert('連結已複製'));
   }
@@ -588,19 +586,15 @@ function shareResult() {
 function submitEmail() {
   const email = document.getElementById('email-input').value;
   if (!email) return;
-  /* ★ 改這裡：接上 MailerLite API 或表單 */
   alert('謝謝！我會寄給你：' + email);
 }
 
-/* ── Preloader ── */
 window.addEventListener('DOMContentLoaded', () => {
   const lL = document.getElementById('line-l');
   const lR = document.getElementById('line-r');
   const pt = document.getElementById('pre-text');
-
   setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
   setTimeout(() => { pt.classList.add('ready'); pt.textContent = 'Enter'; }, 1600);
-
   pt.addEventListener('click', () => {
     if (!pt.classList.contains('ready')) return;
     document.getElementById('preloader').style.opacity = '0';
@@ -609,8 +603,6 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('site').style.opacity = '1';
     }, 600);
   });
-
-  /* 自訂游標 */
   const cur = document.getElementById('cursor');
   const ring = document.getElementById('cursor-ring');
   let mx=0,my=0,rx=0,ry=0;
@@ -623,8 +615,6 @@ window.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
     el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
   });
-
-  /* 粒子 */
   MoriParticles.init('quiz');
 });
 </script>
