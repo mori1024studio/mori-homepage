@@ -456,7 +456,7 @@
   const cvs=document.getElementById('three-canvas');
   const W=window.innerWidth,H=window.innerHeight;
   const scene=new THREE.Scene();
-  scene.fog=new THREE.FogExp2(0x090705,0.0028);
+  scene.fog=new THREE.FogExp2(0x090705,0.0016);
   const camera=new THREE.PerspectiveCamera(68,W/H,0.1,2000);
   camera.position.set(0,90,380); camera.lookAt(0,10,0);
   const renderer=new THREE.WebGLRenderer({canvas:cvs,antialias:false});
@@ -464,26 +464,41 @@
   renderer.setSize(W,H); renderer.setClearColor(0x090705,1);
   const circleTex=makeCircleTex();
 
-  /* ── PARTICLES ── */
+  /* ── PARTICLES：峽谷地形分布 ── */
+  // 左峽谷壁 20% | 右峽谷壁 20% | 峽谷地板 20% | 山峰 15% | 環境散布 25%
   const isMobile=window.innerWidth<768;
-  const COUNT=isMobile?7000:16000;
-  const pos=new Float32Array(COUNT*3),col=new Float32Array(COUNT*3),phase=new Float32Array(COUNT);
+  const COUNT=isMobile?8000:18000;
+  const pos=new Float32Array(COUNT*3),col=new Float32Array(COUNT*3),
+        phase=new Float32Array(COUNT),baseY=new Float32Array(COUNT);
   for(let i=0;i<COUNT;i++){
-    const x=(Math.random()-.5)*1000,z=Math.random()*1400-1000;
-    const n1=noise2D(x*.004,z*.004),n2=noise2D(x*.012,z*.012),n3=noise2D(x*.03,z*.03);
-    let y=n1*28+n2*10+n3*5-40;
-    if(Math.random()<.12) y+=60+Math.random()*90;
+    const r=Math.random(),z=Math.random()*1500-1050;
+    let x,y;
+    if(r<0.20){                                           // 左牆：高聳豎向
+      x=-(180+Math.random()*270); y=-90+Math.random()*460;
+    } else if(r<0.40){                                    // 右牆：高聳豎向
+      x=  180+Math.random()*270;  y=-90+Math.random()*460;
+    } else if(r<0.58){                                    // 地板：低而密
+      x=(Math.random()-.5)*800;   y=-180+Math.random()*100;
+    } else if(r<0.70){                                    // 山峰：高聳稀疏
+      x=(Math.random()-.5)*600+(Math.random()>.5?240:-240);
+      y=120+Math.random()*280;
+    } else {                                              // 環境：noise 散布
+      x=(Math.random()-.5)*900;
+      const n1=noise2D(x*.004,z*.004),n2=noise2D(x*.015,z*.015);
+      y=n1*28+n2*14+5;
+    }
     pos[i*3]=x; pos[i*3+1]=y; pos[i*3+2]=z;
-    const b=.25+Math.random()*.75;
-    col[i*3]=(196/255)*b; col[i*3+1]=(169/255)*b*(.9+Math.random()*.2); col[i*3+2]=(106/255)*b*(.7+Math.random()*.3);
+    baseY[i]=y;
+    const b=.30+Math.random()*.70;
+    col[i*3]=(196/255)*b; col[i*3+1]=(169/255)*b*(.88+Math.random()*.22); col[i*3+2]=(106/255)*b*(.65+Math.random()*.35);
     phase[i]=Math.random()*Math.PI*2;
   }
   const geo=new THREE.BufferGeometry();
   geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
   geo.setAttribute('color',new THREE.BufferAttribute(col,3));
   const mat=new THREE.PointsMaterial({
-    size:isMobile?2.5:2.0,map:circleTex,alphaMap:circleTex,
-    vertexColors:true,transparent:true,opacity:.8,sizeAttenuation:true,
+    size:isMobile?4.5:3.2,map:circleTex,alphaMap:circleTex,
+    vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true,
     depthWrite:false,blending:THREE.AdditiveBlending,alphaTest:.01,
   });
   const particles=new THREE.Points(geo,mat); scene.add(particles);
@@ -508,15 +523,16 @@
   let scrollY=0;
   window.addEventListener('scroll',()=>{scrollY=window.scrollY;},{passive:true});
 
-  // 7 個航點定義穿越軌跡：進入→左壓彎→右俯衝→峽谷底→拉升峰頂→第二俯衝→出雲
+  // 航點：高空俯衝 → 峽谷底（左右牆包夾）→ 急速拉升看峰頂 → 第二俯衝 → 出雲
+  // 峽谷壁在 x=±180~450，攝影機 x 保持 ±100 之內，讓牆壁始終可見
   const WP=[
-    {t:0.00, cx:0,   cy:90,  cz:380,  tx:0,   ty:25,  tz:180,  roll:0.00},
-    {t:0.15, cx:-60, cy:48,  cz:200,  tx:70,  ty:5,   tz:0,    roll:-0.28},
-    {t:0.32, cx:90,  cy:8,   cz:10,   tx:-80, ty:-5,  tz:-180, roll:0.30},
-    {t:0.50, cx:-70, cy:-10, cz:-180, tx:60,  ty:20,  tz:-380, roll:-0.22},
-    {t:0.68, cx:110, cy:48,  cz:-380, tx:-45, ty:2,   tz:-560, roll:0.28},
-    {t:0.84, cx:-35, cy:5,   cz:-560, tx:15,  ty:32,  tz:-720, roll:-0.14},
-    {t:1.00, cx:10,  cy:38,  cz:-720, tx:0,   ty:10,  tz:-900, roll:0.00},
+    {t:0.00, cx:0,   cy:160, cz:380,  tx:0,   ty:40,  tz:120,  roll:0.00},  // 高空俯視
+    {t:0.14, cx:60,  cy:80,  cz:180,  tx:-80, ty:0,   tz:-20,  roll:-0.32}, // 右壓彎進入
+    {t:0.28, cx:-50, cy:-20, cz:0,    tx:70,  ty:-80, tz:-200, roll:0.35},  // 俯衝峽谷底，看地板
+    {t:0.44, cx:70,  cy:-60, cz:-200, tx:-60, ty:-20, tz:-400, roll:-0.28}, // 峽谷深處，雙牆夾道
+    {t:0.58, cx:-40, cy:100, cz:-400, tx:30,  ty:280, tz:-560, roll:0.30},  // 急速拉升，仰望山峰
+    {t:0.74, cx:50,  cy:-30, cz:-560, tx:-50, ty:-60, tz:-730, roll:-0.24}, // 俯衝穿越第二峽谷
+    {t:1.00, cx:0,   cy:60,  cz:-730, tx:0,   ty:20,  tz:-950, roll:0.00},  // 出雲穩定
   ];
   function wpLerp(key,p){
     p=Math.max(0,Math.min(1,p));
@@ -541,7 +557,7 @@
     camera.position.set(cx,cy,cz);
     camera.up.set(Math.sin(roll),Math.cos(roll),0);
     camera.lookAt(tx,ty,tz);
-    for(let i=0;i<COUNT;i+=3) posAttr.array[i*3+1]+=Math.sin(time+phase[i])*.015;
+    for(let i=0;i<COUNT;i++) posAttr.array[i*3+1]=baseY[i]+Math.sin(time*.7+phase[i])*3.5;
     posAttr.needsUpdate=true; particles.rotation.y+=.00008;
     sUni.uTime.value=time; sUni.uFade.value=1.-ease(Math.min(raw*2.8,1));
     glowSphere.rotation.y+=.00025;
