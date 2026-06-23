@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORI — 你的「不夠好」從哪裡來？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+/* v1.0 | 2026-06-23 | 自我價值測驗：你的不夠好從哪裡來 · T7 核心解鎖 */
+
+/* ── 頁面骨架 ── */
+#site { min-height: 100vh; display: flex; flex-direction: column; }
+.quiz-main {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 100px 24px 80px;
+}
+
+/* ── 畫面切換 ── */
+.screen {
+  width: 100%; max-width: 640px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+  pointer-events: none; position: absolute;
+}
+.screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
+
+/* ── 開始畫面 ── */
+.start-eyebrow {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px;
+  letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px;
+  text-transform: uppercase;
+}
+.start-title {
+  font-family: var(--font-display); font-weight: 900; font-size: 52px;
+  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1.15; margin-bottom: 28px;
+}
+.start-desc {
+  font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2;
+  color: rgba(237,232,223,.55); margin-bottom: 48px;
+}
+.start-meta {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em;
+  color: rgba(154,140,120,.4); margin-bottom: 48px;
+}
+.btn-start {
+  display: inline-flex; align-items: center; gap: 16px;
+  font-family: var(--font-body); font-size: 16px; letter-spacing: .25em; color: var(--gold);
+  background: transparent; border: 1px solid rgba(196,169,106,.25);
+  padding: 14px 36px; cursor: none; transition: all .3s;
+}
+.btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
+.btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
+.btn-start:hover .btn-start-arrow { width: 44px; }
+
+/* ── 進度條 ── */
+.progress-wrap { margin-bottom: 40px; }
+.progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
+.progress-total { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .3em; color: rgba(154,140,120,.45); text-transform: uppercase; }
+.progress-bar-bg { height: 1px; background: rgba(196,169,106,.1); position: relative; overflow: visible; }
+.progress-bar-fill { height: 1px; background: var(--gold); transition: width .6s cubic-bezier(.4,0,.2,1); position: relative; }
+.progress-bar-fill::after { content: ''; position: absolute; right: -3px; top: -3px; width: 7px; height: 7px; background: var(--gold); border-radius: 50%; }
+
+/* ── 問題 ── */
+.question-tag { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px; }
+.question-text { font-family: 'LXGW WenKai TC', serif; font-size: 24px; line-height: 1.75; color: var(--text); margin-bottom: 36px; }
+
+/* ── 選項 ── */
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 14px 18px;
+  background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1);
+  cursor: none; transition: all .25s; position: relative; overflow: hidden;
+}
+.option::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform .3s; }
+.option:hover { border-color: rgba(196,169,106,.28); background: rgba(16,12,8,.85); }
+.option:hover::before { transform: scaleY(1); }
+.option.selected { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); pointer-events: none; }
+.option.selected::before { transform: scaleY(1); }
+.option.fade-out { opacity: .25; transform: translateX(-6px); }
+.option-key { font-family: 'Kaushan Script', cursive; font-size: 18px; color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px; transition: color .25s; }
+.option:hover .option-key, .option.selected .option-key { color: var(--gold); }
+.option-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7; color: rgba(237,232,223,.7); transition: color .25s; }
+.option:hover .option-text, .option.selected .option-text { color: var(--text); }
+
+/* ── 結果畫面基礎 ── */
+.result-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 16px; }
+.result-type { font-family: var(--font-display); font-weight: 900; font-size: 64px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 8px; }
+.result-subtitle { font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em; color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 32px; }
+.result-divider { width: 48px; height: 1px; background: rgba(196,169,106,.25); margin-bottom: 32px; }
+.result-desc { font-family: 'LXGW WenKai TC', serif; font-size: 17px; line-height: 2; color: rgba(237,232,223,.65); margin-bottom: 40px; }
+.result-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-share, .btn-retry { padding: 12px 28px; font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; cursor: none; transition: all .25s; }
+.btn-share { background: rgba(196,169,106,.1); border: 1px solid rgba(196,169,106,.35); color: var(--gold); }
+.btn-share:hover { background: rgba(196,169,106,.18); }
+.btn-retry { background: transparent; border: 1px solid rgba(196,169,106,.12); color: rgba(154,140,120,.6); }
+.btn-retry:hover { color: rgba(154,140,120,.9); border-color: rgba(196,169,106,.25); }
+
+/* ── Email CTA ── */
+.result-cta { margin-top: 40px; padding: 24px; border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5); }
+.result-cta-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 12px; }
+.result-cta-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8; color: rgba(237,232,223,.55); margin-bottom: 16px; }
+.email-form { display: flex; gap: 8px; }
+.email-input { flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8); border: 1px solid rgba(196,169,106,.2); color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .25s; }
+.email-input:focus { border-color: rgba(196,169,106,.45); }
+.email-input::placeholder { color: rgba(154,140,120,.35); }
+.btn-email { padding: 10px 20px; background: rgba(196,169,106,.12); border: 1px solid rgba(196,169,106,.3); color: var(--gold); font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s; }
+.btn-email:hover { background: rgba(196,169,106,.2); }
+
+/* ════════════════════════════════════════
+   T7 核心解鎖 — Core Unlock Animation
+   輕柔版 · 主題：脆弱 · 低刺激
+   ════════════════════════════════════════ */
+.core-wrap {
+  position: relative; margin: 32px auto 40px;
+  width: 180px; height: 180px;
+}
+
+/* 6 條射線 */
+.core-ray {
+  position: absolute; left: 50%; top: 0; bottom: 0;
+  width: 1px; margin-left: -.5px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(196,169,106,.07) 22%,
+    rgba(196,169,106,.18) 50%,
+    rgba(196,169,106,.07) 78%,
+    transparent 100%
+  );
+  transform-origin: center;
+  transform: rotate(var(--angle));
+  opacity: 0;
+}
+
+/* 3 層同心環 */
+.core-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(196,169,106,.18);
+  opacity: 0; transform: scale(.65);
+}
+.core-ring.r1 { inset: 30%; }
+.core-ring.r2 { inset: 15%; }
+.core-ring.r3 { inset: 0; }
+
+/* 中心光暈 */
+.core-glow {
+  position: absolute; inset: 18%; border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(196,169,106,.22) 0%, transparent 70%);
+  opacity: 0;
+}
+
+/* 中心點 */
+.core-dot {
+  position: absolute; left: 50%; top: 50%;
+  width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 10px rgba(196,169,106,.9), 0 0 28px rgba(196,169,106,.35);
+  opacity: 0; transform: scale(0);
+}
+
+/* 觸發後動畫（類別加上 .is-unlocking）*/
+.core-wrap.is-unlocking .core-ray {
+  animation: coreRay .9s ease forwards var(--delay, 0s);
+}
+.core-wrap.is-unlocking .core-ring.r1 {
+  animation: coreRing .55s cubic-bezier(.34,1.2,.64,1) forwards .28s;
+}
+.core-wrap.is-unlocking .core-ring.r2 {
+  animation: coreRing .55s cubic-bezier(.34,1.2,.64,1) forwards .48s;
+}
+.core-wrap.is-unlocking .core-ring.r3 {
+  animation: coreRing .55s cubic-bezier(.34,1.2,.64,1) forwards .68s;
+}
+.core-wrap.is-unlocking .core-glow {
+  animation: coreGlow 1.8s ease forwards .75s;
+}
+.core-wrap.is-unlocking .core-dot {
+  animation: coreDot .5s cubic-bezier(.34,1.5,.64,1) forwards .08s;
+}
+
+@keyframes coreRay  { from{opacity:0} to{opacity:1} }
+@keyframes coreRing { from{opacity:0;transform:scale(.65)} to{opacity:1;transform:scale(1)} }
+@keyframes coreGlow { 0%{opacity:0} 40%{opacity:1} 100%{opacity:.5} }
+@keyframes coreDot  { from{opacity:0;transform:scale(0)} to{opacity:1;transform:scale(1)} }
+
+/* 結果文字延遲淡入 */
+.result-text-block {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity .8s ease, transform .8s ease;
+}
+.result-text-block.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="god-ray"></div>
+<div id="vignette"></div>
+
+<!-- Preloader -->
+<div id="preloader">
+  <div id="pre-top"></div>
+  <div id="pre-bot"></div>
+  <div id="pre-corner-tl"></div>
+  <div id="pre-corner-br"></div>
+  <div id="pre-center">
+    <div class="pre-line" id="line-l"></div>
+    <span id="pre-text">Loading</span>
+    <div class="pre-line" id="line-r"></div>
+  </div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<div id="site">
+
+  <nav>
+    <a href="/" class="logo" style="text-decoration:none">Mori</a>
+    <div class="nav-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+  </nav>
+
+  <main class="quiz-main">
+
+    <!-- 開始畫面 -->
+    <div class="screen active" id="screen-start">
+      <div class="gothic-arch" style="position:relative;width:100%;height:50px;margin-bottom:8px">
+        <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,90 L0,60 Q180,0 360,40 Q540,70 720,20 Q900,-20 1080,40 Q1260,80 1440,55 L1440,90 Z" fill="rgba(196,169,106,0.04)"/>
+          <path d="M720,20 L716,0 L720,4 L724,0 Z" fill="rgba(196,169,106,0.3)"/>
+        </svg>
+      </div>
+      <div class="ornament" style="margin-bottom:36px">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+      <p class="start-eyebrow">Mori Studio · 心理探索</p>
+      <h1 class="start-title" id="quiz-title"></h1>
+      <p class="start-desc" id="quiz-desc"></p>
+      <p class="start-meta" id="quiz-meta"></p>
+      <button class="btn-start" onclick="startQuiz()">
+        開始探索
+        <span class="btn-start-arrow"></span>
+      </button>
+    </div>
+
+    <!-- 作答畫面 -->
+    <div class="screen" id="screen-quiz">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-num" id="q-num">Q1</span>
+          <span class="progress-total" id="q-total">/ 8 題</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <p class="question-tag" id="q-tag"></p>
+      <p class="question-text" id="q-text"></p>
+      <div class="options" id="options-wrap"></div>
+    </div>
+
+    <!-- 結果畫面（T7 核心解鎖）-->
+    <div class="screen" id="screen-result">
+      <div class="ornament" style="margin-bottom:32px">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+
+      <!-- T7 核心解鎖動畫元件 -->
+      <div class="core-wrap" id="core-wrap">
+        <div class="core-ray" style="--angle:0deg;--delay:.05s"></div>
+        <div class="core-ray" style="--angle:30deg;--delay:.10s"></div>
+        <div class="core-ray" style="--angle:60deg;--delay:.15s"></div>
+        <div class="core-ray" style="--angle:90deg;--delay:.05s"></div>
+        <div class="core-ray" style="--angle:120deg;--delay:.10s"></div>
+        <div class="core-ray" style="--angle:150deg;--delay:.15s"></div>
+        <div class="core-ring r3"></div>
+        <div class="core-ring r2"></div>
+        <div class="core-ring r1"></div>
+        <div class="core-glow"></div>
+        <div class="core-dot"></div>
+      </div>
+
+      <!-- 結果文字（動畫後淡入）-->
+      <div class="result-text-block" id="result-text-block">
+        <p class="result-eyebrow">你的核心模式</p>
+        <h2 class="result-type" id="r-type"></h2>
+        <p class="result-subtitle" id="r-subtitle"></p>
+        <div class="result-divider"></div>
+        <p class="result-desc" id="r-desc"></p>
+        <div class="result-actions">
+          <button class="btn-share" onclick="shareResult()">分享結果</button>
+          <button class="btn-retry" onclick="retryQuiz()">重新測驗</button>
+        </div>
+        <div class="result-cta" id="result-cta" style="display:none">
+          <p class="result-cta-label">深度解析</p>
+          <p class="result-cta-text" id="r-cta-text"></p>
+          <div class="email-form">
+            <input class="email-input" type="email" placeholder="你的 Email" id="email-input">
+            <button class="btn-email" onclick="submitEmail()">送出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-logo">Mori</div>
+    <div class="footer-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+    <p class="footer-copy">© 2025 Mori Studio · 底層邏輯 × AI 工具 × 副業思維</p>
+  </footer>
+
+</div>
+
+<!-- ════════ 測驗資料 ════════ -->
+<script>
+const QUIZ_INFO = {
+  title:       '你的「不夠好」從哪裡來？',
+  desc:        '那個感覺自己不夠好的聲音，不是隨機出現的。它有一個根源——一個你在某個時刻學到的模式。這個測驗幫你找到它。',
+  meta:        '共 8 題 · 約 4 分鐘',
+  questionTag: '自我價值探索'
+};
+
+const QUESTIONS = [
+  {
+    text: '你完成了一件事，但結果沒有達到你自己的預期。你最主要的感受是？',
+    options: [
+      { key:'A', text:'覺得「整個人」有問題——不只是這件事做不好', scores:{ D:3 } },
+      { key:'B', text:'反覆想著「我哪裡可以做得更完美」', scores:{ M:3 } },
+      { key:'C', text:'擔心別人知道結果後，怎麼看待我', scores:{ A:3 } },
+      { key:'D', text:'想知道別人在同樣情境下做得如何', scores:{ C:3 } }
+    ]
+  },
+  {
+    text: '有人真誠地稱讚你，你的第一個念頭是？',
+    options: [
+      { key:'A', text:'暫時鬆了口氣——終於有人看見了', scores:{ A:3 } },
+      { key:'B', text:'他只是客氣，我沒有真的那麼好', scores:{ D:3 } },
+      { key:'C', text:'擔心下次能不能繼續維持這個水準', scores:{ M:3 } },
+      { key:'D', text:'想知道他有沒有也這樣稱讚過其他人', scores:{ C:3 } }
+    ]
+  },
+  {
+    text: '你把時間花在純粹的休息或享樂，沒有任何產出。你的內心感受是？',
+    options: [
+      { key:'A', text:'隱約感覺「我不配這樣休息」', scores:{ D:3 } },
+      { key:'B', text:'擔心別人覺得我不夠努力', scores:{ A:3 } },
+      { key:'C', text:'一直在想別人在這段時間可能做了什麼', scores:{ C:3 } },
+      { key:'D', text:'今天沒有產出，這一天就像沒有價值', scores:{ P:3 } }
+    ]
+  },
+  {
+    text: '你知道自己有一個「不夠好的地方」。你通常怎麼面對它？',
+    options: [
+      { key:'A', text:'用更多的成就去蓋掉那種感覺', scores:{ P:3 } },
+      { key:'B', text:'把那個地方藏好，不讓人發現', scores:{ D:3 } },
+      { key:'C', text:'不停努力改進，但「夠好」的標準一直在往前移', scores:{ M:3 } },
+      { key:'D', text:'找一個比你更差的對比，短暫讓自己好受一點', scores:{ C:3 } }
+    ]
+  },
+  {
+    text: '你在某件事上被批評了。最讓你難受的，是哪種感受？',
+    options: [
+      { key:'A', text:'「這個缺點我早就知道了——果然我就是這樣的人」', scores:{ D:3 } },
+      { key:'B', text:'「他現在怎麼看我？我在他眼中的評價降了」', scores:{ A:3 } },
+      { key:'C', text:'「我已經很努力了，怎麼還是不夠好」', scores:{ P:3 } },
+      { key:'D', text:'「他說的這個缺點，其他人也有嗎？還是只有我？」', scores:{ C:3 } }
+    ]
+  },
+  {
+    text: '你做完了一件讓你驕傲的事，但沒有人注意到。你的感受是？',
+    options: [
+      { key:'A', text:'有點失落——被看見才感覺算數', scores:{ A:3 } },
+      { key:'B', text:'感覺這件事「不算什麼」，繼續設更高的目標', scores:{ M:3 } },
+      { key:'C', text:'確認做完了就好，但心裡有個地方還是空的', scores:{ D:3 } },
+      { key:'D', text:'想知道其他人有沒有在做同樣的事，他們做到哪了', scores:{ C:3 } }
+    ]
+  },
+  {
+    text: '有人在你擅長的領域表現得比你好。你的主要反應是？',
+    options: [
+      { key:'A', text:'擔心別人把我們比較，我的評價會下降', scores:{ A:3 } },
+      { key:'B', text:'「果然我不夠好」——有人比我強就是我的問題', scores:{ D:3 } },
+      { key:'C', text:'告訴自己要做出更好的成果，這樣才算超越了', scores:{ P:3 } },
+      { key:'D', text:'感到受威脅，一直在意這個差距', scores:{ C:3 } }
+    ]
+  },
+  {
+    text: '你設定了一個目標，終於達到了。達到之後，你的感覺是？',
+    options: [
+      { key:'A', text:'比想像的空——馬上開始設更高的目標', scores:{ M:3 } },
+      { key:'B', text:'期待有人注意到或給予肯定', scores:{ A:3 } },
+      { key:'C', text:'高興了一下，但很快在想「這樣算夠了嗎」', scores:{ P:3 } },
+      { key:'D', text:'想知道別人做得怎樣，確認自己在哪個位置', scores:{ C:3 } }
+    ]
+  }
+];
+
+const RESULTS = {
+  P: {
+    type:     '表現綁架型',
+    subtitle: 'The Achiever\'s Trap',
+    desc:     '你把自我價值和你做的事的結果綁在一起了。做到了，你短暫地感覺自己「還可以」；沒做到，你感覺整個人是有問題的。這不是弱點，而是一個你在某個時刻學到的生存策略：只要我夠好，我就是安全的。問題是這個策略讓你永遠在表演，以高昂的代價維持著。你需要的不是做更多的事——而是讓「你是什麼人」和「你做了什麼事」之間，留一點空隙。',
+    cta:      '留下 Email，我寄給你一份針對「表現綁架型」的自我解套練習。'
+  },
+  A: {
+    type:     '認可飢渴型',
+    subtitle: 'The Approval Seeker',
+    desc:     '你的安全感高度仰賴別人的回應。被肯定的時候，你暫時感覺足夠好；被忽略或批評的時候，你的根基就動搖了。這讓你非常疲憊——因為你無法控制別人給不給你那個肯定。你值不值得，不是靠別人投票決定的。那個一直需要被肯定的部分，是在尋找一個它從來沒有真正得到過的東西。',
+    cta:      '留下 Email，我寄給你針對「認可飢渴型」的根源探索練習。'
+  },
+  C: {
+    type:     '比較底洞型',
+    subtitle: 'The Comparison Trap',
+    desc:     '你的自我評估幾乎不能獨立存在——它需要一個比較對象。比你差的人讓你短暫安心，比你好的人讓你感到威脅。但這個遊戲沒有終點：世界上永遠會有人在某個維度比你好。比較的結果永遠無法填滿那個洞。那個洞下面，通常藏著一個沒被正視的問題：「我到底想成為什麼樣的人，如果不跟任何人比的話？」',
+    cta:      '留下 Email，我寄給你針對「比較底洞型」的自我定位練習。'
+  },
+  D: {
+    type:     '缺陷中心型',
+    subtitle: 'The Core Wound',
+    desc:     '在你的某個深處，有一個非常安靜的信念在運作著：「我本質上是有問題的。」不是「我這次做錯了」，而是「我這個人根本就是不夠的」。這讓所有的成就都很難真正進來，也讓所有的批評都直接擊中核心。這個信念不是真實的——但它的感覺非常真實。它是從某個時刻、某個地方學來的，而學來的東西是可以被質疑的。',
+    cta:      '留下 Email，我寄給你針對「缺陷中心型」的核心信念探索練習。'
+  },
+  M: {
+    type:     '完美主義型',
+    subtitle: 'The Impossible Standard',
+    desc:     '你給自己設定的標準，本來就不可能被達到——不是因為你不夠努力，而是因為那個標準的真正功能是讓你永遠有理由繼續努力。停下來反而最難受。你不是真的在追求完美；你是在用完美來迴避一個問題：「如果我停止表現，我還算夠好嗎？」那個問題的答案是肯定的——但你需要先願意停下來去感受它。',
+    cta:      '留下 Email，我寄給你針對「完美主義型」的自我鬆綁練習。'
+  }
+};
+</script>
+
+<!-- ════════ 共用引擎 ════════ -->
+<script src="/shared/particles.js"></script>
+<script>
+/* 初始化文案 */
+document.getElementById('quiz-title').textContent = QUIZ_INFO.title;
+document.getElementById('quiz-desc').textContent  = QUIZ_INFO.desc;
+document.getElementById('quiz-meta').textContent  = QUIZ_INFO.meta;
+document.getElementById('q-tag').textContent      = QUIZ_INFO.questionTag;
+document.title = 'MORI — ' + QUIZ_INFO.title;
+
+/* 狀態 */
+let currentQ = 0;
+const scores = {};
+Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
+
+/* 畫面切換 */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  setTimeout(() => document.getElementById(id).classList.add('active'), 50);
+}
+
+/* 開始 */
+function startQuiz() {
+  currentQ = 0;
+  Object.keys(scores).forEach(k => { scores[k] = 0; });
+  showScreen('screen-quiz');
+  setTimeout(renderQuestion, 300);
+}
+
+/* 渲染題目 */
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const total = QUESTIONS.length;
+  document.getElementById('q-num').textContent            = 'Q' + (currentQ + 1);
+  document.getElementById('q-total').textContent          = '/ ' + total + ' 題';
+  document.getElementById('progress-fill').style.width   = (currentQ / total * 100) + '%';
+  document.getElementById('q-text').textContent           = q.text;
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="option-key">${opt.key}</span><span class="option-text">${opt.text}</span>`;
+    btn.addEventListener('click', () => selectOption(btn, opt, i));
+    wrap.appendChild(btn);
+  });
+}
+
+/* 選擇選項 */
+function selectOption(el, opt, idx) {
+  document.querySelectorAll('.option').forEach((o, i) => {
+    o.classList.add(i === idx ? 'selected' : 'fade-out');
+  });
+  Object.entries(opt.scores).forEach(([k, v]) => { scores[k] = (scores[k] || 0) + v; });
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < QUESTIONS.length) renderQuestion();
+    else showResult();
+  }, 520);
+}
+
+/* 顯示結果 + T7 核心解鎖動畫 */
+function showResult() {
+  const topKey = Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+  const r = RESULTS[topKey];
+
+  document.getElementById('r-type').textContent     = r.type;
+  document.getElementById('r-subtitle').textContent = r.subtitle;
+  document.getElementById('r-desc').textContent     = r.desc;
+  document.getElementById('progress-fill').style.width = '100%';
+
+  if (r.cta) {
+    document.getElementById('result-cta').style.display = 'block';
+    document.getElementById('r-cta-text').textContent   = r.cta;
+  }
+
+  showScreen('screen-result');
+
+  /* T7：觸發核心解鎖，文字延遲顯示 */
+  setTimeout(() => {
+    const wrap = document.getElementById('core-wrap');
+    wrap.classList.remove('is-unlocking');
+    void wrap.offsetWidth; /* 強制 reflow 使動畫重設 */
+    wrap.classList.add('is-unlocking');
+    setTimeout(() => {
+      document.getElementById('result-text-block').classList.add('visible');
+    }, 1100);
+  }, 400);
+}
+
+/* 動作 */
+function retryQuiz() {
+  document.getElementById('result-text-block').classList.remove('visible');
+  document.getElementById('core-wrap').classList.remove('is-unlocking');
+  showScreen('screen-start');
+}
+function shareResult() {
+  const type = document.getElementById('r-type').textContent;
+  if (navigator.share) {
+    navigator.share({ title: 'Mori 測驗結果', text: '我的「不夠好」根源是「' + type + '」', url: location.href });
+  } else {
+    navigator.clipboard.writeText(location.href).then(() => alert('連結已複製'));
+  }
+}
+function submitEmail() {
+  const email = document.getElementById('email-input').value;
+  if (!email) return;
+  alert('謝謝！我會寄給你：' + email);
+}
+
+/* Preloader + 游標 + 粒子 */
+window.addEventListener('DOMContentLoaded', () => {
+  const lL = document.getElementById('line-l');
+  const lR = document.getElementById('line-r');
+  const pt = document.getElementById('pre-text');
+
+  setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
+  setTimeout(() => { pt.classList.add('ready'); pt.textContent = 'Enter'; }, 1600);
+  pt.addEventListener('click', () => {
+    if (!pt.classList.contains('ready')) return;
+    document.getElementById('preloader').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('preloader').style.display = 'none';
+      document.getElementById('site').style.opacity = '1';
+    }, 600);
+  });
+
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function tick(){ rx+=(mx-rx)*.18; ry+=(my-ry)*.18;
+    cur.style.left=mx+'px'; cur.style.top=my+'px';
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(tick); })();
+  document.querySelectorAll('button,a').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+
+  MoriParticles.init('quiz');
+});
+</script>
+</body>
+</html>
