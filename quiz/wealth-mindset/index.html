@@ -165,6 +165,20 @@
   font-family: var(--font-ui); transition: border-color .3s, color .3s;
 }
 .btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+/* ── 副業意象調查門 ── */
+.survey-type-teaser { text-align: center; margin-bottom: 28px; }
+.survey-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.survey-type-name { font-size: clamp(24px,5vw,34px); font-weight: 900; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.survey-type-brief { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.survey-divider { text-align: center; font-size: 11px; letter-spacing: .1em; color: var(--muted); margin: 24px 0 20px; }
+.survey-group { margin-bottom: 24px; }
+.survey-q { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.5; }
+.survey-opts { display: flex; flex-direction: column; gap: 8px; }
+.survey-opt { background: rgba(28,28,42,.6); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-family: var(--font-ui); font-size: 13px; color: var(--muted); cursor: none; text-align: left; transition: border-color .2s, color .2s; }
+.survey-opt:hover { border-color: rgba(196,169,106,.3); color: var(--text); }
+.survey-opt.picked { border-color: var(--gold); color: var(--text); background: rgba(196,169,106,.08); }
+.btn-unlock { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; font-family: var(--font-ui); font-size: 15px; font-weight: 900; border: none; border-radius: 100px; cursor: none; margin-top: 8px; opacity: .35; pointer-events: none; transition: opacity .25s; }
+.btn-unlock:not([disabled]) { opacity: 1; pointer-events: auto; }
 
 /* ── 結果畫面 ── */
 .result-eyebrow {
@@ -309,6 +323,44 @@
       <div class="quiz-nav">
         <button class="btn-prev-q" id="btnPrev" onclick="prevQ()">← 返回首頁</button>
       </div>
+    </div>
+
+    <!-- ── 畫面：副業意象調查 ── -->
+    <div class="screen" id="screen-survey">
+      <div class="survey-type-teaser">
+        <p class="survey-eyebrow">你的結果出來了</p>
+        <h2 class="survey-type-name" id="s-type-name"></h2>
+        <p class="survey-type-brief" id="s-type-brief"></p>
+      </div>
+      <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的分析</div>
+      <div class="survey-group">
+        <p class="survey-q">你目前的副業狀態是？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">還沒有任何嘗試，但很想開始</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">有想法但一直沒有行動</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">嘗試了一些，還沒有穩定收入</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">已有穩定副業收入</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你最想靠副業實現什麼？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">每月多 1-2 萬，補充主業收入</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">達到財務自由，完全靠副業生活</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">做有意義的事，不只為了錢</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">建立一個可規模化的一人事業</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你每天能投入副業的時間大約是？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">1 小時以內</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">1–2 小時</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">3 小時以上</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">可以全力投入</button>
+        </div>
+      </div>
+      <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看完整分析 →</button>
     </div>
 
     <!-- 結果畫面 -->
@@ -511,6 +563,7 @@ let currentQ = 0;
 let answersHistory = [];
 const scores = {};
 let currentResultKey = null;
+let surveyAnswers = { 1: '', 2: '', 3: '' };
 
 /* ── MailerLite 串接設定 ── */
 /* 本機預覽無效，需在 HTTPS 真實環境才能運作 */
@@ -535,6 +588,7 @@ function showScreen(id) {
 function startQuiz() {
   currentQ = 0;
   answersHistory = [];
+  surveyAnswers = { 1: '', 2: '', 3: '' };
   Object.keys(scores).forEach(k => { scores[k] = 0; });
   showScreen('screen-quiz');
   setTimeout(renderQuestion, 300);
@@ -604,21 +658,36 @@ function showResult() {
   const topKey = Object.entries(computed).sort((a,b) => b[1]-a[1])[0][0];
   currentResultKey = topKey;
   const r = RESULTS[topKey];
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('s-type-name').textContent  = r.type;
+  document.getElementById('s-type-brief').textContent = r.subtitle;
+  surveyAnswers = { 1: '', 2: '', 3: '' };
+  document.getElementById('btnUnlock').disabled = true;
+  showScreen('screen-survey');
+}
 
+/* ── 副業意象調查門 ── */
+function surveyPick(q, val, btn) {
+  surveyAnswers[q] = val;
+  btn.closest('.survey-group').querySelectorAll('.survey-opt').forEach(b => b.classList.remove('picked'));
+  btn.classList.add('picked');
+  if (surveyAnswers[1] && surveyAnswers[2] && surveyAnswers[3]) {
+    document.getElementById('btnUnlock').disabled = false;
+  }
+}
+function unlockResult() {
+  renderFullResult();
+  showScreen('screen-result');
+}
+function renderFullResult() {
+  const r = RESULTS[currentResultKey];
   document.getElementById('r-type').textContent     = r.type;
   document.getElementById('r-subtitle').textContent = r.subtitle;
   document.getElementById('r-desc').textContent     = r.desc;
-
-  /* 進度條滿格 */
-  document.getElementById('progress-fill').style.width = '100%';
-
-  /* Email CTA（如果有設定則顯示）*/
   if (r.cta) {
     document.getElementById('result-cta').style.display = 'block';
     document.getElementById('r-cta-text').textContent = r.cta;
   }
-
-  showScreen('screen-result');
 }
 
 /* ── 動作 ── */
