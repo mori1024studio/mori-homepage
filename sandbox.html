@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mori · 粒子沙盒</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#0A0A0F;color:#C8C4B8;font-family:'Noto Sans TC',system-ui,sans-serif}
+#app{display:flex;height:100vh}
+
+/* ── Canvas ── */
+#cw{flex:1;position:relative}
+canvas{width:100%;height:100%;display:block}
+#info{position:absolute;top:14px;left:16px;font-size:9px;letter-spacing:.3em;color:rgba(196,169,106,.28);pointer-events:none;text-transform:uppercase}
+#fps{position:absolute;bottom:14px;left:16px;font-size:10px;color:rgba(196,169,106,.22);pointer-events:none;font-variant-numeric:tabular-nums}
+#hint{position:absolute;bottom:14px;right:300px;font-size:10px;color:rgba(196,169,106,.28);pointer-events:none;letter-spacing:.08em}
+
+/* ── Panel ── */
+#panel{
+  width:280px;flex-shrink:0;background:#0C0C18;
+  border-left:1px solid rgba(196,169,106,.1);
+  overflow-y:auto;display:flex;flex-direction:column;
+}
+#panel::-webkit-scrollbar{width:3px}
+#panel::-webkit-scrollbar-thumb{background:rgba(196,169,106,.15);border-radius:2px}
+
+.ps{padding:13px 14px;border-bottom:1px solid rgba(196,169,106,.07)}
+.pt{font-size:8px;letter-spacing:.38em;color:rgba(196,169,106,.38);text-transform:uppercase;margin-bottom:9px}
+
+/* terrain grid */
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.tbtn{
+  padding:8px 3px 5px;background:rgba(20,20,34,.7);
+  border:1px solid rgba(196,169,106,.07);border-radius:5px;
+  font-size:9px;text-align:center;cursor:pointer;
+  color:rgba(160,142,108,.5);transition:.14s;line-height:1.3;
+}
+.tbtn:hover{border-color:rgba(196,169,106,.22);color:rgba(196,169,106,.75)}
+.tbtn.act{background:rgba(196,169,106,.1);border-color:rgba(196,169,106,.38);color:#C4A96A}
+.te{font-size:15px;display:block;margin-bottom:2px}
+
+/* effect list */
+.elist{display:flex;flex-direction:column;gap:3px}
+.ebtn{
+  padding:6px 10px;background:rgba(20,20,34,.7);
+  border:1px solid rgba(196,169,106,.07);border-radius:4px;
+  font-size:10px;cursor:pointer;color:rgba(160,142,108,.5);
+  transition:.14s;text-align:left;display:flex;align-items:center;gap:7px;
+}
+.ebtn:hover{border-color:rgba(196,169,106,.22);color:rgba(196,169,106,.75)}
+.ebtn.act{background:rgba(196,169,106,.1);border-color:rgba(196,169,106,.38);color:#C4A96A}
+.en{font-size:8px;opacity:.32;min-width:16px;font-variant-numeric:tabular-nums}
+
+/* sliders */
+.srow{margin-bottom:11px}
+.slbl{display:flex;justify-content:space-between;font-size:10px;color:rgba(160,142,108,.65);margin-bottom:5px}
+.sv{color:#C4A96A;font-variant-numeric:tabular-nums}
+input[type=range]{
+  width:100%;-webkit-appearance:none;appearance:none;
+  height:2px;background:rgba(196,169,106,.16);border-radius:1px;outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+  background:#C4A96A;cursor:pointer;box-shadow:0 0 5px rgba(196,169,106,.35);
+}
+
+/* colors */
+.crow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.clbl{font-size:10px;color:rgba(160,142,108,.65);flex:1}
+input[type=color]{
+  width:32px;height:20px;border:1px solid rgba(196,169,106,.22);
+  border-radius:3px;background:none;cursor:pointer;padding:2px;
+}
+
+/* export */
+.xbtn{
+  margin:12px 14px;padding:8px;background:rgba(196,169,106,.07);
+  border:1px solid rgba(196,169,106,.28);border-radius:6px;
+  color:#C4A96A;font-size:10px;cursor:pointer;text-align:center;
+  letter-spacing:.1em;transition:.18s;
+}
+.xbtn:hover{background:rgba(196,169,106,.14)}
+.xbtn:active{background:rgba(196,169,106,.2)}
+
+/* homepage link */
+.hlink{
+  margin:0 14px 12px;padding:7px;background:rgba(28,28,50,.5);
+  border:1px solid rgba(196,169,106,.12);border-radius:6px;
+  color:rgba(196,169,106,.55);font-size:10px;cursor:pointer;text-align:center;
+  letter-spacing:.08em;text-decoration:none;display:block;transition:.18s;
+}
+.hlink:hover{border-color:rgba(196,169,106,.28);color:rgba(196,169,106,.85)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="cw">
+    <canvas id="c"></canvas>
+    <div id="info">Mori · Particle Sandbox</div>
+    <div id="fps">-- fps</div>
+    <div id="hint">捲動以控制飛行進度 · 點選地形/效果即時切換</div>
+  </div>
+  <div id="panel">
+
+    <!-- ── 地形 ── -->
+    <div class="ps">
+      <div class="pt">地形 Terrain</div>
+      <div class="tgrid" id="tgrid"></div>
+    </div>
+
+    <!-- ── 穿越效果 ── -->
+    <div class="ps">
+      <div class="pt">穿越效果 Flight Effect</div>
+      <div class="elist" id="elist"></div>
+    </div>
+
+    <!-- ── 粒子參數 ── -->
+    <div class="ps">
+      <div class="pt">粒子參數 Particle</div>
+      <div id="sliders"></div>
+    </div>
+
+    <!-- ── 顏色 ── -->
+    <div class="ps">
+      <div class="pt">顏色 Color</div>
+      <div class="crow"><span class="clbl">粒子色</span><input type="color" id="cp" value="#C4A96A"></div>
+      <div class="crow"><span class="clbl">霧氣色</span><input type="color" id="cf" value="#090705"></div>
+    </div>
+
+    <button class="xbtn" id="xbtn">📋 複製設定</button>
+    <a class="hlink" href="/">← 回首頁</a>
+  </div>
+</div>
+
+<script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+<script>
+/* ══════════════════════════════════════
+   SIMPLEX NOISE 2D
+══════════════════════════════════════ */
+const noise2D=(()=>{
+  const F2=.5*(Math.sqrt(3)-1),G2=(3-Math.sqrt(3))/6;
+  const p0=new Uint8Array(256);for(let i=0;i<256;i++)p0[i]=i;
+  for(let i=255;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p0[i],p0[j]]=[p0[j],p0[i]];}
+  const pm=new Uint8Array(512);for(let i=0;i<512;i++)pm[i]=p0[i&255];
+  const G=[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
+  const dot=(g,x,y)=>g[0]*x+g[1]*y;
+  return(xi,yi)=>{
+    const s=(xi+yi)*F2,ii=Math.floor(xi+s),jj=Math.floor(yi+s);
+    const t2=(ii+jj)*G2,x0=xi-(ii-t2),y0=yi-(jj-t2);
+    const i1=x0>y0?1:0,j1=x0>y0?0:1;
+    const x1=x0-i1+G2,y1=y0-j1+G2,x2=x0-1+2*G2,y2=y0-1+2*G2;
+    const g0=pm[(ii+pm[jj&255])&255]&7,g1=pm[(ii+i1+pm[(jj+j1)&255])&255]&7,g2=pm[(ii+1+pm[(jj+1)&255])&255]&7;
+    let n=0;
+    let a=.5-x0*x0-y0*y0;if(a>0)n+=a*a*a*a*dot(G[g0],x0,y0);
+    let b=.5-x1*x1-y1*y1;if(b>0)n+=b*b*b*b*dot(G[g1],x1,y1);
+    let c=.5-x2*x2-y2*y2;if(c>0)n+=c*c*c*c*dot(G[g2],x2,y2);
+    return 70*n;
+  };
+})();
+
+/* ══════════════════════════════════════
+   TERRAIN GENERATORS
+   每個 fn(N, bx, by, bz) 填入 Float32Array
+   z 範圍：-1050 ~ 450
+══════════════════════════════════════ */
+
+/* 01 峽谷 — 高牆、地板、散落山峰 */
+function genCanyon(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const r=Math.random(),z=Math.random()*1500-1050;let x,y;
+    if(r<.30){x=-(110+Math.random()*210);y=-100+Math.random()*500;}
+    else if(r<.60){x=110+Math.random()*210;y=-100+Math.random()*500;}
+    else if(r<.78){x=(Math.random()-.5)*600;y=-200+Math.random()*110;}
+    else if(r<.90){x=(Math.random()-.5)*500+(Math.random()>.5?200:-200);y=130+Math.random()*320;}
+    else{x=(Math.random()-.5)*800;y=noise2D(x*.004,z*.004)*20;}
+    bx[i]=x;by[i]=y;bz[i]=z;
+  }
+}
+
+/* 02 山峰 — 多峰簇、谷底、天空散落 */
+function genMountain(N,bx,by,bz){
+  const peaks=[];
+  for(let p=0;p<8;p++)peaks.push({x:(Math.random()-.5)*280,r:28+Math.random()*55,h:180+Math.random()*320});
+  for(let i=0;i<N;i++){
+    const z=Math.random()*1500-1050,r=Math.random();let x,y;
+    if(r<.52){
+      const pk=peaks[i%peaks.length];
+      const ang=Math.random()*Math.PI*2,dr=pk.r*(0.3+Math.random()*0.7);
+      x=pk.x+Math.cos(ang)*dr;
+      y=-150+Math.random()*(pk.h+150);
+    }else if(r<.80){x=(Math.random()-.5)*700;y=-220+Math.random()*80;}
+    else{x=(Math.random()-.5)*1000;y=250+Math.random()*380;}
+    bx[i]=x;by[i]=y;bz[i]=z;
+  }
+}
+
+/* 03 峽灣 — U 型曲面、底部密集、頂部開放 */
+function genFjord(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const z=Math.random()*1500-1050,r=Math.random();let x,y;
+    if(r<.35){
+      y=-50+Math.random()*500;
+      const w=Math.pow(Math.max(0,(y+50)/500),1.4);
+      x=-(55+w*240)*(1+(Math.random()-.5)*.08);
+    }else if(r<.70){
+      y=-50+Math.random()*500;
+      const w=Math.pow(Math.max(0,(y+50)/500),1.4);
+      x=(55+w*240)*(1+(Math.random()-.5)*.08);
+    }else if(r<.88){x=(Math.random()-.5)*180;y=-170+Math.random()*120;}
+    else{x=(Math.random()-.5)*800;y=320+Math.random()*200;}
+    bx[i]=x;by[i]=y;bz[i]=z;
+  }
+}
+
+/* 04 喀斯特 — 不規則石柱群（桂林風格）*/
+function genKarst(N,bx,by,bz){
+  const pls=[];
+  for(let p=0;p<60;p++)pls.push({x:(Math.random()-.5)*680,z:Math.random()*1500-1050,r:7+Math.random()*38,h:60+Math.random()*480});
+  for(let i=0;i<N;i++){
+    const pk=pls[Math.floor(Math.random()*pls.length)];
+    const ang=Math.random()*Math.PI*2,dr=Math.random()*pk.r;
+    const jz=Math.random()<.85?pk.z+(Math.random()-.5)*25:Math.random()*1500-1050;
+    bx[i]=pk.x+Math.cos(ang)*dr;
+    by[i]=-220+Math.random()*(pk.h+220);
+    bz[i]=jz;
+  }
+}
+
+/* 05 海蝕洞 — 橢圓拱形隧道截面 */
+function genSeaCave(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const z=Math.random()*1500-1050,r=Math.random();let x,y;
+    if(r<.62){
+      const ang=Math.random()*Math.PI*2;
+      const rx=115+Math.random()*28,ry=85+Math.random()*22;
+      const jitter=(Math.random()-.5)*.14;
+      x=Math.cos(ang)*rx*(1+jitter);
+      y=35+Math.sin(ang)*ry*(1+jitter);
+    }else if(r<.84){x=(Math.random()-.5)*320;y=-70+Math.random()*55;}
+    else{x=(Math.random()-.5)*250;y=120+Math.random()*25;}
+    bx[i]=x;by[i]=y;bz[i]=z;
+  }
+}
+
+/* 06 冰川裂縫 — 極窄垂直深縫 */
+function genGlacier(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const z=Math.random()*1500-1050,r=Math.random();let x,y;
+    const dent=noise2D(z*.008,0)*15;// 壁面起伏
+    if(r<.38){x=-(16+Math.random()*48)+dent;y=-350+Math.random()*750;}
+    else if(r<.76){x=(16+Math.random()*48)+dent;y=-350+Math.random()*750;}
+    else if(r<.90){x=(Math.random()-.5)*30;y=-350+Math.random()*60;}
+    else{x=(Math.random()-.5)*550;y=280+Math.random()*220;}
+    bx[i]=x;by[i]=y;bz[i]=z;
+  }
+}
+
+/* 07 沙漠沙丘 — 噪聲正弦丘陵 */
+function genDunes(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const z=Math.random()*1500-1050,x=(Math.random()-.5)*900;
+    const h=noise2D(x*.005,z*.005)*200+noise2D(x*.016,z*.016)*70;
+    const r=Math.random();let y;
+    if(r<.68)y=h+(Math.random()-.5)*35;
+    else if(r<.88)y=h-70+Math.random()*70;
+    else y=h+100+Math.random()*140;
+    bx[i]=x;by[i]=y;bz[i]=z;
+  }
+}
+
+/* 08 深海溝 — V 形下沉，邊緣密集 */
+function genTrench(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const z=Math.random()*1500-1050,r=Math.random();let x,y;
+    if(r<.36){x=-(90+Math.random()*220);y=(-Math.abs(x))*1.4-80+Math.random()*80;}
+    else if(r<.72){x=90+Math.random()*220;y=(-x)*1.4-80+Math.random()*80;}
+    else if(r<.85){x=(Math.random()-.5)*80;y=-480+Math.random()*70;}
+    else{x=(Math.random()-.5)*900;y=80+Math.random()*220;}
+    bx[i]=x;by[i]=y;bz[i]=z;
+  }
+}
+
+/* 09 火山口 — 碗形，唇緣 + 內壁 + 噴發柱 */
+function genCrater(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const z=Math.random()*1500-1050,r=Math.random();let x,y;
+    if(r<.44){
+      const ang=Math.random()*Math.PI*2,h=Math.random();
+      const rad=45+h*185;
+      x=Math.cos(ang)*rad*(1+(Math.random()-.5)*.09);
+      y=-120+h*300;
+    }else if(r<.68){
+      const ang=Math.random()*Math.PI*2,rad=185+Math.random()*45;
+      x=Math.cos(ang)*rad;y=165+Math.random()*70;
+    }else if(r<.82){
+      const ang=Math.random()*Math.PI*2,rad=Math.random()*48;
+      x=Math.cos(ang)*rad;y=-120+Math.random()*35;
+    }else{x=(Math.random()-.5)*140;y=220+Math.random()*350;}
+    bx[i]=x;by[i]=y;bz[i]=z;
+  }
+}
+
+/* 10 熔岩隧道 — 圓筒形管壁 */
+function genLavaTube(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const z=Math.random()*1500-1050;
+    const ang=Math.random()*Math.PI*2;
+    const r=85+noise2D(ang*2.5,z*.012)*22+Math.random()*18;
+    bx[i]=Math.cos(ang)*r;by[i]=Math.sin(ang)*r;bz[i]=z;
+  }
+}
+
+/* 11 星雲 — 3D 體積噪聲雲，無固定地形 */
+function genNebula(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const z=Math.random()*1500-1050,x=(Math.random()-.5)*800,y=(Math.random()-.5)*600;
+    const n1=noise2D(x*.005+z*.002,y*.007),n2=noise2D(x*.012+z*.006,y*.015);
+    bx[i]=x+n1*55;by[i]=y+n2*38;bz[i]=z;
+  }
+}
+
+/* 12 竹林 — 垂直莖幹叢 */
+function genBamboo(N,bx,by,bz){
+  const stems=[];for(let s=0;s<140;s++)stems.push({x:(Math.random()-.5)*650,z:Math.random()*1500-1050,r:3+Math.random()*9});
+  for(let i=0;i<N;i++){
+    const st=stems[Math.floor(Math.random()*stems.length)];
+    const ang=Math.random()*Math.PI*2,dr=Math.random()*st.r;
+    bx[i]=st.x+Math.cos(ang)*dr;
+    by[i]=-220+Math.random()*750;
+    bz[i]=st.z+(Math.random()-.5)*18;
+  }
+}
+
+const TERRAINS=[
+  {id:'canyon',   name:'峽谷',   emoji:'🏔', fn:genCanyon,   hint:'峽谷飛越：兩側高牆，深谷地板'},
+  {id:'mountain', name:'山峰',   emoji:'⛰', fn:genMountain, hint:'山峰穿越：多峰簇，天空散落'},
+  {id:'fjord',    name:'峽灣',   emoji:'🌊', fn:genFjord,    hint:'峽灣：U 型曲面，底部緊縮'},
+  {id:'karst',    name:'喀斯特', emoji:'🗿', fn:genKarst,    hint:'喀斯特：桂林式不規則石柱群'},
+  {id:'seacave',  name:'海蝕洞', emoji:'🕳', fn:genSeaCave,  hint:'海蝕洞：橢圓拱形隧道截面'},
+  {id:'glacier',  name:'冰川',   emoji:'🧊', fn:genGlacier,  hint:'冰川裂縫：極窄垂直深縫'},
+  {id:'dunes',    name:'沙丘',   emoji:'🏜', fn:genDunes,    hint:'沙漠沙丘：噪聲丘陵起伏'},
+  {id:'trench',   name:'海溝',   emoji:'🌀', fn:genTrench,   hint:'深海溝：V 形下沉，底部幽暗'},
+  {id:'crater',   name:'火山口', emoji:'🌋', fn:genCrater,   hint:'火山口：碗形唇緣，噴發柱'},
+  {id:'lavatube', name:'熔岩隧', emoji:'🔥', fn:genLavaTube, hint:'熔岩隧道：圓筒管壁穿越'},
+  {id:'nebula',   name:'星雲',   emoji:'✨', fn:genNebula,   hint:'星雲：三維體積雲，無固定地形'},
+  {id:'bamboo',   name:'竹林',   emoji:'🎋', fn:genBamboo,   hint:'竹林：垂直莖幹密林'},
+];
+
+/* ══════════════════════════════════════
+   CAMERA PATH GENERATORS
+   fn(t, rollMult) → {cx,cy,cz,tx,ty,tz,roll}
+   t: 0→1 循環，z 從 350 飛到 -1000
+══════════════════════════════════════ */
+const Z0=350,ZN=-1000;
+
+/* 01 直線穿越 */
+function pathStraight(t,rm){
+  const z=Z0+t*(ZN-Z0);
+  return{cx:0,cy:20,cz:z,tx:0,ty:0,tz:z-300,roll:0};
+}
+/* 02 S 型蛇行 */
+function pathSerpentine(t,rm){
+  const z=Z0+t*(ZN-Z0),w=Math.sin(t*Math.PI*5)*100;
+  return{cx:w,cy:0,cz:z,tx:w*.65,ty:0,tz:z-280,roll:-w*.0042*rm};
+}
+/* 03 螺旋下降 */
+function pathSpiralDown(t,rm){
+  const z=Z0+t*(ZN-Z0),ang=t*Math.PI*5;
+  const cx=Math.cos(ang)*95,cy=-t*220+50;
+  return{cx,cy,cz:z,tx:Math.cos(ang+.3)*65,ty:cy-25,tz:z-260,roll:Math.cos(ang)*.52*rm};
+}
+/* 04 俯衝急拉 */
+function pathNosedive(t,rm){
+  const z=Z0+t*(ZN-Z0);
+  const cy=20-Math.sin(t*Math.PI*3)*160;
+  return{cx:0,cy,cz:z,tx:0,ty:cy+Math.sin((t+.02)*Math.PI*3)*(-120),tz:z-280,roll:Math.sin(t*Math.PI*6)*.3*rm};
+}
+/* 05 側滾翻轉 */
+function pathRollBank(t,rm){
+  const z=Z0+t*(ZN-Z0),w=Math.sin(t*Math.PI*6)*90;
+  return{cx:w,cy:10,cz:z,tx:w*.5,ty:0,tz:z-280,roll:-w*.0078*rm};
+}
+/* 06 過山車 */
+function pathCoaster(t,rm){
+  const z=Z0+t*(ZN-Z0);
+  const cy=Math.sin(t*Math.PI*4.5)*190-20;
+  const ty=Math.sin((t+.04)*Math.PI*4.5)*190-20;
+  return{cx:0,cy,cz:z,tx:0,ty,tz:z-250,roll:Math.sin(t*Math.PI*9)*.22*rm};
+}
+/* 07 低空掠地 */
+function pathLowFly(t,rm){
+  const z=Z0+t*(ZN-Z0);
+  const cy=-160+Math.sin(t*Math.PI*4)*30;
+  const cx=Math.sin(t*Math.PI*3)*60;
+  return{cx,cy,cz:z,tx:cx*.7,ty:cy+15,tz:z-280,roll:-cx*.004*rm};
+}
+/* 08 高空鳥瞰 */
+function pathOverhead(t,rm){
+  const z=Z0+t*(ZN-Z0),cx=Math.sin(t*Math.PI*3)*130;
+  return{cx,cy:400,cz:z,tx:cx*.25,ty:0,tz:z-180,roll:Math.sin(t*Math.PI*3)*.18*rm};
+}
+/* 09 穿洞鑽隙 */
+function pathWeave(t,rm){
+  const z=Z0+t*(ZN-Z0),f=t*Math.PI*10;
+  const cx=Math.sin(f)*140,cy=Math.cos(f*.4)*70;
+  return{cx,cy,cz:z,tx:Math.sin(f+.12)*140,ty:cy,tz:z-240,roll:-Math.sin(f)*.65*rm};
+}
+/* 10 螺旋攀升 */
+function pathSpiralUp(t,rm){
+  const z=Z0+t*(ZN-Z0),ang=t*Math.PI*5;
+  const cx=Math.cos(ang)*95,cy=t*230-100;
+  return{cx,cy,cz:z,tx:Math.cos(ang+.3)*65,ty:cy+25,tz:z-260,roll:-Math.cos(ang)*.52*rm};
+}
+
+const EFFECTS=[
+  {id:'straight',   name:'直線穿越', fn:pathStraight},
+  {id:'serpentine', name:'S型蛇行',  fn:pathSerpentine},
+  {id:'spiral_dn',  name:'螺旋下降', fn:pathSpiralDown},
+  {id:'nosedive',   name:'俯衝急拉', fn:pathNosedive},
+  {id:'rollbank',   name:'側滾翻轉', fn:pathRollBank},
+  {id:'coaster',    name:'過山車',   fn:pathCoaster},
+  {id:'lowfly',     name:'低空掠地', fn:pathLowFly},
+  {id:'overhead',   name:'高空鳥瞰', fn:pathOverhead},
+  {id:'weave',      name:'穿洞鑽隙', fn:pathWeave},
+  {id:'spiral_up',  name:'螺旋攀升', fn:pathSpiralUp},
+];
+
+/* ══════════════════════════════════════
+   LIVE PARAMS
+══════════════════════════════════════ */
+const P={
+  count:18000, size:5.5, speed:50,
+  fog:0.0006, roll:1.0, float:3.5,
+};
+const MAX=40000;
+
+/* ══════════════════════════════════════
+   THREE.JS SETUP
+══════════════════════════════════════ */
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setClearColor(0x090705);
+
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x090705,P.fog);
+
+const cam=new THREE.PerspectiveCamera(72,2,1,3000);
+
+// Buffers (allocate for MAX, drawRange limits render count)
+const bX=new Float32Array(MAX),bY=new Float32Array(MAX),bZ=new Float32Array(MAX);
+const tX=new Float32Array(MAX),tY=new Float32Array(MAX),tZ=new Float32Array(MAX);
+const phi=new Float32Array(MAX);
+for(let i=0;i<MAX;i++) phi[i]=Math.random()*Math.PI*2;
+
+const posBuf=new Float32Array(MAX*3);
+const geo=new THREE.BufferGeometry();
+geo.setAttribute('position',new THREE.BufferAttribute(posBuf,3));
+geo.setDrawRange(0,P.count);
+
+const mat=new THREE.PointsMaterial({
+  size:P.size,sizeAttenuation:true,transparent:true,
+  opacity:.88,blending:THREE.AdditiveBlending,depthWrite:false,
+  color:new THREE.Color('#C4A96A'),
+});
+scene.add(new THREE.Points(geo,mat));
+
+// State
+let curTerrain=0,curEffect=0,camT=0,lerping=false;
+
+/* ══════════════════════════════════════
+   TERRAIN APPLY
+══════════════════════════════════════ */
+function applyTerrain(idx,withLerp){
+  TERRAINS[idx].fn(MAX,tX,tY,tZ);
+  if(withLerp){lerping=true;}
+  else{
+    for(let i=0;i<MAX;i++){bX[i]=tX[i];bY[i]=tY[i];bZ[i]=tZ[i];}
+    lerping=false;
+  }
+  curTerrain=idx;
+  refreshTBtns();
+  document.getElementById('hint').textContent=TERRAINS[idx].hint;
+}
+
+/* ══════════════════════════════════════
+   RESIZE
+══════════════════════════════════════ */
+function resize(){
+  const cw=document.getElementById('cw');
+  const w=cw.clientWidth,h=cw.clientHeight;
+  renderer.setSize(w,h,false);
+  cam.aspect=w/h;cam.updateProjectionMatrix();
+}
+window.addEventListener('resize',resize);resize();
+
+/* ══════════════════════════════════════
+   ANIMATION LOOP
+══════════════════════════════════════ */
+let last=0,fc=0,ft=0;
+
+function animate(now){
+  requestAnimationFrame(animate);
+  const dt=Math.min((now-last)/1000,.05);last=now;
+
+  // FPS display
+  fc++;ft+=dt;
+  if(ft>=1){document.getElementById('fps').textContent=`${Math.round(fc/ft)} fps`;fc=0;ft=0;}
+
+  const time=now*.001;
+
+  // Advance camera
+  camT+=P.speed*0.000030;
+  if(camT>=1) camT-=1;
+
+  const e=EFFECTS[curEffect].fn(camT,P.roll);
+  cam.position.set(e.cx,e.cy,e.cz);
+  cam.up.set(Math.sin(e.roll),Math.cos(e.roll),0);
+  cam.lookAt(e.tx,e.ty,e.tz);
+
+  // Lerp terrain transition
+  if(lerping){
+    let done=true;
+    for(let i=0;i<MAX;i++){
+      const dx=tX[i]-bX[i],dy=tY[i]-bY[i],dz=tZ[i]-bZ[i];
+      if(Math.abs(dx)+Math.abs(dy)+Math.abs(dz)>0.8) done=false;
+      bX[i]+=dx*.048;bY[i]+=dy*.048;bZ[i]+=dz*.048;
+    }
+    if(done) lerping=false;
+  }
+
+  // Write positions + float
+  const N=P.count,pa=geo.attributes.position.array;
+  for(let i=0;i<N;i++){
+    pa[i*3  ]=bX[i];
+    pa[i*3+1]=bY[i]+Math.sin(time*.7+phi[i])*P.float;
+    pa[i*3+2]=bZ[i];
+  }
+  geo.attributes.position.needsUpdate=true;
+  renderer.render(scene,cam);
+}
+
+/* ══════════════════════════════════════
+   UI BUILD
+══════════════════════════════════════ */
+
+// — Terrain buttons —
+const tgrid=document.getElementById('tgrid');
+function refreshTBtns(){tgrid.querySelectorAll('.tbtn').forEach((b,i)=>b.classList.toggle('act',i===curTerrain));}
+TERRAINS.forEach((t,i)=>{
+  const b=document.createElement('button');b.className='tbtn';
+  b.innerHTML=`<span class="te">${t.emoji}</span>${t.name}`;
+  b.onclick=()=>applyTerrain(i,true);
+  tgrid.appendChild(b);
+});
+
+// — Effect buttons —
+const elist=document.getElementById('elist');
+function refreshEBtns(){elist.querySelectorAll('.ebtn').forEach((b,i)=>b.classList.toggle('act',i===curEffect));}
+EFFECTS.forEach((e,i)=>{
+  const b=document.createElement('button');b.className='ebtn';
+  b.innerHTML=`<span class="en">${String(i+1).padStart(2,'0')}</span>${e.name}`;
+  b.onclick=()=>{curEffect=i;refreshEBtns();};
+  elist.appendChild(b);
+});
+
+// — Sliders —
+const SCONF=[
+  {k:'count', lbl:'粒子數',    min:2000, max:40000,step:1000, fmt:v=>(v/1000).toFixed(0)+'k',
+   cb:()=>{geo.setDrawRange(0,P.count);applyTerrain(curTerrain,false);}},
+  {k:'size',  lbl:'粒子大小',  min:1,    max:15,   step:.5,   fmt:v=>v.toFixed(1),
+   cb:()=>{mat.size=P.size;}},
+  {k:'speed', lbl:'飛行速度',  min:0,    max:200,  step:5,    fmt:v=>v+'%',
+   cb:()=>{}},
+  {k:'fog',   lbl:'霧氣濃度',  min:0,    max:.005, step:.0001,fmt:v=>(v*1000).toFixed(1),
+   cb:()=>{scene.fog.density=P.fog;}},
+  {k:'roll',  lbl:'翻轉強度',  min:0,    max:3,    step:.1,   fmt:v=>v.toFixed(1),
+   cb:()=>{}},
+  {k:'float', lbl:'漂浮幅度',  min:0,    max:18,   step:.5,   fmt:v=>v.toFixed(1),
+   cb:()=>{}},
+];
+const sldiv=document.getElementById('sliders');
+SCONF.forEach(s=>{
+  const row=document.createElement('div');row.className='srow';
+  const lbl=document.createElement('div');lbl.className='slbl';
+  lbl.innerHTML=`<span>${s.lbl}</span><span class="sv" id="sv_${s.k}">${s.fmt(P[s.k])}</span>`;
+  const inp=document.createElement('input');
+  inp.type='range';inp.min=s.min;inp.max=s.max;inp.step=s.step;inp.value=P[s.k];
+  inp.oninput=()=>{
+    P[s.k]=Number(inp.value);
+    document.getElementById('sv_'+s.k).textContent=s.fmt(P[s.k]);
+    s.cb();
+  };
+  row.appendChild(lbl);row.appendChild(inp);
+  sldiv.appendChild(row);
+});
+
+// — Color pickers —
+document.getElementById('cp').oninput=e=>mat.color.set(e.target.value);
+document.getElementById('cf').oninput=e=>{
+  const c=new THREE.Color(e.target.value);
+  scene.fog.color.copy(c);renderer.setClearColor(c);
+};
+
+// — Export —
+document.getElementById('xbtn').onclick=()=>{
+  const cfg={terrain:TERRAINS[curTerrain].id,effect:EFFECTS[curEffect].id,...P};
+  const txt=JSON.stringify(cfg,null,2);
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.getElementById('xbtn');b.textContent='✅ 已複製！';
+    setTimeout(()=>b.textContent='📋 複製設定',1800);
+  }).catch(()=>prompt('複製此設定：',txt));
+};
+
+/* ══════════════════════════════════════
+   KEYBOARD SHORTCUTS
+══════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'){curEffect=(curEffect+1)%EFFECTS.length;refreshEBtns();}
+  if(e.key==='ArrowLeft'){curEffect=(curEffect+EFFECTS.length-1)%EFFECTS.length;refreshEBtns();}
+  if(e.key==='ArrowDown'){applyTerrain((curTerrain+1)%TERRAINS.length,true);}
+  if(e.key==='ArrowUp'){applyTerrain((curTerrain+TERRAINS.length-1)%TERRAINS.length,true);}
+});
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+refreshTBtns();
+refreshEBtns();
+applyTerrain(0,false);
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
