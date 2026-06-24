@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- v1.0 | 2026-06-24 | 先問為什麼 T7 核心解鎖 5層 -->
+<title>MORI — 你真正為了什麼在努力？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+/* ══ 測驗頁專屬樣式 ══════════════════════════════════════════ */
+
+#site { min-height: 100vh; display: flex; flex-direction: column; }
+.quiz-main {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 100px 24px 80px;
+}
+.screen {
+  width: 100%; max-width: 640px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+  pointer-events: none; position: absolute;
+}
+.screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
+
+.start-eyebrow {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 9px;
+  letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px;
+  text-transform: uppercase;
+}
+.start-title {
+  font-family: var(--font-display); font-weight: 900; font-size: 52px;
+  background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1.15; margin-bottom: 28px;
+}
+.start-desc {
+  font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2;
+  color: rgba(237,232,223,.55); margin-bottom: 48px;
+}
+.start-meta {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em;
+  color: rgba(154,140,120,.4); margin-bottom: 48px;
+}
+.btn-start {
+  display: inline-flex; align-items: center; gap: 16px;
+  font-family: var(--font-body); font-size: 16px; letter-spacing: .25em; color: var(--gold);
+  background: transparent; border: 1px solid rgba(196,169,106,.25);
+  padding: 14px 36px; cursor: none; transition: all .3s;
+}
+.btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
+.btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
+.btn-start:hover .btn-start-arrow { width: 44px; }
+
+.progress-wrap { margin-bottom: 40px; }
+.progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
+.progress-total { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .3em; color: rgba(154,140,120,.45); text-transform: uppercase; }
+.progress-bar-bg { height: 1px; background: rgba(196,169,106,.1); position: relative; overflow: visible; }
+.progress-bar-fill { height: 1px; background: var(--gold); transition: width .6s cubic-bezier(.4,0,.2,1); position: relative; }
+.progress-bar-fill::after { content: ''; position: absolute; right: -3px; top: -3px; width: 7px; height: 7px; background: var(--gold); border-radius: 50%; }
+
+.question-tag { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px; }
+.question-text { font-family: 'LXGW WenKai TC', serif; font-size: 24px; line-height: 1.75; color: var(--text); margin-bottom: 36px; }
+
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+  display: flex; align-items: flex-start; gap: 16px; padding: 14px 18px;
+  background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1);
+  cursor: none; transition: all .25s; position: relative; overflow: hidden;
+}
+.option::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform .3s; }
+.option:hover { border-color: rgba(196,169,106,.28); background: rgba(16,12,8,.85); }
+.option:hover::before { transform: scaleY(1); }
+.option.selected { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); pointer-events: none; }
+.option.selected::before { transform: scaleY(1); }
+.option.fade-out { opacity: .25; transform: translateX(-6px); }
+.option-key { font-family: 'Kaushan Script', cursive; font-size: 18px; color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px; transition: color .25s; }
+.option:hover .option-key, .option.selected .option-key { color: var(--gold); }
+.option-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7; color: rgba(237,232,223,.7); transition: color .25s; }
+.option:hover .option-text, .option.selected .option-text { color: var(--text); }
+
+.quiz-nav { display: flex; align-items: center; margin-top: 24px; }
+.btn-prev-q {
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 100px; padding: 10px 22px;
+  font-size: 13px; color: var(--muted); cursor: none;
+  font-family: var(--font-ui); transition: border-color .3s, color .3s;
+}
+.btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+
+/* ── 調查門 ── */
+.survey-type-teaser { text-align: center; margin-bottom: 28px; }
+.survey-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.survey-type-name { font-size: clamp(24px,5vw,34px); font-weight: 900; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.survey-type-brief { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.survey-divider { text-align: center; font-size: 11px; letter-spacing: .1em; color: var(--muted); margin: 24px 0 20px; }
+.survey-group { margin-bottom: 24px; }
+.survey-q { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.5; }
+.survey-opts { display: flex; flex-direction: column; gap: 8px; }
+.survey-opt { background: rgba(28,28,42,.6); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-family: var(--font-ui); font-size: 13px; color: var(--muted); cursor: none; text-align: left; transition: border-color .2s, color .2s; }
+.survey-opt:hover { border-color: rgba(196,169,106,.3); color: var(--text); }
+.survey-opt.picked { border-color: var(--gold); color: var(--text); background: rgba(196,169,106,.08); }
+.btn-unlock { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; font-family: var(--font-ui); font-size: 15px; font-weight: 900; border: none; border-radius: 100px; cursor: none; margin-top: 8px; opacity: .35; pointer-events: none; transition: opacity .25s; }
+.btn-unlock:not([disabled]) { opacity: 1; pointer-events: auto; }
+
+/* ── 結果畫面 ── */
+.result-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 16px; }
+.result-type { font-family: var(--font-display); font-weight: 900; font-size: 56px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 8px; }
+.result-subtitle { font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em; color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 32px; }
+.result-divider { width: 48px; height: 1px; background: rgba(196,169,106,.25); margin-bottom: 32px; }
+.result-desc { font-family: 'LXGW WenKai TC', serif; font-size: 17px; line-height: 2; color: rgba(237,232,223,.65); margin-bottom: 40px; }
+.btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+.btn-sec-row { display: flex; gap: 10px; }
+.btn-line { display: flex; align-items: center; justify-content: center; gap: 10px; background: #06C755; color: #fff; border: none; border-radius: 100px; padding: 16px; font-size: 15px; font-weight: 900; cursor: none; font-family: var(--font-ui); transition: opacity .2s; width: 100%; }
+.btn-line:hover { opacity: .88; }
+.btn-ghost-sec { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1.5px solid var(--border); border-radius: 100px; padding: 13px 16px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .2s, color .2s; }
+.btn-ghost-sec:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+.btn-ghost-full { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1.5px solid var(--border); border-radius: 100px; padding: 13px 16px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .2s, color .2s; }
+.btn-ghost-full:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+.btn-ghost-full:disabled { opacity: .4; pointer-events: none; }
+.btn-retry { background: transparent; border: 1px solid rgba(196,169,106,.12); color: rgba(154,140,120,.6); border-radius: 100px; padding: 12px 28px; font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; cursor: none; transition: all .25s; }
+.btn-retry:hover { color: rgba(154,140,120,.9); border-color: rgba(196,169,106,.25); }
+#pdf-target { position: fixed; top: -9999px; left: -9999px; width: 390px; display: none; }
+.result-analysis-block { margin-bottom: 32px; }
+.result-analysis-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 14px; }
+.result-analysis-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 2; color: rgba(237,232,223,.62); white-space: pre-line; }
+.result-morview-block { margin-bottom: 32px; padding: 20px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); }
+.result-morview-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
+.result-morview-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); white-space: pre-line; }
+.result-cta { margin-top: 40px; padding: 24px; border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5); }
+.result-cta-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 12px; }
+.result-cta-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8; color: rgba(237,232,223,.55); margin-bottom: 16px; }
+.email-form { display: flex; gap: 8px; }
+.email-input { flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8); border: 1px solid rgba(196,169,106,.2); color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .25s; }
+.email-input:focus { border-color: rgba(196,169,106,.45); }
+.email-input::placeholder { color: rgba(154,140,120,.35); }
+.btn-email { padding: 10px 20px; background: rgba(196,169,106,.12); border: 1px solid rgba(196,169,106,.3); color: var(--gold); font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s; }
+.btn-email:hover { background: rgba(196,169,106,.2); }
+
+/* ════ T7 核心解鎖動畫 ════ */
+.core-wrap {
+  position: relative; margin: 32px auto 40px;
+  width: 180px; height: 180px;
+}
+.core-ray {
+  position: absolute; left: 50%; top: 0; bottom: 0;
+  width: 1px; margin-left: -.5px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(196,169,106,.07) 22%,
+    rgba(196,169,106,.18) 50%,
+    rgba(196,169,106,.07) 78%,
+    transparent 100%
+  );
+  transform-origin: center;
+  transform: rotate(var(--angle));
+  opacity: 0;
+}
+.core-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(196,169,106,.18);
+  opacity: 0; transform: scale(.65);
+}
+.core-ring.r1 { inset: 30%; }
+.core-ring.r2 { inset: 15%; }
+.core-ring.r3 { inset: 0; }
+.core-glow {
+  position: absolute; inset: 18%; border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(196,169,106,.22) 0%, transparent 70%);
+  opacity: 0;
+}
+.core-dot {
+  position: absolute; left: 50%; top: 50%;
+  width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 10px rgba(196,169,106,.9), 0 0 28px rgba(196,169,106,.35);
+  opacity: 0; transform: scale(0);
+}
+.core-wrap.is-unlocking .core-ray {
+  animation: coreRay .9s ease forwards var(--delay, 0s);
+}
+.core-wrap.is-unlocking .core-ring.r1 {
+  animation: coreRing .55s cubic-bezier(.34,1.2,.64,1) forwards .28s;
+}
+.core-wrap.is-unlocking .core-ring.r2 {
+  animation: coreRing .55s cubic-bezier(.34,1.2,.64,1) forwards .48s;
+}
+.core-wrap.is-unlocking .core-ring.r3 {
+  animation: coreRing .55s cubic-bezier(.34,1.2,.64,1) forwards .68s;
+}
+.core-wrap.is-unlocking .core-glow {
+  animation: coreGlow 1.8s ease forwards .75s;
+}
+.core-wrap.is-unlocking .core-dot {
+  animation: coreDot .5s cubic-bezier(.34,1.5,.64,1) forwards .08s;
+}
+@keyframes coreRay  { from{opacity:0} to{opacity:1} }
+@keyframes coreRing { from{opacity:0;transform:scale(.65)} to{opacity:1;transform:scale(1)} }
+@keyframes coreGlow { 0%{opacity:0} 40%{opacity:1} 100%{opacity:.5} }
+@keyframes coreDot  { from{opacity:0;transform:scale(0)} to{opacity:1;transform:scale(1)} }
+
+.result-text-block {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity .8s ease, transform .8s ease;
+}
+.result-text-block.visible { opacity: 1; transform: translateY(0); }
+
+/* ── 相關測驗推薦 ── */
+.related { margin-top: 48px; border-top: 1px solid rgba(196,169,106,.15); padding-top: 32px; }
+.related-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px; }
+.related-links { display: flex; flex-direction: column; gap: 12px; }
+.related-link { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border: 1px solid rgba(196,169,106,.18); border-radius: 10px; background: rgba(196,169,106,.04); text-decoration: none; transition: background .2s, border-color .2s; }
+.related-link:hover { background: rgba(196,169,106,.09); border-color: rgba(196,169,106,.35); }
+.related-link-title { font-family: 'LXGW WenKai TC', serif; font-size: 14px; color: rgba(237,232,223,.75); }
+.related-link-tag { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .1em; color: rgba(196,169,106,.5); white-space: nowrap; margin-left: 12px; }
+</style>
+</head>
+<body>
+
+<div id="god-ray"></div>
+<div id="vignette"></div>
+
+<div id="preloader">
+  <div id="pre-top"></div>
+  <div id="pre-bot"></div>
+  <div id="pre-corner-tl"></div>
+  <div id="pre-corner-br"></div>
+  <div id="pre-center">
+    <div class="pre-line" id="line-l"></div>
+    <span id="pre-text">Loading</span>
+    <div class="pre-line" id="line-r"></div>
+  </div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<div id="site">
+
+  <nav>
+    <a href="/" class="logo" style="text-decoration:none">Mori</a>
+    <div class="nav-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+  </nav>
+
+  <main class="quiz-main">
+
+    <!-- 開始畫面 -->
+    <div class="screen active" id="screen-start">
+      <div class="gothic-arch" style="position:relative;width:100%;height:50px;margin-bottom:8px">
+        <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,90 L0,60 Q180,0 360,40 Q540,70 720,20 Q900,-20 1080,40 Q1260,80 1440,55 L1440,90 Z" fill="rgba(196,169,106,0.04)"/>
+          <path d="M720,20 L716,0 L720,4 L724,0 Z" fill="rgba(196,169,106,0.3)"/>
+        </svg>
+      </div>
+      <div class="ornament" style="margin-bottom:36px">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+      <p class="start-eyebrow">Mori Studio · 動力根源探索</p>
+      <h1 class="start-title" id="quiz-title">你真正為了什麼在努力？</h1>
+      <p class="start-desc" id="quiz-desc">Simon Sinek 說：順境看不出你的 WHY，逆境才看得出來。\n10 道逆境情境題，找出你努力背後真正的驅動力。</p>
+      <p class="start-meta" id="quiz-meta">共 10 題 · 約 4 分鐘</p>
+      <button class="btn-start" onclick="startQuiz()">
+        開始探索
+        <span class="btn-start-arrow"></span>
+      </button>
+    </div>
+
+    <!-- 作答畫面 -->
+    <div class="screen" id="screen-quiz">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-num" id="q-num">Q1</span>
+          <span class="progress-total" id="q-total">/ 10 題</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <p class="question-tag" id="q-tag">先問為什麼</p>
+      <p class="question-text" id="q-text"></p>
+      <div class="options" id="options-wrap"></div>
+      <div class="quiz-nav">
+        <button class="btn-prev-q" id="btnPrev" onclick="prevQ()">← 返回首頁</button>
+      </div>
+    </div>
+
+    <!-- 調查門 -->
+    <div class="screen" id="screen-survey">
+      <div class="survey-type-teaser">
+        <p class="survey-eyebrow">你的結果出來了</p>
+        <h2 class="survey-type-name" id="s-type-name"></h2>
+        <p class="survey-type-brief" id="s-type-brief"></p>
+      </div>
+      <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的分析</div>
+      <div class="survey-group">
+        <p class="survey-q">你目前最常為了哪件事在努力？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">主業工作或職場表現</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">副業或創業計畫</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">個人成長和技能提升</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">還在尋找方向，不確定</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你距離「清楚知道自己為什麼在努力」有多遠？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">完全不知道，只是在做</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">有模糊感覺但說不清楚</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">有想法但還沒確認過</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">已經知道，但執行上還有困難</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你最想達到的狀態是？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">有穩定收入，不再為錢擔心</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">做讓我有滿足感的事</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">對別人的生活有一點影響</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">知道自己往哪裡走，不再迷茫</button>
+        </div>
+      </div>
+      <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看你的 WHY →</button>
+    </div>
+
+    <!-- 結果畫面（T7 核心解鎖）-->
+    <div class="screen" id="screen-result">
+      <div class="ornament" style="margin-bottom:32px">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+
+      <div class="core-wrap" id="core-wrap">
+        <div class="core-ray" style="--angle:0deg;--delay:.05s"></div>
+        <div class="core-ray" style="--angle:36deg;--delay:.08s"></div>
+        <div class="core-ray" style="--angle:72deg;--delay:.12s"></div>
+        <div class="core-ray" style="--angle:108deg;--delay:.06s"></div>
+        <div class="core-ray" style="--angle:144deg;--delay:.10s"></div>
+        <div class="core-ray" style="--angle:180deg;--delay:.14s"></div>
+        <div class="core-ring r3"></div>
+        <div class="core-ring r2"></div>
+        <div class="core-ring r1"></div>
+        <div class="core-glow"></div>
+        <div class="core-dot"></div>
+      </div>
+
+      <div class="result-text-block" id="result-text-block">
+        <p class="result-eyebrow">你的驅動力核心</p>
+        <h2 class="result-type" id="r-type"></h2>
+        <p class="result-subtitle" id="r-subtitle"></p>
+        <div class="result-divider"></div>
+        <p class="result-desc" id="r-desc"></p>
+        <div class="result-analysis-block">
+          <p class="result-analysis-label">行為分析</p>
+          <p class="result-analysis-text" id="r-analysis"></p>
+        </div>
+        <div class="result-morview-block">
+          <p class="result-morview-label">Mori 觀點</p>
+          <p class="result-morview-text" id="r-morview"></p>
+        </div>
+        <div class="btn-row">
+          <button class="btn-line" onclick="openLine()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true" style="flex-shrink:0"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+            追蹤 LINE@
+          </button>
+          <div class="btn-sec-row">
+            <button class="btn-ghost-sec" onclick="openIG()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              追蹤 IG
+            </button>
+            <button class="btn-ghost-sec" onclick="shareResult()">分享結果</button>
+          </div>
+          <button class="btn-ghost-full" id="dlBtn" onclick="downloadPDF()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            下載結果
+          </button>
+          <button class="btn-retry" onclick="retryQuiz()">重新測驗</button>
+        </div>
+        <div class="result-cta" id="result-cta" style="display:none">
+          <p class="result-cta-label">深度解析</p>
+          <p class="result-cta-text" id="r-cta-text"></p>
+          <div class="email-form">
+            <input class="email-input" type="email" placeholder="你的 Email" id="email-input">
+            <button class="btn-email" onclick="submitEmail()">送出</button>
+          </div>
+          <p id="email-done" style="display:none;color:var(--gold);font-size:13px;text-align:center;margin-top:12px;">✓ 收到了，稍後寄到你的信箱。</p>
+        </div>
+        <div class="related">
+          <p class="related-label">繼續探索</p>
+          <div class="related-links">
+            <a class="related-link" href="/quiz/not-enough/">
+              <span class="related-link-title">你的「不夠好」從哪裡來？</span>
+              <span class="related-link-tag">自我價值</span>
+            </a>
+            <a class="related-link" href="/quiz/anti-fragile/">
+              <span class="related-link-title">你是在壓力下碎裂、撐住，還是變強？</span>
+              <span class="related-link-tag">反脆弱</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-logo">Mori</div>
+    <div class="footer-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+    <p class="footer-copy">© 2025 Mori Studio · 底層邏輯 × AI 工具 × 副業思維</p>
+  </footer>
+
+</div>
+
+<!-- ══ 測驗資料區 ══════════════════════════════════════════════ -->
+<script>
+const QUIZ_INFO = {
+  title:       '你真正為了什麼在努力？',
+  desc:        'Simon Sinek 說：順境看不出你的 WHY，逆境才看得出來。\n10 道逆境情境題，找出你努力背後真正的驅動力。',
+  meta:        '共 10 題 · 約 4 分鐘',
+  questionTag: '先問為什麼'
+};
+
+const QUESTIONS = [
+  {
+    text: '你花了幾個月做一件你相信的事，但沒有任何經濟回報，也沒人注意到。你最可能繼續做的理由是？',
+    options: [
+      { key:'A', text:'還在等待，相信回報只是時間問題，先撐著', scores:{ W1:3 } },
+      { key:'B', text:'這段過程讓我學到了很多，即使沒有回報也有收穫', scores:{ W3:3 } },
+      { key:'C', text:'做這件事本身就讓我有某種說不清楚的充實感', scores:{ W3:2, W4:1 } },
+      { key:'D', text:'已經有幾個人因為這件事的結果而受益，這就夠了', scores:{ W4:2, W5:1 } }
+    ]
+  },
+  {
+    text: '你做的事被人批評「方向錯了、徒勞無功」。你的第一反應是？',
+    options: [
+      { key:'A', text:'開始動搖，想找人支持我，確認自己還在對的路上', scores:{ W2:2, W1:1 } },
+      { key:'B', text:'感到不服，想用結果證明他們是錯的', scores:{ W2:3 } },
+      { key:'C', text:'看看批評裡有沒有值得參考的部分，其他的不管', scores:{ W3:2, W5:1 } },
+      { key:'D', text:'回到當初做這件事的理由——那個理由還說服得了我嗎？', scores:{ W5:3 } }
+    ]
+  },
+  {
+    text: '你在做一件長期的事，短期內看不到任何進展跡象。你還在做的理由最接近哪一個？',
+    options: [
+      { key:'A', text:'這件事如果做成了，回報很大，所以繼續', scores:{ W1:3 } },
+      { key:'B', text:'放棄的話好像很沒面子，不能就這樣放棄', scores:{ W2:3 } },
+      { key:'C', text:'我在過程中仍然有在成長，這件事對我本身有價值', scores:{ W3:3 } },
+      { key:'D', text:'我知道這件事的方向是對的，進度慢是過程的一部分', scores:{ W4:1, W5:2 } }
+    ]
+  },
+  {
+    text: '你在做的事出現了比你強的競爭者。你最主要的感受和反應是？',
+    options: [
+      { key:'A', text:'評估這件事還值不值得繼續，有更強的人就沒有我的必要了', scores:{ W1:3 } },
+      { key:'B', text:'需要想辦法做得比他更好，否則做這件事沒有意義', scores:{ W2:3 } },
+      { key:'C', text:'他做得好代表這個方向有需求，我做自己的版本就好', scores:{ W3:2, W4:1 } },
+      { key:'D', text:'看看能不能向他學習，甚至未來合作——做到更大的結果', scores:{ W4:2, W5:1 } }
+    ]
+  },
+  {
+    text: '假設你做的所有事，永遠不會有任何人知道是你做的——沒有署名、沒有肯定、沒有掌聲。你還會繼續嗎？',
+    options: [
+      { key:'A', text:'沒有人知道的話，意義大幅減少，動力會很難維持', scores:{ W1:2, W2:1 } },
+      { key:'B', text:'需要一段時間重新找到動力，但不確定能不能找到', scores:{ W2:2, W3:1 } },
+      { key:'C', text:'只要結果是好的，做了就做了，這不影響我繼續做', scores:{ W3:2, W5:1 } },
+      { key:'D', text:'當然繼續，這件事的意義不取決於別人知不知道', scores:{ W5:3 } }
+    ]
+  },
+  {
+    text: '你在某個投入很多的方向徹底失敗了，結果和預期完全相反。你最快找到繼續前進的理由是什麼？',
+    options: [
+      { key:'A', text:'先評估這件事還有沒有值得繼續的潛力，再決定', scores:{ W1:3 } },
+      { key:'B', text:'這次失敗對我的形象影響有多大，我需要先處理好這個', scores:{ W2:3 } },
+      { key:'C', text:'至少我學到了下次可以帶走的東西，這讓我可以繼續', scores:{ W3:3 } },
+      { key:'D', text:'我還沒有放棄的理由，最初讓我開始做這件事的衝動還在', scores:{ W5:3 } }
+    ]
+  },
+  {
+    text: '你做一件事已經很久了，熱情明顯減退，感覺像在應付。你最可能的做法是？',
+    options: [
+      { key:'A', text:'評估目前的進度和預期回報，決定值不值得繼續', scores:{ W1:3 } },
+      { key:'B', text:'看看周圍有沒有人需要這件事，那個需要感能重新點燃你', scores:{ W4:3 } },
+      { key:'C', text:'找到新的學習角度或挑戰，讓自己重新對這件事感到興奮', scores:{ W3:3 } },
+      { key:'D', text:'回去問自己最初為什麼開始做——如果理由還說服得了你，繼續', scores:{ W5:3 } }
+    ]
+  },
+  {
+    text: '你做的事沒有人理解，身邊也沒有人有興趣。你的態度是？',
+    options: [
+      { key:'A', text:'沒有人理解讓我開始懷疑自己是不是走錯了路', scores:{ W1:2, W2:1 } },
+      { key:'B', text:'感到有點孤獨，需要找到和你在做同樣事的人才能繼續', scores:{ W2:2, W3:1 } },
+      { key:'C', text:'先確認自己的方向沒有問題，再看要不要花時間讓別人理解', scores:{ W5:3 } },
+      { key:'D', text:'沒有人做的事往往更值得做，這讓我更有把握繼續', scores:{ W4:1, W5:2 } }
+    ]
+  },
+  {
+    text: '有人問你「你為什麼要做這件事？」你最真實的回答最接近哪一個？',
+    options: [
+      { key:'A', text:'因為這樣做有機會帶來我想要的成果（收入、自由、生活方式）', scores:{ W1:3 } },
+      { key:'B', text:'因為我需要證明自己能把這件事做成', scores:{ W2:3 } },
+      { key:'C', text:'因為做這件事的過程本身讓我感覺活著', scores:{ W3:3 } },
+      { key:'D', text:'因為這件事對某些人有意義，那個意義比我的個人收益更重要', scores:{ W4:2, W5:1 } }
+    ]
+  },
+  {
+    text: '如果你的時間和資源突然全部清空，可以重新開始，你最可能做什麼？',
+    options: [
+      { key:'A', text:'找一個能讓我最快達到財務安全的事來做', scores:{ W1:3 } },
+      { key:'B', text:'找一個能讓我發揮能力、被更多人看見的舞台', scores:{ W2:3 } },
+      { key:'C', text:'做我一直想做但一直沒有條件做的事，不管回報是什麼', scores:{ W3:3 } },
+      { key:'D', text:'找到一個我能長期投入、讓某些人的生活真的不一樣的方向', scores:{ W4:2, W5:1 } }
+    ]
+  }
+];
+
+const RESULTS = {
+  W1: {
+    type:     '外部符號驅動型',
+    subtitle: 'External Symbol',
+    desc:     '你努力的核心動力是可見的成果：收入、地位、他人的認可、生活方式的標誌。這不是問題，外部符號是真實的動機——但它有一個本質上的弱點：它的力量取決於環境能不能給你那個符號。當環境不給的時候，你的動力就斷了。',
+    analysis: '外部符號驅動型的核心機制是：你的努力是為了換取某個你目前還沒有的東西。這讓你有清楚的目標感——你知道自己要的是什麼，這在短期內是一種非常有效的動力來源。\n\n但它的結構性問題也很清楚：一旦那個符號暫時看不到，或者你發現得到了那個符號但感覺不如預期，驅動力就會迅速下降。這讓你在逆境中特別容易動搖——因為逆境的定義就是「外部符號暫時不來了」。\n\n另一個隱藏的成本：你可能在追求某個外部符號的路上，越走越遠離你真正想要的生活。因為你的指南針是「這件事能帶給我什麼」，而不是「這件事讓我感覺自己是誰」。',
+    morview:  '外部符號驅動型不是你的錯，這是社會系統給大多數人的預設動力配置：努力 → 得到 → 再努力。它能運作，但它需要持續的「得到」來維持。\n\n我給你一個實驗：試著找出你最想得到的那個符號（無論是金錢、自由、認可還是什麼），然後問自己：「如果我已經擁有這個了，我還會做現在在做的事嗎？」答案會告訴你，你是否需要升級你的 WHY。',
+    cta:      '留下 Email，我寄給你「外部符號驅動型」的 WHY 升級框架。'
+  },
+  W2: {
+    type:     '驗證需求驅動型',
+    subtitle: 'Validation Seeking',
+    desc:     '你努力的核心是需要向某個人（或某個聲音）證明自己是有能力的。這比外部符號深一層——你不只是要得到成果，你需要讓那個結果說明「我是足夠好的」。這讓你有很強的韌性，但也讓你無法真正從成功中得到平靜，因為你在回應的，是一個比任何成就都更深的疑問。',
+    analysis: '驗證需求驅動型的動力有一個特殊的結構：你在回應一個「懷疑你的聲音」。那個聲音也許來自早年的某個重要他人，也許來自某次讓你深受打擊的失敗，也許是你自己給自己設的懷疑。不管來源是哪裡，你的努力在某種程度上是一場「我會讓你看見我做到了」的內心對話。\n\n這讓你的動力在逆境下比外部符號型更持久——因為被質疑本身就是一種觸發動力的方式。但它也有一個隱形的天花板：成功了也很難真正安心，因為那個「你夠好嗎」的問題，不是任何成就能夠永久回答的。\n\n最重要的認識：這個 WHY 是真實的，但它是在回應一個本來就不該繼續被回應的問題。',
+    morview:  '我直接說：你在打一場不可能贏的仗。不是因為你不夠好，而是因為「向別人（或自己的某個聲音）證明你足夠好」這件事，天生就沒有終點。\n\n你需要的不是更多的成就，是找到那個「懷疑你的聲音」的起源，然後決定你是否還要繼續讓它替你設定方向。這是你的 WHY 最需要升級的部分。',
+    cta:      '留下 Email，我寄給你「驗證需求驅動型」的 WHY 重設練習。'
+  },
+  W3: {
+    type:     '成長享受驅動型',
+    subtitle: 'Growth & Enjoyment',
+    desc:     '你努力的核心驅動是過程本身——你享受學習、成長、突破的感覺。這是比前兩個層次更穩定的 WHY，因為它不依賴外部的肯定或可量化的結果。只要過程裡有成長，你就能找到繼續的理由。但這個 WHY 也有一個盲點：當成長的感覺停下來的時候，你的動力也會跟著停。',
+    analysis: '成長享受驅動型的核心是「內在滿足感」。你的動力不需要別人點燃，也不需要結果來驗證，過程本身就是獎勵。這讓你在很多人失去動力的情況下還能繼續——因為你的燃料來自過程，而不是結果。\n\n但這個 WHY 有一個微妙的限制：它非常個人化。你做這件事，核心受益者是你自己（因為你在成長）。這沒有問題，但它讓你在某些「需要為了別人繼續撐著」的時刻特別難熬——因為你的驅動力系統沒有一個「為了他人」的那一個引擎。\n\n當你的成長享受型 WHY 遇到停滯期，最容易發生的事是：找到一個新的成長機會（換方向），而不是深挖現有的方向。長期的影響力，需要比成長享受更深層的 WHY 來支撐。',
+    morview:  '成長享受型是一個我非常尊重的 WHY，因為它是自主的——你的動力不依賴別人。但我觀察到一件事：最持久的影響力，通常來自於「為了讓某件事在世界上存在」，而不只是「因為這件事讓我成長」。\n\n你的下一步可能是問自己：你的成長，最終是為了讓什麼變得更好？那個「什麼」，是你 WHY 的下一層。',
+    cta:      '留下 Email，我寄給你「成長享受驅動型」的 WHY 深挖練習。'
+  },
+  W4: {
+    type:     '社群貢獻驅動型',
+    subtitle: 'Community Impact',
+    desc:     '你努力的核心是對他人的影響：你需要看到你的努力對某些人有意義。比前三個層次更向外——你的動力不只取決於你得到了什麼，而是取決於別人因為你得到了什麼。這是一個非常有力量的 WHY，但它也依賴一個前提：你能看見那個影響，而那個影響夠真實地存在。',
+    analysis: '社群貢獻驅動型的力量來源是「我的存在讓某件事變得更好」。這讓你在做有意義的事上有非常強的耐受度——因為只要那個影響還在，你就有理由繼續。\n\n這個 WHY 有一個特殊的穩定性：它不是「我要得到什麼」，也不是「我要證明什麼」，而是「我要讓某件事在世界上存在」。這種定向讓你更能承受個人的挫折——因為你的焦點不在你身上。\n\n但社群貢獻驅動型也有一個隱形的疲勞：如果你長期給予卻看不到那個影響，或者你感覺你的貢獻沒有被需要，驅動力會非常快速地流失。你需要清楚看見「誰因為我而有所不同」，否則這個 WHY 就失去了燃料。',
+    morview:  '社群貢獻型的 WHY 在所有層次裡最能讓人長期撐著，因為它把你的動力錨定在你以外的東西上。但我給你一個提醒：確認你貢獻的對象是真實的需求，而不只是你投射的需求。最強的貢獻，來自於你真正理解某些人需要什麼，然後你恰好有能力給。\n\n問自己：你最清楚哪些人需要什麼？那個交叉點，就是你最強的位置。',
+    cta:      '留下 Email，我寄給你「社群貢獻驅動型」的影響力精準化練習。'
+  },
+  W5: {
+    type:     '使命清醒驅動型',
+    subtitle: 'Mission Clarity',
+    desc:     '你有一個清楚的「為什麼」。這個 WHY 不依賴結果，不依賴別人的肯定，也不依賴別人理解。它是你在逆境中最後剩下的那個理由，而那個理由本身就夠了。Simon Sinek 所說的「先問為什麼」，說的就是這個層次——你知道自己為什麼在這裡，這個「知道」本身就是最持久的動力來源。',
+    analysis: '使命清醒驅動型是所有 WHY 層次裡最難假裝的一種——因為它只有在逆境中才會真正被測試。在順境裡，所有人看起來都像是使命清醒型。只有在沒有回報、沒有認可、沒有人支持、甚至被批評的情況下，你的 WHY 仍然能給你繼續的理由，才是真正的使命清醒。\n\n這個層次的驅動力有一個特殊的結構：它不需要外部輸入來維持。這讓你在大多數人的動力系統都停擺的環境下，仍然能保持穩定的行動力。這是一種罕見的能力，因為大多數人的動力是由環境決定的。\n\n使命清醒型也有它的風險：高度的確定感有時候讓你對修正方向不夠開放。最強的使命清醒，是既知道為什麼，又能靈活地調整怎麼做。',
+    morview:  '使命清醒型是我自己努力維持的狀態，所以我對它既有認同感，也有清醒的認識。\n\n我觀察到一件事：使命清醒型最大的危險，是把「我知道為什麼」變成「我不需要任何反饋」。最好的使命，是一個能接受現實檢驗、並因此變得更清晰的使命——不是一個需要被保護免於質疑的信念。\n\n繼續問自己那個問題，它的答案會隨著你的成長而改變，而那個改變本身就是一種成熟。',
+    cta:      '留下 Email，我寄給你「使命清醒驅動型」的使命持續深化練習。'
+  }
+};
+</script>
+
+<!-- ══ 共用引擎 ══════════════════════════════════════════════ -->
+<script src="/shared/particles.js"></script>
+<script>
+document.getElementById('quiz-title').textContent = QUIZ_INFO.title;
+document.getElementById('quiz-desc').textContent  = QUIZ_INFO.desc;
+document.getElementById('quiz-meta').textContent  = QUIZ_INFO.meta;
+document.getElementById('q-tag').textContent      = QUIZ_INFO.questionTag;
+document.title = 'MORI — ' + QUIZ_INFO.title;
+
+let currentQ = 0;
+let answersHistory = [];
+const scores = {};
+let currentResultKey = null;
+let surveyAnswers = { 1: '', 2: '', 3: '' };
+const CFG = {
+  lineUrl: 'https://line.me/R/ti/p/@507wvwbz',
+  igUrl:   'https://instagram.com/mori1024_',
+};
+function openLine() { window.open(CFG.lineUrl, '_blank'); }
+function openIG()   { window.open(CFG.igUrl,   '_blank'); }
+
+function buildPDFHTML(r) {
+  return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
+    '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
+    '<div style="padding:36px 28px 44px">' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · WHY 診斷</p>' +
+      '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
+      '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 28px;line-height:1.6">' + r.subtitle + '</p>' +
+      '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 28px"></div>' +
+      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 40px">' + r.desc.substring(0, 220) + '…</p>' +
+      '<p style="font-size:10px;color:rgba(154,140,120,0.4);letter-spacing:.06em;margin:0">mori-homepage.pages.dev</p>' +
+    '</div></div>';
+}
+async function downloadPDF() {
+  if (!currentResultKey) return;
+  const r = RESULTS[currentResultKey];
+  const target = document.getElementById('pdf-target');
+  const btn = document.getElementById('dlBtn');
+  const origHTML = btn ? btn.innerHTML : '';
+  target.style.display = 'block';
+  target.innerHTML = buildPDFHTML(r);
+  if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
+  try {
+    const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const w = canvas.width / 2, h = canvas.height / 2;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [w, h] });
+    pdf.addImage(imgData, 'PNG', 0, 0, w, h);
+    pdf.save('mori-why-' + currentResultKey.toLowerCase() + '.pdf');
+  } catch(e) { console.error(e); }
+  finally {
+    target.style.display = 'none';
+    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
+  }
+}
+
+/* ── MailerLite 串接設定 ── */
+/* 本機預覽無效，需在 HTTPS 真實環境才能運作 */
+const ML_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZTY0ZmY0YjJhYzcyMzM0ZTVlZjNmMzBlYTVlZjE0OWE5Mzg1ZDI2NDNiM2EzZmU3ZGUxYWVlMTA0NWZmMjFhYTJmN2FhYzQ5ODIwZDlhZmMiLCJpYXQiOjE3ODIyMjYxNDQuNjU1MzAzLCJuYmYiOjE3ODIyMjYxNDQuNjU1MzA3LCJleHAiOjQ5Mzc4OTk3NDQuNjQ5MjQ5LCJzdWIiOiIyNDQ5MDA2Iiwic2NvcGVzIjpbXX0.gXowQcDS-zoaY-A1We4MOAcjeaJ7RGc5VPB4EuXq2RR3vMyFfUmzeucHkxeNNj2DFyjtREnqFUOvTPL-y_rpvBKgNt22pwDgjfvb5pz9KB1zV_x_ULdOyGDFPQvYvmOcnDeXRTbZKSNQ7BrYHh_o1hFMiqc7YtGL9F3tsnYVi3ZyeFJStmeAxHP0493VIrR_FzKZS7l2fPG5ltaMomShz6T3MhEUCsLsGTfZc92ufHU1bRhXYdzQMkDpzVrhtZtd-ix-P_ym12GrORv5k5LOm69ts38rUQyCZR5dPxIrTFv2J1kEhhF-8uhQ9R6i6x0hf0Yv2KMVF-cDhoI9w6MTB_zXR58IiQ0W0xaeEwrEseCOwhFEUs7UIeMBVl5sopJViSOZBYRXbv67COxej5rNZM-RD6BZfDbiWJ_MTYLmOJ7BCpDKkZ04SzALl5E0McPR645u-Znf4eXMRgNTYrLUTOdQ6ez3BmmOZ3hhwA7toi1rXXaQJCBWlgs9g6bZeYKVoPdT8suaK6bXA9vaaA4-6c8yAhEyeXReB3gWzaJmQ6XCdBk5MRVOJ-gHZNHpibBz03MYRtKL6R1HM3GRBELXYQt3puu5IlHP_m9xk9FHKwH8WVkzvnSmU2SpUbHabozMNKSNeuopT9r3CAnAnd5WYdpZFeSMFcpr8MTjYTXOhuE';
+const ML_GROUPS = {
+  W1: '191148809608234785',
+  W2: '191148810223748990',
+  W3: '191148810811999268',
+  W4: '191148811446388243',
+  W5: '191148812040930969',
+};
+Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  setTimeout(() => document.getElementById(id).classList.add('active'), 50);
+}
+function startQuiz() {
+  currentQ = 0;
+  answersHistory = [];
+  surveyAnswers = { 1: '', 2: '', 3: '' };
+  Object.keys(scores).forEach(k => { scores[k] = 0; });
+  showScreen('screen-quiz');
+  setTimeout(renderQuestion, 300);
+}
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const total = QUESTIONS.length;
+  document.getElementById('q-num').textContent  = 'Q' + (currentQ + 1);
+  document.getElementById('q-total').textContent = '/ ' + total + ' 題';
+  document.getElementById('progress-fill').style.width = (currentQ / total * 100) + '%';
+  document.getElementById('q-text').textContent = q.text;
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="option-key">${opt.key}</span><span class="option-text">${opt.text}</span>`;
+    btn.addEventListener('click', () => selectOption(btn, opt, i));
+    wrap.appendChild(btn);
+  });
+  const prevIdx = answersHistory[currentQ];
+  if (prevIdx !== undefined) {
+    const opts = document.querySelectorAll('.option');
+    if (opts[prevIdx]) opts[prevIdx].classList.add('selected');
+  }
+  const pb = document.getElementById('btnPrev');
+  if (pb) pb.textContent = currentQ === 0 ? '← 返回首頁' : '← 上一題';
+}
+function selectOption(el, opt, idx) {
+  answersHistory[currentQ] = idx;
+  document.querySelectorAll('.option').forEach((o, i) => {
+    o.classList.add(i === idx ? 'selected' : 'fade-out');
+  });
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < QUESTIONS.length) renderQuestion();
+    else showResult();
+  }, 520);
+}
+function prevQ() {
+  if (currentQ === 0) { showScreen('screen-start'); return; }
+  currentQ--;
+  renderQuestion();
+}
+function showResult() {
+  const computed = { W1:0, W2:0, W3:0, W4:0, W5:0 };
+  answersHistory.forEach((optIdx, qIdx) => {
+    if (optIdx !== undefined && QUESTIONS[qIdx]) {
+      Object.entries(QUESTIONS[qIdx].options[optIdx].scores).forEach(([k,v]) => {
+        computed[k] = (computed[k] || 0) + v;
+      });
+    }
+  });
+  const topKey = Object.entries(computed).sort((a,b) => b[1]-a[1])[0][0];
+  currentResultKey = topKey;
+  const r = RESULTS[topKey];
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('s-type-name').textContent  = r.type;
+  document.getElementById('s-type-brief').textContent = r.subtitle;
+  surveyAnswers = { 1: '', 2: '', 3: '' };
+  document.getElementById('btnUnlock').disabled = true;
+  showScreen('screen-survey');
+}
+function surveyPick(q, val, btn) {
+  surveyAnswers[q] = val;
+  btn.closest('.survey-group').querySelectorAll('.survey-opt').forEach(b => b.classList.remove('picked'));
+  btn.classList.add('picked');
+  if (surveyAnswers[1] && surveyAnswers[2] && surveyAnswers[3]) {
+    document.getElementById('btnUnlock').disabled = false;
+  }
+}
+function unlockResult() {
+  renderFullResult();
+  showScreen('screen-result');
+}
+function renderFullResult() {
+  const r = RESULTS[currentResultKey];
+  document.getElementById('r-type').textContent     = r.type;
+  document.getElementById('r-subtitle').textContent = r.subtitle;
+  document.getElementById('r-desc').textContent     = r.desc;
+  document.getElementById('r-analysis').textContent = r.analysis || '';
+  document.getElementById('r-morview').textContent  = r.morview  || '';
+  if (r.cta) {
+    document.getElementById('result-cta').style.display = 'block';
+    document.getElementById('r-cta-text').textContent = r.cta;
+  }
+  /* T7 核心解鎖動畫 */
+  document.getElementById('result-text-block').classList.remove('visible');
+  setTimeout(() => {
+    const wrap = document.getElementById('core-wrap');
+    wrap.classList.remove('is-unlocking');
+    void wrap.offsetWidth;
+    wrap.classList.add('is-unlocking');
+    setTimeout(() => {
+      document.getElementById('result-text-block').classList.add('visible');
+    }, 1100);
+  }, 400);
+}
+function retryQuiz() {
+  document.getElementById('result-text-block').classList.remove('visible');
+  document.getElementById('core-wrap').classList.remove('is-unlocking');
+  showScreen('screen-start');
+}
+async function shareResult() {
+  if (!currentResultKey) return;
+  const r = RESULTS[currentResultKey];
+  const target = document.getElementById('pdf-target');
+  target.style.display = 'block';
+  target.innerHTML = buildPDFHTML(r);
+  try {
+    const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
+    canvas.toBlob(async (blob) => {
+      const fname = 'mori-why-' + currentResultKey.toLowerCase() + '.png';
+      const file = new File([blob], fname, { type: 'image/png' });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Mori WHY 測驗結果' });
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fname;
+        a.click();
+      }
+    }, 'image/png');
+  } catch(e) { console.error(e); }
+  finally { target.style.display = 'none'; }
+}
+async function submitEmail() {
+  const emailEl = document.getElementById('email-input');
+  const email = emailEl.value.trim();
+  if (!email || !email.includes('@')) return;
+  const btn = document.querySelector('.btn-email');
+  btn.disabled = true;
+  btn.textContent = '送出中…';
+  try {
+    const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ML_KEY}`,
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ email, groups: ML_GROUPS[currentResultKey] ? [ML_GROUPS[currentResultKey]] : [] }),
+    });
+    if (res.ok) {
+      document.querySelector('.email-form').style.display = 'none';
+      document.getElementById('email-done').style.display = 'block';
+    } else {
+      btn.disabled = false; btn.textContent = '送出';
+    }
+  } catch(err) {
+    btn.disabled = false; btn.textContent = '送出';
+  }
+}
+window.addEventListener('DOMContentLoaded', () => {
+  const lL = document.getElementById('line-l');
+  const lR = document.getElementById('line-r');
+  const pt = document.getElementById('pre-text');
+  setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
+  setTimeout(() => { pt.classList.add('ready'); pt.textContent = 'Enter'; }, 1600);
+  pt.addEventListener('click', () => {
+    if (!pt.classList.contains('ready')) return;
+    document.getElementById('preloader').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('preloader').style.display = 'none';
+      document.getElementById('site').style.opacity = '1';
+    }, 600);
+  });
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function tick(){ rx+=(mx-rx)*.18; ry+=(my-ry)*.18;
+    cur.style.left=mx+'px'; cur.style.top=my+'px';
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(tick); })();
+  document.querySelectorAll('button,a').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+  MoriParticles.init('quiz');
+});
+</script>
+<div id="pdf-target"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>
