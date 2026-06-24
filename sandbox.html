@@ -109,10 +109,22 @@ input[type=color]{
       <div class="tgrid" id="tgrid"></div>
     </div>
 
+    <!-- ── 地形參數 ── -->
+    <div class="ps">
+      <div class="pt">地形參數 Terrain Params</div>
+      <div id="tsliders"></div>
+    </div>
+
     <!-- ── 穿越效果 ── -->
     <div class="ps">
       <div class="pt">穿越效果 Flight Effect</div>
       <div class="elist" id="elist"></div>
+    </div>
+
+    <!-- ── 視角控制 ── -->
+    <div class="ps">
+      <div class="pt">視角 Camera</div>
+      <div id="camsliders"></div>
     </div>
 
     <!-- ── 粒子參數 ── -->
@@ -166,9 +178,14 @@ const noise2D=(()=>{
    z 範圍：-1050 ~ 450
 ══════════════════════════════════════ */
 
-/* 指數衰減距離：均值=scale，大多數粒子緊貼表面 */
+/* 指數衰減距離：均值=scale*P.surfaceTight，P.surfaceTight 越小越緊貼表面 */
 function expOff(scale){
-  return -Math.log(1-Math.random()*.9999)*scale;
+  return -Math.log(1-Math.random()*.9999)*scale*P.surfaceTight;
+}
+/* 高斯隨機（全域共用） */
+function gauss(sig){
+  const u=Math.max(Math.random(),1e-9),v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(Math.PI*2*v)*sig;
 }
 
 /* 01 峽谷 — 垂直岩壁貼面採樣，地板噪聲高度 */
@@ -411,6 +428,237 @@ function genBamboo(N,bx,by,bz){
   }
 }
 
+/* 13 星空 — 銀河帶 + 星雲群 + 背景散星 */
+function genStarfield(N,bx,by,bz){
+  const nebs=[
+    {cx:-220,cy:150,cz:-180,sx:120,sy:55,sz:130},
+    {cx:280,cy:200,cz:80,sx:140,sy:65,sz:150},
+    {cx:-360,cy:80,cz:-520,sx:110,sy:50,sz:120},
+    {cx:160,cy:310,cz:-720,sx:100,sy:45,sz:115},
+    {cx:-80,cy:60,cz:280,sx:90,sy:40,sz:100},
+    {cx:420,cy:190,cz:-350,sx:130,sy:60,sz:140},
+    {cx:-480,cy:250,cz:-680,sx:115,sy:52,sz:125},
+    {cx:50,cy:400,cz:-160,sx:80,sy:38,sz:90},
+    {cx:230,cy:110,cz:-920,sx:125,sy:58,sz:135},
+    {cx:-270,cy:280,cz:-820,sx:105,sy:48,sz:115},
+  ];
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.42){// 銀河帶：薄曲面，密集分布
+      const x=(Math.random()-.5)*1500;
+      const z=Math.random()*1600-1100;
+      bx[i]=x;
+      by[i]=110+x*.05+(z+300)*.015+gauss(28);
+      bz[i]=z;
+    }else if(p<.67){// 星雲團塊
+      const nb=nebs[Math.floor(Math.random()*nebs.length)];
+      bx[i]=nb.cx+gauss(nb.sx);
+      by[i]=nb.cy+gauss(nb.sy);
+      bz[i]=nb.cz+gauss(nb.sz);
+    }else{// 背景散星
+      bx[i]=(Math.random()-.5)*1400;
+      by[i]=-180+Math.random()*650;
+      bz[i]=Math.random()*1600-1100;
+    }
+  }
+}
+
+/* ── 宇宙系列 ── */
+
+/* 14 宇宙絲網 — 星系團節點 + 暗物質絲狀橋接 */
+function genCosmicWeb(N,bx,by,bz){
+  const cls=Array.from({length:16},()=>({
+    cx:(Math.random()-.5)*1400,cy:(Math.random()-.5)*900,cz:Math.random()*2600-1800
+  }));
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.38){// 絲狀橋接
+      const a=cls[Math.floor(Math.random()*cls.length)];
+      const b=cls[Math.floor(Math.random()*cls.length)];
+      const t=Math.random();
+      bx[i]=a.cx+(b.cx-a.cx)*t+gauss(15);
+      by[i]=a.cy+(b.cy-a.cy)*t+gauss(10);
+      bz[i]=a.cz+(b.cz-a.cz)*t+gauss(15);
+    }else if(p<.65){// 星系團核心
+      const c=cls[Math.floor(Math.random()*cls.length)];
+      bx[i]=c.cx+gauss(60);by[i]=c.cy+gauss(42);bz[i]=c.cz+gauss(60);
+    }else{// 宇宙背景稀疏場
+      bx[i]=(Math.random()-.5)*1600;
+      by[i]=(Math.random()-.5)*1000;
+      bz[i]=Math.random()*2600-1800;
+    }
+  }
+}
+
+/* 15 暗物質暈 — 球形暗暈環繞扁平星系盤 */
+function genDarkMatter(N,bx,by,bz){
+  const hls=Array.from({length:12},()=>({
+    cx:(Math.random()-.5)*1000,cy:(Math.random()-.5)*600,cz:Math.random()*2200-1600,
+    rH:100+Math.random()*220,rD:40+Math.random()*90
+  }));
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.50){// 球形暗物質暈
+      const h=hls[Math.floor(Math.random()*hls.length)];
+      const r=Math.random()*h.rH;
+      const a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1);
+      bx[i]=h.cx+r*Math.sin(b)*Math.cos(a);
+      by[i]=h.cy+r*Math.sin(b)*Math.sin(a)*.55;
+      bz[i]=h.cz+r*Math.cos(b);
+    }else if(p<.78){// 扁平星系盤
+      const h=hls[Math.floor(Math.random()*hls.length)];
+      const r=Math.sqrt(Math.random())*h.rD,a=Math.random()*Math.PI*2;
+      bx[i]=h.cx+Math.cos(a)*r;by[i]=h.cy+gauss(9);bz[i]=h.cz+Math.sin(a)*r;
+    }else{// 散場
+      bx[i]=(Math.random()-.5)*1400;
+      by[i]=(Math.random()-.5)*900;
+      bz[i]=Math.random()*2200-1600;
+    }
+  }
+}
+
+/* 16 宇宙爆炸 — 從奇點向外輻射的衝擊波殼 */
+function genBigBang(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.58){// 主衝擊波球殼（多重半徑）
+      const R=150+Math.random()*550;
+      const a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1);
+      const off=gauss(25);
+      bx[i]=(R+off)*Math.sin(b)*Math.cos(a);
+      by[i]=(R+off)*Math.sin(b)*Math.sin(a)*.7;
+      bz[i]=(R+off)*Math.cos(b)-350;
+    }else if(p<.80){// 噴發絲流（從中心向外射線）
+      const a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1);
+      const r=Math.random()*750;
+      bx[i]=r*Math.sin(b)*Math.cos(a)+gauss(12);
+      by[i]=r*Math.sin(b)*Math.sin(a)*.6+gauss(8);
+      bz[i]=r*Math.cos(b)-350;
+    }else{// 中心殘留核
+      bx[i]=gauss(70);by[i]=gauss(50);bz[i]=gauss(70)-350;
+    }
+  }
+}
+
+/* ── 星空系列 ── */
+
+/* 17 銀河系 — 三臂螺旋 + 星系核球 */
+function genGalaxy(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.58){// 螺旋臂（三臂）
+      const arm=Math.floor(Math.random()*3);
+      const t=Math.random();
+      const r=80+t*420,a=t*Math.PI*4+arm*(Math.PI*2/3);
+      bx[i]=Math.cos(a)*r+gauss(20+t*18);
+      by[i]=gauss(10+t*7);
+      bz[i]=Math.sin(a)*r+gauss(20+t*18)-200;
+    }else if(p<.80){// 核球
+      bx[i]=gauss(70);by[i]=gauss(40);bz[i]=gauss(70)-200;
+    }else{// 星系暈（稀疏大範圍）
+      const r=Math.random()*550;
+      const a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1);
+      bx[i]=r*Math.sin(b)*Math.cos(a);
+      by[i]=r*Math.sin(b)*Math.sin(b)*.28;
+      bz[i]=r*Math.cos(b)-200;
+    }
+  }
+}
+
+/* 18 球狀星團 — 密集球形，中心指數集中 */
+function genGlobular(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.72){// 球形密集核心
+      const r=Math.abs(gauss(1))*190;
+      const a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1);
+      bx[i]=r*Math.sin(b)*Math.cos(a);
+      by[i]=r*Math.sin(b)*Math.sin(a);
+      bz[i]=r*Math.cos(b)-280;
+    }else{// 背景散場
+      bx[i]=(Math.random()-.5)*1400;
+      by[i]=(Math.random()-.5)*900;
+      bz[i]=Math.random()*2200-1600;
+    }
+  }
+}
+
+/* ── 星雲系列 ── */
+
+/* 19 發射星雲 — 發光核心 + 氣柱 (Orion-like) */
+function genEmissionNebula(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.35){// 發光核心（高斯團）
+      bx[i]=gauss(100);by[i]=gauss(72);bz[i]=gauss(100)-300;
+    }else if(p<.66){// 氣柱 / 絲流（從核心輻射）
+      const ang=Math.random()*Math.PI*2;
+      const l=90+Math.random()*400,t=Math.random();
+      bx[i]=Math.cos(ang)*l*t+gauss(18);
+      by[i]=Math.sin(ang)*l*t+gauss(13);
+      bz[i]=gauss(22)*t+gauss(18)-300;
+    }else if(p<.88){// 外層漫射氣殼
+      const r=280+Math.random()*200;
+      const a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1);
+      bx[i]=r*Math.sin(b)*Math.cos(a)+gauss(25);
+      by[i]=r*Math.sin(b)*Math.sin(a)*.65+gauss(18);
+      bz[i]=r*Math.cos(b)*.75-300;
+    }else{// 深空背景
+      bx[i]=(Math.random()-.5)*1200;
+      by[i]=(Math.random()-.5)*800;
+      bz[i]=Math.random()*2000-1500;
+    }
+  }
+}
+
+/* 20 行星狀星雲 — 同心氣環 (Ring Nebula-like) */
+function genPlanetaryNebula(N,bx,by,bz){
+  const RINGS=[{r:70,w:20},{r:155,w:18},{r:245,w:25},{r:360,w:35},{r:480,w:45}];
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.12){// 中心恆星核
+      bx[i]=gauss(28);by[i]=gauss(20);bz[i]=gauss(28)-300;
+    }else if(p<.84){// 同心環殼
+      const rg=RINGS[Math.floor(Math.random()*RINGS.length)];
+      const r=rg.r+gauss(rg.w);
+      const a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1);
+      bx[i]=r*Math.sin(b)*Math.cos(a);
+      by[i]=r*Math.sin(b)*Math.sin(a)*.5;
+      bz[i]=r*Math.cos(b)*.5-300;
+    }else{// 背景
+      bx[i]=(Math.random()-.5)*1200;
+      by[i]=(Math.random()-.5)*800;
+      bz[i]=Math.random()*2000-1500;
+    }
+  }
+}
+
+/* 21 超新星殘骸 — 膨脹絲狀球殼 (Crab-like) */
+function genSupernovaRemnant(N,bx,by,bz){
+  for(let i=0;i<N;i++){
+    const p=Math.random();
+    if(p<.55){// 噪聲膨脹殼
+      const a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1);
+      const r=260+noise2D(a*3.2,b*2.8)*90+gauss(28);
+      bx[i]=r*Math.sin(b)*Math.cos(a);
+      by[i]=r*Math.sin(b)*Math.sin(a)*.72;
+      bz[i]=r*Math.cos(b)-300;
+    }else if(p<.78){// 放射絲流
+      const a=Math.random()*Math.PI*2;
+      const l=80+Math.random()*280,t=Math.random();
+      bx[i]=Math.cos(a)*l*t+gauss(13);
+      by[i]=Math.sin(a)*l*t*.58+gauss(9);
+      bz[i]=gauss(20)-300;
+    }else if(p<.91){// 中心脈衝星風
+      bx[i]=gauss(48);by[i]=gauss(34);bz[i]=gauss(48)-300;
+    }else{// 背景
+      bx[i]=(Math.random()-.5)*1200;
+      by[i]=(Math.random()-.5)*800;
+      bz[i]=Math.random()*2000-1500;
+    }
+  }
+}
+
 const TERRAINS=[
   {id:'canyon',      name:'峽谷',     emoji:'🏔', fn:genCanyon,      hint:'峽谷：垂直岩壁貼面，地板清晰邊界'},
   {id:'mountain',    name:'山峰',     emoji:'⛰', fn:genMountain,    hint:'山峰：高斯峰疊加，粒子貼頂面連續起伏'},
@@ -424,6 +672,18 @@ const TERRAINS=[
   {id:'crater',      name:'火山口',   emoji:'🌋', fn:genCrater,      hint:'火山口：圓唇緣 + 碗型內壁，極坐標採樣'},
   {id:'lavatube',    name:'熔岩隧道', emoji:'🔥', fn:genLavaTube,    hint:'熔岩隧道：圓筒噪聲管壁，完整截面'},
   {id:'bamboo',      name:'竹林',     emoji:'🎋', fn:genBamboo,      hint:'竹林：細圓柱貼面，全高覆蓋'},
+  {id:'starfield',   name:'星空',     emoji:'✨', fn:genStarfield,   hint:'星空：銀河帶 + 星雲群 + 背景散星'},
+  // ── 宇宙
+  {id:'cosmicweb',   name:'宇宙絲網', emoji:'🕸', fn:genCosmicWeb,   hint:'宇宙絲網：星系團節點 + 暗物質絲狀橋接結構'},
+  {id:'darkmatter',  name:'暗物質暈', emoji:'⚫', fn:genDarkMatter,  hint:'暗物質暈：球形暗暈環繞扁平星系盤'},
+  {id:'bigbang',     name:'宇宙爆炸', emoji:'💥', fn:genBigBang,     hint:'宇宙爆炸：從奇點向外輻射的多層衝擊波殼'},
+  // ── 星空
+  {id:'galaxy',      name:'銀河系',   emoji:'🌀', fn:genGalaxy,      hint:'銀河系：三臂螺旋結構 + 核球 + 暈'},
+  {id:'globular',    name:'球狀星團', emoji:'⭐', fn:genGlobular,    hint:'球狀星團：密集球形，中心指數集中'},
+  // ── 星雲
+  {id:'emission',    name:'發射星雲', emoji:'🔴', fn:genEmissionNebula,   hint:'發射星雲：核心氣柱 + 漫射氣殼 (Orion-like)'},
+  {id:'planetary',   name:'行星狀星雲',emoji:'💫', fn:genPlanetaryNebula,  hint:'行星狀星雲：同心氣環殼 (Ring Nebula-like)'},
+  {id:'supernova',   name:'超新星殘骸',emoji:'🌟', fn:genSupernovaRemnant, hint:'超新星殘骸：噪聲膨脹殼 + 放射絲流 (Crab-like)'},
 ];
 
 /* ══════════════════════════════════════
@@ -431,65 +691,67 @@ const TERRAINS=[
    fn(t, rollMult) → {cx,cy,cz,tx,ty,tz,roll}
    t: 0→1 循環，z 從 350 飛到 -1000
 ══════════════════════════════════════ */
-const Z0=350,ZN=-1000;
+const Z0=200,ZN=-900;
+// 第一人稱：相機從 z=200 飛到 z=-900，始終在地形內部
+// P.camH=0：浮在中央；P.camTY=0：水平視線
 
 /* 01 直線穿越 */
 function pathStraight(t,rm){
   const z=Z0+t*(ZN-Z0);
-  return{cx:0,cy:20,cz:z,tx:0,ty:0,tz:z-300,roll:0};
+  return{cx:0,cy:P.camH,cz:z,tx:0,ty:P.camTY,tz:z-500,roll:0};
 }
 /* 02 S 型蛇行 */
 function pathSerpentine(t,rm){
-  const z=Z0+t*(ZN-Z0),w=Math.sin(t*Math.PI*5)*100;
-  return{cx:w,cy:0,cz:z,tx:w*.65,ty:0,tz:z-280,roll:-w*.0042*rm};
+  const z=Z0+t*(ZN-Z0),w=Math.sin(t*Math.PI*5)*130;
+  return{cx:w,cy:P.camH,cz:z,tx:w*.55,ty:P.camTY,tz:z-480,roll:-w*.0032*rm};
 }
 /* 03 螺旋下降 */
 function pathSpiralDown(t,rm){
   const z=Z0+t*(ZN-Z0),ang=t*Math.PI*5;
-  const cx=Math.cos(ang)*95,cy=-t*220+50;
-  return{cx,cy,cz:z,tx:Math.cos(ang+.3)*65,ty:cy-25,tz:z-260,roll:Math.cos(ang)*.52*rm};
+  const cx=Math.cos(ang)*120,cy=P.camH-t*180;
+  return{cx,cy,cz:z,tx:Math.cos(ang+.3)*80,ty:P.camTY-t*120,tz:z-480,roll:Math.cos(ang)*.5*rm};
 }
 /* 04 俯衝急拉 */
 function pathNosedive(t,rm){
   const z=Z0+t*(ZN-Z0);
-  const cy=20-Math.sin(t*Math.PI*3)*160;
-  return{cx:0,cy,cz:z,tx:0,ty:cy+Math.sin((t+.02)*Math.PI*3)*(-120),tz:z-280,roll:Math.sin(t*Math.PI*6)*.3*rm};
+  const cy=P.camH+Math.sin(t*Math.PI*3)*220;
+  return{cx:0,cy,cz:z,tx:0,ty:P.camTY+Math.sin((t+.02)*Math.PI*3)*(-140),tz:z-480,roll:Math.sin(t*Math.PI*6)*.32*rm};
 }
 /* 05 側滾翻轉 */
 function pathRollBank(t,rm){
-  const z=Z0+t*(ZN-Z0),w=Math.sin(t*Math.PI*6)*90;
-  return{cx:w,cy:10,cz:z,tx:w*.5,ty:0,tz:z-280,roll:-w*.0078*rm};
+  const z=Z0+t*(ZN-Z0),w=Math.sin(t*Math.PI*6)*140;
+  return{cx:w,cy:P.camH,cz:z,tx:w*.48,ty:P.camTY,tz:z-480,roll:-w*.006*rm};
 }
 /* 06 過山車 */
 function pathCoaster(t,rm){
   const z=Z0+t*(ZN-Z0);
-  const cy=Math.sin(t*Math.PI*4.5)*190-20;
-  const ty=Math.sin((t+.04)*Math.PI*4.5)*190-20;
-  return{cx:0,cy,cz:z,tx:0,ty,tz:z-250,roll:Math.sin(t*Math.PI*9)*.22*rm};
+  const cy=P.camH+Math.sin(t*Math.PI*4.5)*240;
+  const ty=P.camTY+Math.sin((t+.04)*Math.PI*4.5)*200;
+  return{cx:0,cy,cz:z,tx:0,ty,tz:z-460,roll:Math.sin(t*Math.PI*9)*.24*rm};
 }
 /* 07 低空掠地 */
 function pathLowFly(t,rm){
   const z=Z0+t*(ZN-Z0);
-  const cy=-160+Math.sin(t*Math.PI*4)*30;
-  const cx=Math.sin(t*Math.PI*3)*60;
-  return{cx,cy,cz:z,tx:cx*.7,ty:cy+15,tz:z-280,roll:-cx*.004*rm};
+  const cy=P.camH-80+Math.sin(t*Math.PI*4)*50;
+  const cx=Math.sin(t*Math.PI*3)*80;
+  return{cx,cy,cz:z,tx:cx*.7,ty:P.camTY-60,tz:z-480,roll:-cx*.003*rm};
 }
 /* 08 高空鳥瞰 */
 function pathOverhead(t,rm){
-  const z=Z0+t*(ZN-Z0),cx=Math.sin(t*Math.PI*3)*130;
-  return{cx,cy:400,cz:z,tx:cx*.25,ty:0,tz:z-180,roll:Math.sin(t*Math.PI*3)*.18*rm};
+  const z=Z0+t*(ZN-Z0),cx=Math.sin(t*Math.PI*3)*170;
+  return{cx,cy:P.camH+450,cz:z,tx:cx*.28,ty:P.camTY-80,tz:z-420,roll:Math.sin(t*Math.PI*3)*.2*rm};
 }
 /* 09 穿洞鑽隙 */
 function pathWeave(t,rm){
   const z=Z0+t*(ZN-Z0),f=t*Math.PI*10;
-  const cx=Math.sin(f)*140,cy=Math.cos(f*.4)*70;
-  return{cx,cy,cz:z,tx:Math.sin(f+.12)*140,ty:cy,tz:z-240,roll:-Math.sin(f)*.65*rm};
+  const cx=Math.sin(f)*185,cy=P.camH+Math.cos(f*.4)*115;
+  return{cx,cy,cz:z,tx:Math.sin(f+.12)*185,ty:P.camTY+Math.cos(f*.4)*55,tz:z-470,roll:-Math.sin(f)*.6*rm};
 }
 /* 10 螺旋攀升 */
 function pathSpiralUp(t,rm){
   const z=Z0+t*(ZN-Z0),ang=t*Math.PI*5;
-  const cx=Math.cos(ang)*95,cy=t*230-100;
-  return{cx,cy,cz:z,tx:Math.cos(ang+.3)*65,ty:cy+25,tz:z-260,roll:-Math.cos(ang)*.52*rm};
+  const cx=Math.cos(ang)*120,cy=P.camH+t*230;
+  return{cx,cy,cz:z,tx:Math.cos(ang+.3)*80,ty:P.camTY+t*140,tz:z-480,roll:-Math.cos(ang)*.5*rm};
 }
 
 const EFFECTS=[
@@ -509,8 +771,11 @@ const EFFECTS=[
    LIVE PARAMS
 ══════════════════════════════════════ */
 const P={
-  count:18000, size:5.5, speed:50,
+  count:25000, size:5.5, speed:50,
   fog:0.0006, roll:1.0, float:3.5,
+  camH:0, camTY:0, fov:80,
+  terrainScale:1.0, terrainY:0, terrainXScale:1.0,
+  surfaceTight:0.45, terrainZScale:1.0,
 };
 const MAX=40000;
 
@@ -525,7 +790,7 @@ renderer.setClearColor(0x090705);
 const scene=new THREE.Scene();
 scene.fog=new THREE.FogExp2(0x090705,P.fog);
 
-const cam=new THREE.PerspectiveCamera(72,2,1,3000);
+const cam=new THREE.PerspectiveCamera(P.fov,2,1,3000);
 
 // Buffers (allocate for MAX, drawRange limits render count)
 const bX=new Float32Array(MAX),bY=new Float32Array(MAX),bZ=new Float32Array(MAX);
@@ -619,12 +884,12 @@ function animate(now){
     if(done) lerping=false;
   }
 
-  // Write positions + float
+  // Write positions + float + terrain scale/offset
   const N=P.count,pa=geo.attributes.position.array;
   for(let i=0;i<N;i++){
-    pa[i*3  ]=bX[i];
-    pa[i*3+1]=bY[i]+Math.sin(time*.7+phi[i])*P.float;
-    pa[i*3+2]=bZ[i];
+    pa[i*3  ]=bX[i]*P.terrainXScale;
+    pa[i*3+1]=bY[i]*P.terrainScale+P.terrainY+Math.sin(time*.7+phi[i])*P.float;
+    pa[i*3+2]=bZ[i]*P.terrainZScale;
   }
   geo.attributes.position.needsUpdate=true;
   renderer.render(scene,cam);
@@ -683,6 +948,54 @@ SCONF.forEach(s=>{
   };
   row.appendChild(lbl);row.appendChild(inp);
   sldiv.appendChild(row);
+});
+
+// — Terrain param sliders —
+const TCONF=[
+  {k:'terrainScale', lbl:'地貌落差',  min:0.1,max:4.0, step:0.1,  fmt:v=>parseFloat(v).toFixed(1)+'×', cb:()=>{}},
+  {k:'terrainY',     lbl:'地形高低',  min:-300,max:400,step:10,   fmt:v=>v+'',                          cb:()=>{}},
+  {k:'terrainXScale',lbl:'地形寬廣',  min:0.1,max:4.0, step:0.1,  fmt:v=>parseFloat(v).toFixed(1)+'×', cb:()=>{}},
+  {k:'surfaceTight', lbl:'表面貼合度',min:0.05,max:3.0,step:0.05, fmt:v=>parseFloat(v).toFixed(2)+'×',
+   cb:()=>applyTerrain(curTerrain,false)},
+  {k:'terrainZScale',lbl:'地形深度',  min:0.05,max:2.0,step:0.05, fmt:v=>parseFloat(v).toFixed(2)+'×', cb:()=>{}},
+];
+const tdiv=document.getElementById('tsliders');
+TCONF.forEach(s=>{
+  const row=document.createElement('div');row.className='srow';
+  const lbl=document.createElement('div');lbl.className='slbl';
+  lbl.innerHTML=`<span>${s.lbl}</span><span class="sv" id="sv_${s.k}">${s.fmt(P[s.k])}</span>`;
+  const inp=document.createElement('input');
+  inp.type='range';inp.min=s.min;inp.max=s.max;inp.step=s.step;inp.value=P[s.k];
+  inp.oninput=()=>{
+    P[s.k]=Number(inp.value);
+    document.getElementById('sv_'+s.k).textContent=s.fmt(P[s.k]);
+    s.cb();
+  };
+  row.appendChild(lbl);row.appendChild(inp);
+  tdiv.appendChild(row);
+});
+
+// — Camera sliders —
+const CAMCONF=[
+  {k:'camH',  lbl:'相機高度', min:-150,max:500,step:10,fmt:v=>v+'',        cb:()=>{}},
+  {k:'camTY', lbl:'仰角目標', min:-100,max:500,step:10,fmt:v=>v+'',        cb:()=>{}},
+  {k:'fov',   lbl:'視野角度', min:40,  max:120, step:5, fmt:v=>v+'°',
+   cb:()=>{cam.fov=P.fov;cam.updateProjectionMatrix();}},
+];
+const camdiv=document.getElementById('camsliders');
+CAMCONF.forEach(s=>{
+  const row=document.createElement('div');row.className='srow';
+  const lbl=document.createElement('div');lbl.className='slbl';
+  lbl.innerHTML=`<span>${s.lbl}</span><span class="sv" id="sv_${s.k}">${s.fmt(P[s.k])}</span>`;
+  const inp=document.createElement('input');
+  inp.type='range';inp.min=s.min;inp.max=s.max;inp.step=s.step;inp.value=P[s.k];
+  inp.oninput=()=>{
+    P[s.k]=Number(inp.value);
+    document.getElementById('sv_'+s.k).textContent=s.fmt(P[s.k]);
+    s.cb();
+  };
+  row.appendChild(lbl);row.appendChild(inp);
+  camdiv.appendChild(row);
 });
 
 // — Color pickers —

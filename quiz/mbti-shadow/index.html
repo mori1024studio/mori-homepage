@@ -636,10 +636,12 @@ async function downloadPDF() {
   if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
   try {
     const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
-    const a = document.createElement('a');
-    a.download = 'mori-result-' + currentResultKey.toLowerCase() + '.png';
-    a.href = canvas.toDataURL('image/png');
-    a.click();
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const w = canvas.width / 2, h = canvas.height / 2;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [w, h] });
+    pdf.addImage(imgData, 'PNG', 0, 0, w, h);
+    pdf.save('mori-result-' + currentResultKey.toLowerCase() + '.pdf');
   } catch(e) { console.error(e); }
   finally {
     target.style.display = 'none';
@@ -649,12 +651,12 @@ async function downloadPDF() {
 
 /* ── MailerLite 串接設定 ── */
 /* 本機預覽無效，需在 HTTPS 真實環境才能運作 */
-const ML_KEY = 'YOUR_MAILERLITE_API_KEY';    // ← 填入 API Key
+const ML_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZTY0ZmY0YjJhYzcyMzM0ZTVlZjNmMzBlYTVlZjE0OWE5Mzg1ZDI2NDNiM2EzZmU3ZGUxYWVlMTA0NWZmMjFhYTJmN2FhYzQ5ODIwZDlhZmMiLCJpYXQiOjE3ODIyMjYxNDQuNjU1MzAzLCJuYmYiOjE3ODIyMjYxNDQuNjU1MzA3LCJleHAiOjQ5Mzc4OTk3NDQuNjQ5MjQ5LCJzdWIiOiIyNDQ5MDA2Iiwic2NvcGVzIjpbXX0.gXowQcDS-zoaY-A1We4MOAcjeaJ7RGc5VPB4EuXq2RR3vMyFfUmzeucHkxeNNj2DFyjtREnqFUOvTPL-y_rpvBKgNt22pwDgjfvb5pz9KB1zV_x_ULdOyGDFPQvYvmOcnDeXRTbZKSNQ7BrYHh_o1hFMiqc7YtGL9F3tsnYVi3ZyeFJStmeAxHP0493VIrR_FzKZS7l2fPG5ltaMomShz6T3MhEUCsLsGTfZc92ufHU1bRhXYdzQMkDpzVrhtZtd-ix-P_ym12GrORv5k5LOm69ts38rUQyCZR5dPxIrTFv2J1kEhhF-8uhQ9R6i6x0hf0Yv2KMVF-cDhoI9w6MTB_zXR58IiQ0W0xaeEwrEseCOwhFEUs7UIeMBVl5sopJViSOZBYRXbv67COxej5rNZM-RD6BZfDbiWJ_MTYLmOJ7BCpDKkZ04SzALl5E0McPR645u-Znf4eXMRgNTYrLUTOdQ6ez3BmmOZ3hhwA7toi1rXXaQJCBWlgs9g6bZeYKVoPdT8suaK6bXA9vaaA4-6c8yAhEyeXReB3gWzaJmQ6XCdBk5MRVOJ-gHZNHpibBz03MYRtKL6R1HM3GRBELXYQt3puu5IlHP_m9xk9FHKwH8WVkzvnSmU2SpUbHabozMNKSNeuopT9r3CAnAnd5WYdpZFeSMFcpr8MTjYTXOhuE';
 const ML_GROUPS = {
-  F: 'GROUP_ID_F',   // mbti-shadow-F（情緒潛流型）← 填入 Group ID
-  T: 'GROUP_ID_T',   // mbti-shadow-T（邏輯防護型）← 填入 Group ID
-  N: 'GROUP_ID_N',   // mbti-shadow-N（可能性逃逸型）← 填入 Group ID
-  S: 'GROUP_ID_S',   // mbti-shadow-S（當下錨定型）← 填入 Group ID
+  F: '191078253479331592',  // mbti-shadow-F（情緒潛流型）
+  T: '191078254146225477',  // mbti-shadow-T（邏輯防護型）
+  N: '191078254720845542',  // mbti-shadow-N（可能性逃逸型）
+  S: '191078255289173116',  // mbti-shadow-S（當下錨定型）
 };
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
@@ -774,13 +776,28 @@ function renderFullResult() {
 
 /* ── 動作 ── */
 function retryQuiz() { showScreen('screen-start'); }
-function shareResult() {
-  const type = document.getElementById('r-type').textContent;
-  if (navigator.share) {
-    navigator.share({ title: 'Mori 測驗結果', text: '我的測驗結果是「' + type + '」', url: location.href });
-  } else {
-    navigator.clipboard.writeText(location.href).then(() => alert('連結已複製'));
-  }
+async function shareResult() {
+  if (!currentResultKey) return;
+  const r = RESULTS[currentResultKey];
+  const target = document.getElementById('pdf-target');
+  target.style.display = 'block';
+  target.innerHTML = buildPDFHTML(r);
+  try {
+    const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
+    canvas.toBlob(async (blob) => {
+      const fname = 'mori-result-' + currentResultKey.toLowerCase() + '.png';
+      const file = new File([blob], fname, { type: 'image/png' });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Mori 測驗結果' });
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fname;
+        a.click();
+      }
+    }, 'image/png');
+  } catch(e) { console.error(e); }
+  finally { target.style.display = 'none'; }
 }
 async function submitEmail() {
   const emailEl = document.getElementById('email-input');
@@ -851,5 +868,6 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 <div id="pdf-target"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>

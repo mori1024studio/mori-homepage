@@ -199,8 +199,8 @@ nav {
 
 /* ── ABOUT SECTION ── */
 #about {
-  padding: 160px 52px; background: rgba(9,7,5,.75);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  padding: 160px 52px; background: rgba(9,7,5,.25);
+  backdrop-filter: blur(1px); -webkit-backdrop-filter: blur(1px);
   border-top: 1px solid var(--border); position: relative; overflow: hidden;
 }
 .about-sacred { position: absolute; right: -10%; top: 50%; transform: translateY(-50%); pointer-events: none; }

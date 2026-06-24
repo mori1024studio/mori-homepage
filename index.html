@@ -456,50 +456,74 @@
   const cvs=document.getElementById('three-canvas');
   const W=window.innerWidth,H=window.innerHeight;
   const scene=new THREE.Scene();
-  scene.fog=new THREE.FogExp2(0x090705,0.0006);
-  const camera=new THREE.PerspectiveCamera(68,W/H,0.1,2000);
-  camera.position.set(0,90,380); camera.lookAt(0,10,0);
+  scene.fog=new THREE.FogExp2(0x090705,0.0011);
+  const camera=new THREE.PerspectiveCamera(80,W/H,0.1,3000);
+  camera.position.set(0,-110,200); camera.lookAt(0,-100,-300);
   const renderer=new THREE.WebGLRenderer({canvas:cvs,antialias:false});
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
   renderer.setSize(W,H); renderer.setClearColor(0x090705,1);
   const circleTex=makeCircleTex();
 
-  /* ── PARTICLES：峽谷地形分布 ── */
-  // 左峽谷壁 30% | 右峽谷壁 30% | 峽谷地板 18% | 山峰 12% | 環境 10%
-  // 牆壁收窄到 x=±110~320，讓攝影機飛過時牆壁更近、更震撼
+  /* ── TERRAIN SYSTEM：三地形自動輪換（星空 / 沙丘 / 山峰）── */
   const isMobile=window.innerWidth<768;
-  const COUNT=isMobile?10000:22000;
-  const pos=new Float32Array(COUNT*3),col=new Float32Array(COUNT*3),
-        phase=new Float32Array(COUNT),baseY=new Float32Array(COUNT);
-  for(let i=0;i<COUNT;i++){
-    const r=Math.random(),z=Math.random()*1500-1050;
-    let x,y;
-    if(r<0.30){                                           // 左牆
-      x=-(110+Math.random()*210); y=-100+Math.random()*500;
-    } else if(r<0.60){                                    // 右牆
-      x=  110+Math.random()*210;  y=-100+Math.random()*500;
-    } else if(r<0.78){                                    // 地板
-      x=(Math.random()-.5)*600;   y=-200+Math.random()*110;
-    } else if(r<0.90){                                    // 山峰
-      x=(Math.random()-.5)*500+(Math.random()>.5?200:-200);
-      y=130+Math.random()*320;
-    } else {                                              // 環境
-      x=(Math.random()-.5)*800;
-      const n1=noise2D(x*.004,z*.004),n2=noise2D(x*.015,z*.015);
-      y=n1*20+n2*10;
+  const HP={
+    count:isMobile?14000:40000, size:isMobile?7:5.5,
+    float:18, terrainScale:1.1, terrainY:-200,
+    terrainXScale:4, surfaceTight:0.05, terrainZScale:2,
+  };
+  const MAX=HP.count;
+  const bX=new Float32Array(MAX),bY=new Float32Array(MAX),bZ=new Float32Array(MAX);
+  const tX=new Float32Array(MAX),tY=new Float32Array(MAX),tZ=new Float32Array(MAX);
+  const phi=new Float32Array(MAX);
+  for(let i=0;i<MAX;i++) phi[i]=Math.random()*Math.PI*2;
+
+  function expOff(s){return -Math.log(1-Math.random()*.9999)*s*HP.surfaceTight;}
+  function gauss(sig){const u=Math.max(Math.random(),1e-9),v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(Math.PI*2*v)*sig;}
+
+  function genStarfield(N,bx,by,bz){
+    const nebs=[
+      {cx:-220,cy:150,cz:-180,sx:120,sy:55,sz:130},{cx:280,cy:200,cz:80,sx:140,sy:65,sz:150},
+      {cx:-360,cy:80,cz:-520,sx:110,sy:50,sz:120},{cx:160,cy:310,cz:-720,sx:100,sy:45,sz:115},
+      {cx:-80,cy:60,cz:280,sx:90,sy:40,sz:100},{cx:420,cy:190,cz:-350,sx:130,sy:60,sz:140},
+      {cx:-480,cy:250,cz:-680,sx:115,sy:52,sz:125},{cx:50,cy:400,cz:-160,sx:80,sy:38,sz:90},
+      {cx:230,cy:110,cz:-920,sx:125,sy:58,sz:135},{cx:-270,cy:280,cz:-820,sx:105,sy:48,sz:115},
+    ];
+    for(let i=0;i<N;i++){
+      const p=Math.random(),x=(Math.random()-.5)*1500,z=Math.random()*1600-1100;
+      if(p<.42){bx[i]=x;by[i]=110+x*.05+(z+300)*.015+gauss(28);bz[i]=z;}
+      else if(p<.67){const nb=nebs[Math.floor(Math.random()*nebs.length)];bx[i]=nb.cx+gauss(nb.sx);by[i]=nb.cy+gauss(nb.sy);bz[i]=nb.cz+gauss(nb.sz);}
+      else{bx[i]=(Math.random()-.5)*1400;by[i]=-180+Math.random()*650;bz[i]=z;}
     }
-    pos[i*3]=x; pos[i*3+1]=y; pos[i*3+2]=z;
-    baseY[i]=y;
-    const b=.35+Math.random()*.65;
-    col[i*3]=(196/255)*b; col[i*3+1]=(169/255)*b*(.88+Math.random()*.22); col[i*3+2]=(106/255)*b*(.65+Math.random()*.35);
-    phase[i]=Math.random()*Math.PI*2;
   }
+  function genDunes(N,bx,by,bz){
+    function H(x,z){return noise2D(x*.005,z*.004)*185+noise2D(x*.014,z*.013)*62+noise2D(x*.036,z*.031)*21;}
+    for(let i=0;i<N;i++){const x=(Math.random()-.5)*900,z=Math.random()*1500-1050;bx[i]=x;by[i]=H(x,z)+expOff(13);bz[i]=z;}
+  }
+  function genMountain(N,bx,by,bz){
+    const pks=Array.from({length:7},()=>({px:(Math.random()-.5)*380,pz:Math.random()*1500-1050,H:120+Math.random()*300,sg:38+Math.random()*70}));
+    function H(x,z){let h=noise2D(x*.005,z*.005)*55+noise2D(x*.018,z*.018)*20;for(const p of pks){const dx=x-p.px,dz=z-p.pz;h+=p.H*Math.exp(-(dx*dx+dz*dz)/(2*p.sg*p.sg));}return h-65;}
+    for(let i=0;i<N;i++){const x=(Math.random()-.5)*720,z=Math.random()*1500-1050;bx[i]=x;by[i]=H(x,z)+expOff(18);bz[i]=z;}
+  }
+
+  const TERRAIN_FNS=[genStarfield,genDunes,genMountain];
+  let curTerrain=0,lerping=false;
+  function applyTerrain(idx,withLerp){
+    TERRAIN_FNS[idx](MAX,tX,tY,tZ);
+    if(withLerp){lerping=true;}
+    else{for(let i=0;i<MAX;i++){bX[i]=tX[i];bY[i]=tY[i];bZ[i]=tZ[i];}lerping=false;}
+    curTerrain=idx;
+  }
+  setInterval(()=>applyTerrain((curTerrain+1)%TERRAIN_FNS.length,true), 5*60*1000);
+  applyTerrain(0,false);
+
+  const pos=new Float32Array(MAX*3);
   const geo=new THREE.BufferGeometry();
   geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  geo.setDrawRange(0,MAX);
   const mat=new THREE.PointsMaterial({
-    size:isMobile?7:5.5,map:circleTex,alphaMap:circleTex,
-    vertexColors:true,transparent:true,opacity:.9,sizeAttenuation:true,
+    size:HP.size,map:circleTex,
+    color:new THREE.Color('#C4A96A'),
+    transparent:true,opacity:.9,sizeAttenuation:true,
     depthWrite:false,blending:THREE.AdditiveBlending,alphaTest:.01,
   });
   const particles=new THREE.Points(geo,mat); scene.add(particles);
@@ -527,13 +551,12 @@
   // 航點：高空俯衝 → 峽谷底（左右牆包夾）→ 急速拉升看峰頂 → 第二俯衝 → 出雲
   // 峽谷壁在 x=±180~450，攝影機 x 保持 ±100 之內，讓牆壁始終可見
   const WP=[
-    {t:0.00, cx:0,   cy:160, cz:380,  tx:0,   ty:40,  tz:120,  roll:0.00},  // 高空俯視
-    {t:0.14, cx:60,  cy:80,  cz:180,  tx:-80, ty:0,   tz:-20,  roll:-0.32}, // 右壓彎進入
-    {t:0.28, cx:-50, cy:-20, cz:0,    tx:70,  ty:-80, tz:-200, roll:0.35},  // 俯衝峽谷底，看地板
-    {t:0.44, cx:70,  cy:-60, cz:-200, tx:-60, ty:-20, tz:-400, roll:-0.28}, // 峽谷深處，雙牆夾道
-    {t:0.58, cx:-40, cy:100, cz:-400, tx:30,  ty:280, tz:-560, roll:0.30},  // 急速拉升，仰望山峰
-    {t:0.74, cx:50,  cy:-30, cz:-560, tx:-50, ty:-60, tz:-730, roll:-0.24}, // 俯衝穿越第二峽谷
-    {t:1.00, cx:0,   cy:60,  cz:-730, tx:0,   ty:20,  tz:-950, roll:0.00},  // 出雲穩定
+    {t:0.00, cx:0,   cy:-110, cz:200,  tx:0,   ty:-100, tz:-300,  roll:0.00},
+    {t:0.18, cx:90,  cy:-110, cz:0,    tx:-60, ty:-100, tz:-200,  roll:-0.18},
+    {t:0.36, cx:-70, cy:-130, cz:-200, tx:50,  ty:-100, tz:-400,  roll:0.16},
+    {t:0.54, cx:60,  cy:-100, cz:-400, tx:-45, ty:-100, tz:-600,  roll:-0.14},
+    {t:0.72, cx:-40, cy:-120, cz:-600, tx:30,  ty:-100, tz:-800,  roll:0.12},
+    {t:1.00, cx:0,   cy:-110, cz:-800, tx:0,   ty:-100, tz:-1000, roll:0.00},
   ];
   function wpLerp(key,p){
     p=Math.max(0,Math.min(1,p));
@@ -544,7 +567,7 @@
     return WP[WP.length-1][key];
   }
   const ease=(t)=>t<.5?2*t*t:-1+(4-2*t)*t;
-  let time=0; const posAttr=geo.attributes.position;
+  let time=0;
 
   function animate(){
     requestAnimationFrame(animate); time+=.006;
@@ -558,7 +581,22 @@
     camera.position.set(cx,cy,cz);
     camera.up.set(Math.sin(roll),Math.cos(roll),0);
     camera.lookAt(tx,ty,tz);
-    for(let i=0;i<COUNT;i++) posAttr.array[i*3+1]=baseY[i]+Math.sin(time*.7+phase[i])*3.5;
+    // lerp 地形過渡
+    if(lerping){
+      let done=true;
+      for(let i=0;i<MAX;i++){
+        const dx=tX[i]-bX[i],dy=tY[i]-bY[i],dz=tZ[i]-bZ[i];
+        if(Math.abs(dx)+Math.abs(dy)+Math.abs(dz)>0.8)done=false;
+        bX[i]+=dx*.025;bY[i]+=dy*.025;bZ[i]+=dz*.025;
+      }
+      if(done)lerping=false;
+    }
+    const posAttr=geo.attributes.position;
+    for(let i=0;i<MAX;i++){
+      posAttr.array[i*3  ]=bX[i]*HP.terrainXScale;
+      posAttr.array[i*3+1]=bY[i]*HP.terrainScale+HP.terrainY+Math.sin(time*.7+phi[i])*HP.float;
+      posAttr.array[i*3+2]=bZ[i]*HP.terrainZScale;
+    }
     posAttr.needsUpdate=true; particles.rotation.y+=.00008;
     sUni.uTime.value=time; sUni.uFade.value=1.-ease(Math.min(raw*2.8,1));
     glowSphere.rotation.y+=.00025;
