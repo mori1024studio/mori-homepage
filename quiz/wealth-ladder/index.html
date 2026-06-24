@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- v1.0 | 2026-06-24 | 財富階梯 T2 進度階梯 CF版 port -->
+<title>MORI — 你現在站在財富的哪一階？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+/* ══ 測驗頁專屬樣式 ══════════════════════════════════════════ */
+#site { min-height: 100vh; display: flex; flex-direction: column; }
+.quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
+.screen { width: 100%; max-width: 640px; opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s ease; pointer-events: none; position: absolute; }
+.screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
+
+/* ── Start ── */
+.start-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px; text-transform: uppercase; }
+.start-title { font-family: var(--font-display); font-weight: 900; font-size: 44px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; margin-bottom: 28px; }
+.start-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.55); margin-bottom: 48px; }
+.start-meta { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em; color: rgba(154,140,120,.4); margin-bottom: 48px; }
+.btn-start { display: inline-flex; align-items: center; gap: 16px; font-family: var(--font-body); font-size: 16px; letter-spacing: .25em; color: var(--gold); background: transparent; border: 1px solid rgba(196,169,106,.25); padding: 14px 36px; cursor: none; transition: all .3s; }
+.btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
+.btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
+.btn-start:hover .btn-start-arrow { width: 44px; }
+
+/* ── Quiz ── */
+.dim-banner { display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px; border: 1px solid rgba(196,169,106,.15); margin-bottom: 20px; }
+.dim-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.dim-text { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .35em; color: rgba(196,169,106,.5); text-transform: uppercase; }
+.progress-wrap { margin-bottom: 40px; }
+.progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
+.progress-total { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .3em; color: rgba(154,140,120,.45); text-transform: uppercase; }
+.progress-bar-bg { height: 1px; background: rgba(196,169,106,.1); }
+.progress-bar-fill { height: 1px; background: var(--gold); transition: width .6s cubic-bezier(.4,0,.2,1); position: relative; }
+.progress-bar-fill::after { content: ''; position: absolute; right: -3px; top: -3px; width: 7px; height: 7px; background: var(--gold); border-radius: 50%; }
+.question-text { font-family: 'LXGW WenKai TC', serif; font-size: 22px; line-height: 1.8; color: var(--text); margin-bottom: 36px; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option { display: flex; align-items: flex-start; gap: 16px; padding: 14px 18px; background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1); cursor: none; transition: all .25s; position: relative; overflow: hidden; }
+.option::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform .3s; }
+.option:hover { border-color: rgba(196,169,106,.28); background: rgba(16,12,8,.85); }
+.option:hover::before { transform: scaleY(1); }
+.option.selected { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); pointer-events: none; }
+.option.selected::before { transform: scaleY(1); }
+.option.fade-out { opacity: .25; transform: translateX(-6px); }
+.option-key { font-family: 'Kaushan Script', cursive; font-size: 18px; color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px; transition: color .25s; }
+.option:hover .option-key, .option.selected .option-key { color: var(--gold); }
+.option-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7; color: rgba(237,232,223,.7); transition: color .25s; }
+.option:hover .option-text, .option.selected .option-text { color: var(--text); }
+.quiz-nav { margin-top: 24px; }
+.btn-prev-q { background: transparent; border: 1px solid var(--border); border-radius: 100px; padding: 10px 22px; font-size: 13px; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .3s, color .3s; }
+.btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+
+/* ── Sub-question banner ── */
+.sub-banner { background: rgba(196,169,106,.06); border: 1px solid rgba(196,169,106,.2); padding: 14px 18px; margin-bottom: 20px; font-family: 'Noto Sans TC', sans-serif; font-size: 12px; color: rgba(196,169,106,.7); letter-spacing: .1em; }
+
+/* ── Survey ── */
+.survey-type-teaser { text-align: center; margin-bottom: 28px; }
+.survey-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.survey-type-name { font-size: clamp(22px,5vw,32px); font-weight: 900; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.survey-type-brief { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.survey-divider { text-align: center; font-size: 11px; letter-spacing: .1em; color: var(--muted); margin: 24px 0 20px; }
+.survey-group { margin-bottom: 24px; }
+.survey-q { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.5; }
+.survey-opts { display: flex; flex-direction: column; gap: 8px; }
+.survey-opt { background: rgba(28,28,42,.6); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-family: var(--font-ui); font-size: 13px; color: var(--muted); cursor: none; text-align: left; transition: border-color .2s, color .2s; }
+.survey-opt:hover { border-color: rgba(196,169,106,.3); color: var(--text); }
+.survey-opt.picked { border-color: var(--gold); color: var(--text); background: rgba(196,169,106,.08); }
+.btn-unlock { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; font-family: var(--font-ui); font-size: 15px; font-weight: 900; border: none; border-radius: 100px; cursor: none; margin-top: 8px; opacity: .35; pointer-events: none; transition: opacity .25s; }
+.btn-unlock:not([disabled]) { opacity: 1; pointer-events: auto; }
+
+/* ── T2 結果：進度階梯 ── */
+.result-header { text-align: center; margin-bottom: 36px; opacity: 0; transform: translateY(16px); transition: opacity .6s ease .1s, transform .6s ease .1s; }
+.result-header.revealed { opacity: 1; transform: translateY(0); }
+.result-badge { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
+.result-level { font-family: var(--font-display); font-weight: 900; font-size: 52px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 6px; }
+.result-freedom { font-family: 'Noto Sans TC', sans-serif; font-size: 11px; letter-spacing: .4em; color: rgba(196,169,106,.55); text-transform: uppercase; margin-bottom: 16px; }
+.result-stage { font-family: 'Noto Sans TC', sans-serif; font-size: 14px; color: var(--muted); }
+
+/* ── 階梯視覺 ── */
+.ladder-wrap { margin: 32px 0 40px; opacity: 0; transition: opacity .5s ease .3s; }
+.ladder-wrap.revealed { opacity: 1; }
+.ladder { display: flex; align-items: flex-end; gap: 3px; height: 160px; }
+.ladder-step { flex: 1; border-radius: 3px 3px 0 0; position: relative; transform: scaleY(0); transform-origin: center bottom; transition: transform .5s cubic-bezier(.34,1.2,.64,1); }
+.ladder-step-label { position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); font-family: 'Kaushan Script', cursive; font-size: 13px; color: rgba(196,169,106,.35); white-space: nowrap; }
+.ladder-step.past   { background: var(--step-color, rgba(196,169,106,.25)); }
+.ladder-step.active { background: var(--step-color, var(--gold)); box-shadow: 0 0 20px var(--step-color, var(--gold)); }
+.ladder-step.future { background: rgba(20,20,30,.7); border: 1px solid rgba(196,169,106,.08); }
+.ladder-step.show { transform: scaleY(1); }
+.ladder-active-badge { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .2em; color: var(--gold); white-space: nowrap; opacity: 0; transition: opacity .4s ease .8s; }
+.ladder-step.active .ladder-active-badge { opacity: 1; }
+
+/* ── 維度分數 ── */
+.dim-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 36px; }
+.dim-score-item { padding: 12px 14px; border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5); }
+.dim-score-label { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; color: rgba(196,169,106,.45); margin-bottom: 8px; }
+.dim-score-bar-bg { height: 2px; background: rgba(196,169,106,.1); border-radius: 2px; margin-bottom: 6px; }
+.dim-score-bar-fill { height: 2px; background: var(--gold); border-radius: 2px; transition: width 1s ease .5s; }
+.dim-score-val { font-family: 'Kaushan Script', cursive; font-size: 20px; color: var(--gold); }
+
+/* ── 結果內容 ── */
+.result-content { opacity: 0; transition: opacity .6s ease .6s; }
+.result-content.revealed { opacity: 1; }
+.result-motto { font-family: 'LXGW WenKai TC', serif; font-size: 17px; line-height: 1.8; color: rgba(196,169,106,.8); border-left: 2px solid rgba(196,169,106,.3); padding-left: 16px; margin-bottom: 24px; }
+.result-divider { width: 48px; height: 1px; background: rgba(196,169,106,.25); margin-bottom: 24px; }
+.result-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.65); margin-bottom: 28px; }
+.result-section-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 14px; }
+.result-list { list-style: none; padding: 0; margin: 0 0 28px; display: flex; flex-direction: column; gap: 10px; }
+.result-list li { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8; color: rgba(237,232,223,.65); padding-left: 16px; position: relative; }
+.result-list li::before { content: '—'; position: absolute; left: 0; color: rgba(196,169,106,.4); }
+.result-morview { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); padding: 18px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); margin-bottom: 28px; }
+.result-morview strong { color: rgba(237,232,223,.85); font-weight: normal; }
+
+/* ── CTA ── */
+.btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 40px; }
+.btn-sec-row { display: flex; gap: 10px; }
+.btn-line { display: flex; align-items: center; justify-content: center; gap: 10px; background: #06C755; color: #fff; border: none; border-radius: 100px; padding: 16px; font-size: 15px; font-weight: 900; cursor: none; font-family: var(--font-ui); transition: opacity .2s; width: 100%; }
+.btn-line:hover { opacity: .88; }
+.btn-ghost-sec { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1.5px solid var(--border); border-radius: 100px; padding: 13px 16px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .2s, color .2s; }
+.btn-ghost-sec:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+.btn-ghost-full { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1.5px solid var(--border); border-radius: 100px; padding: 13px 16px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .2s, color .2s; }
+.btn-ghost-full:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+.btn-retry { background: transparent; border: 1px solid rgba(196,169,106,.12); color: rgba(154,140,120,.6); border-radius: 100px; padding: 12px 28px; font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; cursor: none; transition: all .25s; }
+.btn-retry:hover { color: rgba(154,140,120,.9); border-color: rgba(196,169,106,.25); }
+.result-cta { margin-top: 32px; padding: 24px; border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5); }
+.result-cta-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 12px; }
+.result-cta-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8; color: rgba(237,232,223,.55); margin-bottom: 16px; }
+.email-form { display: flex; gap: 8px; }
+.email-input { flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8); border: 1px solid rgba(196,169,106,.2); color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .25s; }
+.email-input:focus { border-color: rgba(196,169,106,.45); }
+.email-input::placeholder { color: rgba(154,140,120,.35); }
+.btn-email { padding: 10px 20px; background: rgba(196,169,106,.12); border: 1px solid rgba(196,169,106,.3); color: var(--gold); font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s; }
+.btn-email:hover { background: rgba(196,169,106,.2); }
+.related { margin-top: 48px; border-top: 1px solid rgba(196,169,106,.15); padding-top: 32px; }
+.related-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px; }
+.related-links { display: flex; flex-direction: column; gap: 12px; }
+.related-link { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border: 1px solid rgba(196,169,106,.18); border-radius: 10px; background: rgba(196,169,106,.04); text-decoration: none; transition: background .2s, border-color .2s; }
+.related-link:hover { background: rgba(196,169,106,.09); border-color: rgba(196,169,106,.35); }
+.related-link-title { font-family: 'LXGW WenKai TC', serif; font-size: 14px; color: rgba(237,232,223,.75); }
+.related-link-tag { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .1em; color: rgba(196,169,106,.5); white-space: nowrap; margin-left: 12px; }
+#pdf-target { position: fixed; top: -9999px; left: -9999px; width: 390px; display: none; }
+</style>
+</head>
+<body>
+<div id="god-ray"></div>
+<div id="vignette"></div>
+<div id="preloader">
+  <div id="pre-top"></div><div id="pre-bot"></div>
+  <div id="pre-corner-tl"></div><div id="pre-corner-br"></div>
+  <div id="pre-center">
+    <div class="pre-line" id="line-l"></div>
+    <span id="pre-text">Loading</span>
+    <div class="pre-line" id="line-r"></div>
+  </div>
+</div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<div id="site">
+  <nav>
+    <a href="/" class="logo" style="text-decoration:none">Mori</a>
+    <div class="nav-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+  </nav>
+  <main class="quiz-main">
+
+    <!-- 開始畫面 -->
+    <div class="screen active" id="screen-start">
+      <div class="ornament" style="margin-bottom:36px">
+        <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
+      </div>
+      <p class="start-eyebrow">Mori Studio · 財富位置診斷</p>
+      <h1 class="start-title">你現在站在<br>財富的哪一階？</h1>
+      <p class="start-desc">18 道情境題，從財務現況、行為、思維、目標四個維度，精準定位你在財富六階梯的位置，以及下一步該做什麼。</p>
+      <p class="start-meta">共 18 題 · 約 5 分鐘 · 6 個財富階層</p>
+      <button class="btn-start" onclick="startQuiz()">開始測驗<span class="btn-start-arrow"></span></button>
+    </div>
+
+    <!-- 作答畫面 -->
+    <div class="screen" id="screen-quiz">
+      <div class="dim-banner" id="dim-banner">
+        <div class="dim-dot"></div>
+        <span class="dim-text" id="dim-label">S 財務現況</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-num" id="q-num">Q1</span>
+          <span class="progress-total" id="q-total">/ 18 題</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <div id="sub-banner" class="sub-banner" style="display:none">⚠ 你的淨資產已超過一般計分範圍，請進一步確認：</div>
+      <p class="question-text" id="q-text"></p>
+      <div class="options" id="options-wrap"></div>
+      <div class="quiz-nav">
+        <button class="btn-prev-q" id="btnPrev" onclick="prevQ()">← 返回首頁</button>
+      </div>
+    </div>
+
+    <!-- 調查門 -->
+    <div class="screen" id="screen-survey">
+      <div class="survey-type-teaser">
+        <p class="survey-eyebrow">你的財富位置確定了</p>
+        <h2 class="survey-type-name" id="s-type-name"></h2>
+        <p class="survey-type-brief" id="s-type-brief"></p>
+      </div>
+      <div class="survey-divider">✦ 最後 3 個問題，讓分析更精準</div>
+      <div class="survey-group">
+        <p class="survey-q">目前最讓你困擾的財務問題是？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">收入太低，不知道從哪裡突破</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">有閒錢但不知道怎麼投資</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">收入不穩定，被動收入幾乎沒有</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">資產夠了，但擔心怎麼保護和傳承</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你對副業的目前態度是？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">還沒開始想，光本業就夠忙了</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">想做，但不確定從哪裡切入</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">有在做，還在摸索階段</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">副業已有穩定收入，在做進一步規模化</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">現在最想改變的一件事是？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">先存到第一個 10 萬緊急備用金</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">建立穩定的投資習慣（定期定額）</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">開始有真正的被動收入</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">讓財富在我不在的時候繼續運作</button>
+        </div>
+      </div>
+      <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看你的財富位置全解析 →</button>
+    </div>
+
+    <!-- 結果畫面（T2 進度階梯）-->
+    <div class="screen" id="screen-result">
+
+      <!-- 標題區 -->
+      <div class="result-header" id="result-header">
+        <p class="result-badge" id="r-badge"></p>
+        <h2 class="result-level" id="r-level"></h2>
+        <p class="result-freedom" id="r-freedom"></p>
+        <p class="result-stage" id="r-stage"></p>
+      </div>
+
+      <!-- 階梯視覺 -->
+      <div class="ladder-wrap" id="ladder-wrap">
+        <div class="ladder" id="ladder">
+          <div class="ladder-step future" id="step-l1" style="height:25px;--step-color:#5B8DB8">
+            <span class="ladder-active-badge">你在這裡</span>
+            <span class="ladder-step-label">L1</span>
+          </div>
+          <div class="ladder-step future" id="step-l2" style="height:50px;--step-color:#6BA8C4">
+            <span class="ladder-active-badge">你在這裡</span>
+            <span class="ladder-step-label">L2</span>
+          </div>
+          <div class="ladder-step future" id="step-l3" style="height:75px;--step-color:#A4BEC8">
+            <span class="ladder-active-badge">你在這裡</span>
+            <span class="ladder-step-label">L3</span>
+          </div>
+          <div class="ladder-step future" id="step-l4" style="height:100px;--step-color:#C4A96A">
+            <span class="ladder-active-badge">你在這裡</span>
+            <span class="ladder-step-label">L4</span>
+          </div>
+          <div class="ladder-step future" id="step-l5" style="height:125px;--step-color:#D4A843">
+            <span class="ladder-active-badge">你在這裡</span>
+            <span class="ladder-step-label">L5</span>
+          </div>
+          <div class="ladder-step future" id="step-l6" style="height:150px;--step-color:#E8C86A">
+            <span class="ladder-active-badge">你在這裡</span>
+            <span class="ladder-step-label">L6</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 維度分數（僅在 L1-L3 顯示，L4+ 用 sub-question 決定不需要） -->
+      <div class="dim-scores" id="dim-scores" style="display:none">
+        <div class="dim-score-item">
+          <div class="dim-score-label">S · 財務現況</div>
+          <div class="dim-score-bar-bg"><div class="dim-score-bar-fill" id="bar-s" style="width:0%"></div></div>
+          <div class="dim-score-val" id="val-s">0%</div>
+        </div>
+        <div class="dim-score-item">
+          <div class="dim-score-label">B · 財務行為</div>
+          <div class="dim-score-bar-bg"><div class="dim-score-bar-fill" id="bar-b" style="width:0%"></div></div>
+          <div class="dim-score-val" id="val-b">0%</div>
+        </div>
+        <div class="dim-score-item">
+          <div class="dim-score-label">M · 財務思維</div>
+          <div class="dim-score-bar-bg"><div class="dim-score-bar-fill" id="bar-m" style="width:0%"></div></div>
+          <div class="dim-score-val" id="val-m">0%</div>
+        </div>
+        <div class="dim-score-item">
+          <div class="dim-score-label">G · 財務目標</div>
+          <div class="dim-score-bar-bg"><div class="dim-score-bar-fill" id="bar-g" style="width:0%"></div></div>
+          <div class="dim-score-val" id="val-g">0%</div>
+        </div>
+      </div>
+
+      <!-- 結果內容 -->
+      <div class="result-content" id="result-content">
+        <p class="result-motto" id="r-motto"></p>
+        <div class="result-divider"></div>
+        <p class="result-desc" id="r-desc"></p>
+
+        <div id="keep-section" style="display:none">
+          <p class="result-section-label">你已經做對的事</p>
+          <ul class="result-list" id="r-keep"></ul>
+        </div>
+
+        <p class="result-section-label">下一步行動</p>
+        <ul class="result-list" id="r-focus"></ul>
+
+        <p class="result-section-label">Mori 觀點</p>
+        <div class="result-morview" id="r-morview"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-line" onclick="openLine()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true" style="flex-shrink:0"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          追蹤 LINE@
+        </button>
+        <div class="btn-sec-row">
+          <button class="btn-ghost-sec" onclick="openIG()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            追蹤 IG
+          </button>
+          <button class="btn-ghost-sec" onclick="shareResult()">分享結果</button>
+        </div>
+        <button class="btn-ghost-full" id="dlBtn" onclick="downloadPDF()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          下載結果
+        </button>
+        <button class="btn-retry" onclick="retryQuiz()">重新測驗</button>
+      </div>
+
+      <div class="result-cta">
+        <p class="result-cta-label">深度資源</p>
+        <p class="result-cta-text" id="r-cta-text"></p>
+        <div class="email-form">
+          <input class="email-input" type="email" placeholder="你的 Email" id="email-input">
+          <button class="btn-email" onclick="submitEmail()">送出</button>
+        </div>
+        <p id="email-done" style="display:none;color:var(--gold);font-size:13px;text-align:center;margin-top:12px;">✓ 收到了，稍後寄到你的信箱。</p>
+      </div>
+
+      <div class="related">
+        <p class="related-label">繼續探索</p>
+        <div class="related-links">
+          <a class="related-link" href="/quiz/mindfuck/">
+            <span class="related-link-title">哪條人性一直在操縱你的決定？</span>
+            <span class="related-link-tag">暗黑心智 7型</span>
+          </a>
+          <a class="related-link" href="/quiz/not-enough/">
+            <span class="related-link-title">你的「不夠好」從哪裡來？</span>
+            <span class="related-link-tag">自我價值 5型</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <div class="footer-logo">Mori</div>
+    <div class="footer-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+    <p class="footer-copy">© 2025 Mori Studio · 底層邏輯 × AI 工具 × 副業思維</p>
+  </footer>
+</div>
+
+<script>
+/* ══ 資料區 ══════════════════════════════════════════════════ */
+const ML_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZTY0ZmY0YjJhYzcyMzM0ZTVlZjNmMzBlYTVlZjE0OWE5Mzg1ZDI2NDNiM2EzZmU3ZGUxYWVlMTA0NWZmMjFhYTJmN2FhYzQ5ODIwZDlhZmMiLCJpYXQiOjE3ODIyMjYxNDQuNjU1MzAzLCJuYmYiOjE3ODIyMjYxNDQuNjU1MzA3LCJleHAiOjQ5Mzc4OTk3NDQuNjQ5MjQ5LCJzdWIiOiIyNDQ5MDA2Iiwic2NvcGVzIjpbXX0.gXowQcDS-zoaY-A1We4MOAcjeaJ7RGc5VPB4EuXq2RR3vMyFfUmzeucHkxeNNj2DFyjtREnqFUOvTPL-y_rpvBKgNt22pwDgjfvb5pz9KB1zV_x_ULdOyGDFPQvYvmOcnDeXRTbZKSNQ7BrYHh_o1hFMiqc7YtGL9F3tsnYVi3ZyeFJStmeAxHP0493VIrR_FzKZS7l2fPG5ltaMomShz6T3MhEUCsLsGTfZc92ufHU1bRhXYdzQMkDpzVrhtZtd-ix-P_ym12GrORv5k5LOm69ts38rUQyCZR5dPxIrTFv2J1kEhhF-8uhQ9R6i6x0hf0Yv2KMVF-cDhoI9w6MTB_zXR58IiQ0W0xaeEwrEseCOwhFEUs7UIeMBVl5sopJViSOZBYRXbv67COxej5rNZM-RD6BZfDbiWJ_MTYLmOJ7BCpDKkZ04SzALl5E0McPR645u-Znf4eXMRgNTYrLUTOdQ6ez3BmmOZ3hhwA7toi1rXXaQJCBWlgs9g6bZeYKVoPdT8suaK6bXA9vaaA4-6c8yAhEyeXReB3gWzaJmQ6XCdBk5MRVOJ-gHZNHpibBz03MYRtKL6R1HM3GRBELXYQt3puu5IlHP_m9xk9FHKwH8WVkzvnSmU2SpUbHabozMNKSNeuopT9r3CAnAnd5WYdpZFeSMFcpr8MTjYTXOhuE';
+const ML_GROUPS = { l1:'191078823526139756', l2:'191078824131167783', l3:'191078824802256318', l4:'191078825522628440', l5:'191078826208396302', l6:'191078826889971230' };
+const CFG = { lineUrl:'https://line.me/R/ti/p/@507wvwbz', igUrl:'https://instagram.com/mori1024_' };
+const DIM_MAX = {S:18, B:18, M:12, G:6};
+const LVL_ORDER = ['l1','l2','l3','l4','l5','l6'];
+
+const SUB_Q1 = {
+  dim:'S', isSubQ:true,
+  q:'請進一步確認你的淨資產範圍：',
+  opts:['320萬 ～ 3,200萬台幣（約 10萬～100萬 USD）','3,200萬 ～ 3.2億台幣（約 100萬～1,000萬 USD）','3.2億台幣以上（約 1,000萬 USD 以上）'],
+  levelOverride:['l4','l5','l6'],
+  dimLbl:'S 財務現況（細化）'
+};
+
+const QS = [
+  {dim:'S',dimLbl:'S 財務現況',q:'你的淨資產（所有資產減去所有負債）大約是多少？',triggerSub:true,
+   opts:['負債中，或淨資產接近於零','正數，但在 30萬台幣以下','30萬 ～ 320萬台幣之間','320萬台幣以上（含投資資產）']},
+  {dim:'S',dimLbl:'S 財務現況',q:'如果明天突然失業，你的積蓄大概能撐多久？',
+   opts:['不到 1 個月','1 ～ 3 個月','3 個月 ～ 1 年','1 年以上，或被動收入已能覆蓋生活費']},
+  {dim:'S',dimLbl:'S 財務現況',q:'每個月，你能固定存下多少比例的收入？',
+   opts:['幾乎沒有，甚至入不敷出','不到 10%（偶爾才存得到）','10 ～ 25%（有點吃力但能做到）','25% 以上，或儲蓄已不是主要關注點']},
+  {dim:'S',dimLbl:'S 財務現況',q:'你目前的被動收入狀況是？',
+   opts:['完全沒有','偶爾有，但不穩定（如分紅、零星投資收益）','每月有固定被動收入，但佔總收入比例不高','被動收入已能覆蓋一半以上的基本生活支出']},
+  {dim:'S',dimLbl:'S 財務現況',q:'你目前的負債狀況？',
+   opts:['有消費性負債（信用卡循環、分期等），每月利息是負擔','有學貸或車貸，正在償還中','有房貸，但屬於計畫內，不影響現金流','沒有負債，或只有策略性低利率貸款']},
+  {dim:'S',dimLbl:'S 財務現況',q:'你的主要收入來源是什麼？',
+   opts:['單一薪資，沒有其他收入','薪資為主，偶爾有其他小收入','薪資加上穩定副業，收入來源多元','多元收入並行，不依賴任何單一來源']},
+  {dim:'B',dimLbl:'B 財務行為',q:'你目前最花心思在哪個財務行動上？',
+   opts:['讓每個月支出不超過收入','透過副業或技能提升增加收入','讓投資組合穩健持續增長','稅務規劃、資產傳承或集中風險管理']},
+  {dim:'B',dimLbl:'B 財務行為',q:'你對副業或額外收入的目前狀態是？',
+   opts:['沒有，也沒有認真考慮','有在嘗試，但還沒有穩定收入','有穩定副業收入，但薪資仍是主要來源','投資或副業已是主要收入，薪資是次要或不必要的']},
+  {dim:'B',dimLbl:'B 財務行為',q:'你目前有在定期投資嗎？（如每月定額買 ETF / 基金）',
+   opts:['沒有，還沒開始','偶爾買一點，但很不規律','有，定期定額，已成固定習慣','投資組合已高度自動化，重心轉向資產配置優化']},
+  {dim:'B',dimLbl:'B 財務行為',q:'你使用「收費制財務顧問」（fee-only，按時間或固定費收費）嗎？',
+   opts:['沒有，也不知道和一般理財顧問有什麼差異','知道差異，但感覺目前資產規模還用不著','有考慮，正在評估或剛開始使用','有，定期進行資產審視；或已達到考慮家族辦公室的規模']},
+  {dim:'B',dimLbl:'B 財務行為',q:'你記錄和追蹤個人財務的習慣是？',
+   opts:['沒有，大概知道收支狀況就好','偶爾記帳，但不規律','有固定追蹤淨資產，每月或每季更新','有完整財務儀表板，追蹤資產配置、稅務、現金流等多維度']},
+  {dim:'B',dimLbl:'B 財務行為',q:'面對一筆意外之財（如年終獎金），你通常的第一反應是？',
+   opts:['先想犒賞自己再說','存起來，但沒有具體計畫','按既定比例分配（消費/備用金/投資），幾乎自動執行','合併進整體資產配置，按再平衡計畫處理']},
+  {dim:'M',dimLbl:'M 財務思維',q:'你對「資產集中風險」的日常關注程度？',
+   opts:['不太了解這個概念','知道要分散，但資產還太少，暫時不是重點','有在主動分散，把資金分布在不同資產類別','這是我最優先關注的風險，集中風險隨時可能帶來不可逆的損傷']},
+  {dim:'M',dimLbl:'M 財務思維',q:'你對「稅務規劃」的實際參與程度？',
+   opts:['完全不了解，只知道要繳稅','了解基本概念，但沒有主動做任何規劃','有利用合法工具做一些優化（退休金帳戶、投資工具選擇等）','有系統性稅務規劃，涉及資產傳承、信託或慈善工具']},
+  {dim:'M',dimLbl:'M 財務思維',q:'面對市場大幅下跌（30%+），你的實際反應會是？',
+   opts:['我幾乎沒有在市場的資產，影響不大','我會焦慮，可能考慮賣出部分','我能維持紀律不賣，因為策略事先已確立','我更關注的是集中風險，整體市場波動對我反而不是主要擔憂']},
+  {dim:'M',dimLbl:'M 財務思維',q:'你認為「金錢」目前對你的生活代表什麼？',
+   opts:['每個月都不夠用，是最大壓力來源','基本夠用，但幾乎沒有餘裕做其他選擇','能讓我做一些想做的事，但仍有很多限制','我任何時候都能對不想做的事說「不」，金錢是工具而非目標']},
+  {dim:'G',dimLbl:'G 財務目標',q:'你目前有在進行「遺產規劃」或「資產傳承」的安排嗎？',
+   opts:['從來沒想過這個問題','知道重要，但感覺是很遠的事','有基本了解（台灣遺產稅門檻等），但還沒具體行動','有，已和律師或顧問做過具體規劃，涉及信託或家族治理']},
+  {dim:'G',dimLbl:'G 財務目標',q:'你對自己財富的「終點」怎麼定義？',
+   opts:['還沒想到這個問題，先活下去再說','希望退休後不用擔心錢的問題','達到財務自由，被動收入覆蓋生活所需','讓財富在我離開後繼續發揮影響力：傳承、公益或家族使命']},
+];
+
+const LVL = {
+  l1:{ badge:'第一階層', freedom:'生存自由', stage:'財富種子期',
+    motto:'非典型結果，需要非典型行動',
+    desc:'你是月光族，一個偶發的厄運就可能讓你陷入鉅額債務。這個階段的問題不是花太多，而是賺太少。',
+    strategy:'最常見的錯誤建議是「記帳省錢」，但第一層的問題在於收入太低，不在於支出。你要採取極端手段：打零工、做兩份工作、拚命學習一項技能，目標只有一個：提高收入並建立緊急資金。省下的 $200 永遠比不上多賺的 $2,000。',
+    mori:'我自己在 L1 的時候，花了整整 6 個月研究 ETF 費用比率，卻還沒有第一個月的緊急備用金。<strong>後來某天突然明白：我用 L3 的策略解決 L1 的問題，難怪什麼都動不了。</strong>書裡有句話讓我印象很深：「診斷錯了，所有的治療都是浪費。」你現在在哪裡，才決定你接下來該做什麼。',
+    focus:['停止把精力放在省錢，把同樣的時間用在學習一個市場有需求的技能','建立最小緊急備用金（目標：先存到 3 萬台幣，作為緩衝墊）','評估目前工作的收入天花板，制定 12 個月的跳槽或轉職計畫'] },
+  l2:{ badge:'第二階層', freedom:'雜貨自由', stage:'財富學習期',
+    motto:'今日學習，終身獲利',
+    desc:'你在雜貨店可以隨心所欲地買，不必看標價。這個階段是教育投資回報率最高的時期。',
+    strategy:'這是教育回報率最高的階段。你的目標是找到專長、興趣與市場需求的交集點。別沉迷於投資，因為本金少，複利也不大；你的職涯發展才是最大的資產。',
+    mori:'L2 的人常常急著想「投資」，但當本金只有幾十萬，花時間學一個能讓薪水翻倍的技能，<strong>遠比研究哪支股票回報高出好幾倍。</strong>我觀察到一個有趣的現象：很多 L2 的人已經知道要改變，但卡在「從哪裡開始」這個問題。其實先從你最容易開始的地方動起來，比選到最完美的起點更重要。',
+    focus:['找到你的「技能—市場」交集：列出 3 個你擅長、市場願意付錢、而且你不討厭的技能','開始小額投資（每月 3,000–5,000 元定期定額 ETF），培養習慣比金額重要','停止比較投資回報，開始比較自己的技能成長速度'] },
+  l3:{ badge:'第三階層', freedom:'餐廳自由', stage:'財富複利期',
+    motto:'持續買進',
+    desc:'你上餐廳點菜可以不看價格。你存下的錢已夠多，開始為你生更多錢。',
+    strategy:'持續買進多元分散的指數基金，靠時間的複利慢慢致富。第三層最大的風險是「生活方式膨脹」，買太貴的房子或車子，讓財富停止複利。紀律不是靠意志力，是靠系統設計。',
+    mori:'L3 是個容易讓人感到「已經做對了」的舒適區。<strong>我常常看到的反模式是：花太多時間優化細節（ETF 費用比率、再平衡時機），而不是去做能帶來更大回報的事。</strong>有一次我問一個朋友：「你研究費用比率差 0.05% 省下的錢，和你把這兩個小時拿去學一個新技能，哪個對你未來 5 年更有影響？」他想了很久，沉默地把電腦關掉了。',
+    focus:['設定「生活方式上限」：決定一個你不會超過的月支出比例，無論薪水怎麼漲','自動化投資：每月薪水入帳第一件事，先自動扣款進投資帳戶','開始計算「淨值成長率」而非薪水成長率：每季記錄一次總資產'] },
+  l4:{ badge:'第四階層', freedom:'旅行自由', stage:'財富轉型期',
+    motto:'讓你到達這裡的，無法帶你走得更遠',
+    desc:'你已進入富人門檻，可以隨意旅行、住豪華飯店。但這是最難突破的一層，帶你到這裡的方法無法帶你更遠。',
+    strategy:'單純「分散投資」已不夠，而是要在關鍵機會上集中。你必須創業，或加入有爆發潛力的公司獲得股權。使用槓桿（勞動力、資本、內容、程式碼）把你的時間和收入脫鉤。',
+    mori:'這本書裡我最有感的一句話是：<strong>「一個在 L5 完全正確的建議，在 L1 執行不只無效，甚至有害。反過來也是。」</strong>L4 的人往往還在用 L3 的策略，繼續定期定額指數基金，卻沒有意識到他們的財富規模已經需要一套完全不同的作業系統。帶你到這裡的方法，已經到了它的極限。',
+    focus:['評估你有沒有可以創業或持股的機會，哪怕是小規模的','開始建立槓桿：內容（YouTube/文章）、程式碼（工具/產品），讓你睡覺時仍然有收入','找一位收費制財務顧問（fee-only），重新審視你的資產配置是否已切換到 L4 策略'] },
+  l5:{ badge:'第五階層', freedom:'住宅自由', stage:'財富守護期',
+    motto:'只有偏執狂才能存活',
+    desc:'你可以不費力買下夢想中的房子。通常到達這一層的人，都是透過出售企業或擁有大量股權。',
+    strategy:'重點是「保護財富」，不是「賺更多」。你需要分散投資，因為讓你致富的集中投資現在可能讓你破產。同時要面對富裕帶來的孤獨感、家族衝突，以及資產集中崩潰的系統性風險。',
+    mori:'到了 L5，大多數的財務教材已經對你失效。<strong>你現在最大的敵人不是市場風險，而是你自己，過度自信、分心於非核心業務、以及被社交義務消耗精力。</strong>偏執不是壞事，是一種防禦機制。書裡說：在某個門檻之間，財富的邊際效用幾乎是平的；但跌破門檻，生活質量會急劇惡化。保護比增長更重要。',
+    focus:['把主要財富從集中資產轉向多元分散（房地產、債券、全球指數）','聘請家族辦公室顧問或私人律師，建立資產保護結構（信託、控股公司）','制定一套「家族財富協議」：如何對子女談錢、防止「富不過三代」'] },
+  l6:{ badge:'第六階層', freedom:'影響力自由', stage:'財富傳承期',
+    motto:'傳承 = 行動 × 財富',
+    desc:'金錢不再是購買力的象徵，而是改變世界的工具。你實現了影響力自由。',
+    strategy:'遺產 = 行動 × 財富。這一層的挑戰是如何處理離婚（這可能是最大的財富毀滅者）、訴訟，以及如何透過慈善留下遺產。財務問題基本已解決，核心問題完全轉變為：這些財富如何繼續發揮影響力？',
+    mori:'L6 面對的問題對大多數人來說是奢侈的煩惱，但它們是真實的。<strong>真正的挑戰是：你的財富有沒有辦法在你離開後繼續發揮意義？</strong>書裡用一個問題結束對 L6 的討論：「假設你達到財務自由，你的一個典型的星期四是什麼樣的？」這個問題在任何層級都值得回答，越早想清楚，財務目標就越有意義。',
+    focus:['建立慈善基金或家族基金會，把捐贈變成一個系統而非隨機決定','撰寫你的「財富哲學」：為什麼累積財富、傳給誰、傳多少、用什麼方式','每年與律師和稅務顧問重新審視遺產規劃，確保符合最新法律'] },
+};
+
+/* ══ 狀態 ══════════════════════════════════════════════════ */
+let questionsToShow = [], answers = [], answersHistory = [];
+let currentQIdx = 0, subInjected = false;
+let currentResultKey = null, currentScores = null;
+let surveyAnswers = {1:'',2:'',3:''};
+
+function openLine() { window.open(CFG.lineUrl,'_blank'); }
+function openIG()   { window.open(CFG.igUrl,'_blank'); }
+
+/* ══ 流程控制 ══════════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  setTimeout(()=>document.getElementById(id).classList.add('active'),50);
+}
+
+function startQuiz() {
+  questionsToShow = [...QS];
+  answers = []; answersHistory = [];
+  currentQIdx = 0; subInjected = false;
+  currentResultKey = null; currentScores = null;
+  surveyAnswers = {1:'',2:'',3:''};
+  showScreen('screen-quiz');
+  setTimeout(renderQuestion, 300);
+}
+
+function renderQuestion() {
+  const q = questionsToShow[currentQIdx];
+  const total = questionsToShow.length;
+  document.getElementById('dim-label').textContent = q.dimLbl || 'S 財務現況';
+  document.getElementById('q-num').textContent = 'Q' + (currentQIdx + 1);
+  document.getElementById('q-total').textContent = '/ ' + total + ' 題';
+  document.getElementById('progress-fill').style.width = (currentQIdx / total * 100) + '%';
+  const subBanner = document.getElementById('sub-banner');
+  subBanner.style.display = q.isSubQ ? 'block' : 'none';
+  document.getElementById('q-text').textContent = q.q;
+  const wrap = document.getElementById('options-wrap'); wrap.innerHTML = '';
+  const keys = ['A','B','C','D'];
+  q.opts.forEach((txt, i) => {
+    const btn = document.createElement('button'); btn.className = 'option';
+    btn.innerHTML = `<span class="option-key">${keys[i]}</span><span class="option-text">${txt}</span>`;
+    btn.addEventListener('click', () => selectOption(i)); wrap.appendChild(btn);
+  });
+  const prevIdx = answersHistory[currentQIdx];
+  if (prevIdx !== undefined) {
+    const opts = document.querySelectorAll('.option');
+    if (opts[prevIdx]) opts[prevIdx].classList.add('selected');
+  }
+  const pb = document.getElementById('btnPrev');
+  if (pb) pb.textContent = currentQIdx === 0 ? '← 返回首頁' : '← 上一題';
+}
+
+function selectOption(optIdx) {
+  answersHistory[currentQIdx] = optIdx;
+  answers[currentQIdx] = optIdx;
+  // Q1 選 D（idx 3）→ 插入 SUB_Q1
+  if (currentQIdx === 0 && optIdx === 3 && !subInjected) {
+    questionsToShow.splice(1, 0, SUB_Q1);
+    subInjected = true;
+  }
+  document.querySelectorAll('.option').forEach((o, i) => o.classList.add(i === optIdx ? 'selected' : 'fade-out'));
+  setTimeout(() => {
+    currentQIdx++;
+    if (currentQIdx < questionsToShow.length) renderQuestion();
+    else calculateResult();
+  }, 520);
+}
+
+function prevQ() {
+  if (currentQIdx === 0) { showScreen('screen-start'); return; }
+  currentQIdx--; renderQuestion();
+}
+
+function calculateResult() {
+  const s = {S:0, B:0, M:0, G:0};
+  let subLvl = null;
+  questionsToShow.forEach((q, i) => {
+    if (answers[i] === undefined) return;
+    if (q.isSubQ) { subLvl = q.levelOverride[answers[i]]; }
+    else { s[q.dim] += answers[i]; }
+  });
+  if (subLvl) {
+    currentResultKey = subLvl;
+    currentScores = null;
+  } else {
+    const Sp = Math.round(s.S / DIM_MAX.S * 100);
+    const Bp = Math.round(s.B / DIM_MAX.B * 100);
+    const Mp = Math.round(s.M / DIM_MAX.M * 100);
+    const Gp = Math.round(s.G / DIM_MAX.G * 100);
+    const overall = Math.round(Sp*0.40 + Bp*0.30 + Mp*0.20 + Gp*0.10);
+    const idx = overall < 33 ? 0 : overall < 55 ? 1 : 2;
+    currentResultKey = LVL_ORDER[idx];
+    currentScores = {Sp, Bp, Mp, Gp};
+    // Keep items
+    const keep = [];
+    if (Sp >= 65) keep.push('你的財務現況管理穩健，持續維持目前的儲蓄與資產配置節奏');
+    if (Bp >= 65) keep.push('你的財務行為執行力強，自動化和定期定額習慣已建立，繼續堅持');
+    if (Mp >= 65) keep.push('你的財務思維超前同層次，在市場波動時能保持理性是稀有能力');
+    if (Gp >= 65) keep.push('你的財務目標視野清晰，長期規劃意識是多數人缺乏的');
+    currentScores.keep = keep.slice(0, 2);
+  }
+  showSurvey();
+}
+
+/* ══ 調查門 ══════════════════════════════════════════════════ */
+function showSurvey() {
+  const r = LVL[currentResultKey];
+  document.getElementById('s-type-name').textContent = r.badge;
+  document.getElementById('s-type-brief').textContent = r.stage;
+  surveyAnswers = {1:'',2:'',3:''};
+  document.getElementById('btnUnlock').disabled = true;
+  showScreen('screen-survey');
+}
+function surveyPick(q, val, btn) {
+  surveyAnswers[q] = val;
+  btn.closest('.survey-group').querySelectorAll('.survey-opt').forEach(b => b.classList.remove('picked'));
+  btn.classList.add('picked');
+  if (surveyAnswers[1] && surveyAnswers[2] && surveyAnswers[3]) document.getElementById('btnUnlock').disabled = false;
+}
+function unlockResult() { renderFullResult(); showScreen('screen-result'); }
+
+/* ══ 結果渲染（T2）══════════════════════════════════════════ */
+function renderFullResult() {
+  const r = LVL[currentResultKey];
+  const lvlIdx = LVL_ORDER.indexOf(currentResultKey);
+  document.getElementById('r-badge').textContent = r.badge;
+  document.getElementById('r-level').textContent = currentResultKey.toUpperCase() + ' · ' + r.freedom;
+  document.getElementById('r-freedom').textContent = r.stage;
+  document.getElementById('r-stage').textContent = r.motto;
+  document.getElementById('r-motto').textContent = r.motto;
+  document.getElementById('r-desc').textContent = r.desc;
+  document.getElementById('r-morview').innerHTML = r.mori;
+  // Focus list
+  const focusList = document.getElementById('r-focus'); focusList.innerHTML = '';
+  r.focus.forEach(item => {
+    const li = document.createElement('li'); li.textContent = item; focusList.appendChild(li);
+  });
+  // Keep list
+  const keepSection = document.getElementById('keep-section');
+  const keepList = document.getElementById('r-keep'); keepList.innerHTML = '';
+  if (currentScores && currentScores.keep && currentScores.keep.length > 0) {
+    currentScores.keep.forEach(item => {
+      const li = document.createElement('li'); li.textContent = item; keepList.appendChild(li);
+    });
+    keepSection.style.display = 'block';
+  } else { keepSection.style.display = 'none'; }
+  // Dimension scores (only for L1-L3)
+  const dimEl = document.getElementById('dim-scores');
+  if (currentScores) {
+    dimEl.style.display = 'grid';
+    setTimeout(() => {
+      document.getElementById('bar-s').style.width = currentScores.Sp + '%';
+      document.getElementById('bar-b').style.width = currentScores.Bp + '%';
+      document.getElementById('bar-m').style.width = currentScores.Mp + '%';
+      document.getElementById('bar-g').style.width = currentScores.Gp + '%';
+      document.getElementById('val-s').textContent = currentScores.Sp + '%';
+      document.getElementById('val-b').textContent = currentScores.Bp + '%';
+      document.getElementById('val-m').textContent = currentScores.Mp + '%';
+      document.getElementById('val-g').textContent = currentScores.Gp + '%';
+    }, 800);
+  } else { dimEl.style.display = 'none'; }
+  // CTA
+  document.getElementById('r-cta-text').textContent = '留下 Email，我把「' + r.freedom + '」的突破資源包寄給你。';
+  document.getElementById('email-done').style.display = 'none';
+  document.querySelector('.email-form').style.display = 'flex';
+  // Animate staircase
+  setTimeout(() => animateLadder(lvlIdx), 200);
+  // Reveal header + content
+  setTimeout(() => {
+    document.getElementById('result-header').classList.add('revealed');
+    document.getElementById('ladder-wrap').classList.add('revealed');
+    document.getElementById('result-content').classList.add('revealed');
+  }, 150);
+}
+
+function animateLadder(activeLvlIdx) {
+  const steps = ['l1','l2','l3','l4','l5','l6'];
+  steps.forEach((key, i) => {
+    const el = document.getElementById('step-' + key);
+    el.classList.remove('past','active','future','show');
+    if (i < activeLvlIdx) el.classList.add('past');
+    else if (i === activeLvlIdx) el.classList.add('active');
+    else el.classList.add('future');
+    setTimeout(() => el.classList.add('show'), i * 80);
+  });
+}
+
+function retryQuiz() {
+  document.getElementById('result-header').classList.remove('revealed');
+  document.getElementById('ladder-wrap').classList.remove('revealed');
+  document.getElementById('result-content').classList.remove('revealed');
+  ['l1','l2','l3','l4','l5','l6'].forEach(k => {
+    const el = document.getElementById('step-' + k);
+    el.classList.remove('past','active','future','show');
+    el.classList.add('future');
+  });
+  showScreen('screen-start');
+}
+
+/* ══ PDF / Share ══════════════════════════════════════════ */
+function buildPDFHTML(r, lvlKey) {
+  return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
+    '<div style="height:5px;background:var(--gold,#C4A96A)"></div>' +
+    '<div style="padding:36px 28px 44px">' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 20px">Mori · 財富階梯診斷</p>' +
+      '<h2 style="font-size:32px;font-weight:900;color:#EDE8DF;margin:0 0 6px;line-height:1.2">' + lvlKey.toUpperCase() + '</h2>' +
+      '<p style="font-size:15px;color:#C4A96A;font-weight:500;margin:0 0 8px">' + r.badge + ' · ' + r.freedom + '</p>' +
+      '<p style="font-size:13px;color:#9A8C78;margin:0 0 24px">' + r.stage + '</p>' +
+      '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 24px"></div>' +
+      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 40px">' + r.desc.substring(0,200) + '…</p>' +
+      '<p style="font-size:10px;color:rgba(154,140,120,0.4);letter-spacing:.06em;margin:0">mori-homepage.pages.dev</p>' +
+    '</div></div>';
+}
+async function downloadPDF() {
+  if (!currentResultKey) return;
+  const r = LVL[currentResultKey], target = document.getElementById('pdf-target'), btn = document.getElementById('dlBtn');
+  const origHTML = btn ? btn.innerHTML : '';
+  target.style.display = 'block'; target.innerHTML = buildPDFHTML(r, currentResultKey);
+  if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
+  try {
+    const canvas = await html2canvas(target, {backgroundColor:'#090705',scale:2,useCORS:true,logging:false});
+    const imgData = canvas.toDataURL('image/png'), {jsPDF} = window.jspdf;
+    const w = canvas.width/2, h = canvas.height/2, pdf = new jsPDF({orientation:'portrait',unit:'px',format:[w,h]});
+    pdf.addImage(imgData,'PNG',0,0,w,h); pdf.save('mori-wealth-' + currentResultKey + '.pdf');
+  } catch(e) { console.error(e); }
+  finally { target.style.display = 'none'; if (btn) { btn.disabled = false; btn.innerHTML = origHTML; } }
+}
+async function shareResult() {
+  if (!currentResultKey) return;
+  const r = LVL[currentResultKey], target = document.getElementById('pdf-target');
+  target.style.display = 'block'; target.innerHTML = buildPDFHTML(r, currentResultKey);
+  try {
+    const canvas = await html2canvas(target, {backgroundColor:'#090705',scale:2,useCORS:true,logging:false});
+    canvas.toBlob(async blob => {
+      const fname = 'mori-wealth-' + currentResultKey + '.png', file = new File([blob], fname, {type:'image/png'});
+      if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) await navigator.share({files:[file], title:'Mori 財富階梯診斷結果'});
+      else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; a.click(); }
+    }, 'image/png');
+  } catch(e) { console.error(e); }
+  finally { target.style.display = 'none'; }
+}
+async function submitEmail() {
+  const emailEl = document.getElementById('email-input'), email = emailEl.value.trim();
+  if (!email || !email.includes('@')) return;
+  const btn = document.querySelector('.btn-email'); btn.disabled = true; btn.textContent = '送出中…';
+  try {
+    const groupId = ML_GROUPS[currentResultKey];
+    const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer ' + ML_KEY,'Accept':'application/json'},
+      body: JSON.stringify({email, groups: groupId ? [groupId] : []}),
+    });
+    if (res.ok) { document.querySelector('.email-form').style.display = 'none'; document.getElementById('email-done').style.display = 'block'; }
+    else { btn.disabled = false; btn.textContent = '送出'; }
+  } catch(err) { btn.disabled = false; btn.textContent = '送出'; }
+}
+
+/* ══ 初始化 ════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  const lL = document.getElementById('line-l'), lR = document.getElementById('line-r'), pt = document.getElementById('pre-text');
+  setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
+  setTimeout(() => { pt.classList.add('ready'); pt.textContent = 'Enter'; }, 1600);
+  pt.addEventListener('click', () => {
+    if (!pt.classList.contains('ready')) return;
+    document.getElementById('preloader').style.opacity = '0';
+    setTimeout(() => { document.getElementById('preloader').style.display = 'none'; document.getElementById('site').style.opacity = '1'; }, 600);
+  });
+  const cur = document.getElementById('cursor'), ring = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function tick(){ rx+=(mx-rx)*.18; ry+=(my-ry)*.18; cur.style.left=mx+'px'; cur.style.top=my+'px'; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(tick); })();
+  document.querySelectorAll('button,a').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+  MoriParticles.init('quiz');
+});
+</script>
+<div id="pdf-target"></div>
+<script src="/shared/particles.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>

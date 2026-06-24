@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- v1.0 | 2026-06-24 | 副業基因 T6 路線地圖 CF版 port -->
+<title>MORI — 你的副業基因是哪一種？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+/* ══ 測驗頁專屬樣式 ════════════════════════════════════════ */
+#site { min-height: 100vh; display: flex; flex-direction: column; }
+.quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
+.screen { width: 100%; max-width: 640px; opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s ease; pointer-events: none; position: absolute; }
+.screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
+
+/* ── Start ── */
+.start-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px; text-transform: uppercase; }
+.start-title { font-family: var(--font-display); font-weight: 900; font-size: 44px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; margin-bottom: 28px; }
+.start-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.55); margin-bottom: 48px; }
+.start-meta { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em; color: rgba(154,140,120,.4); margin-bottom: 48px; }
+.btn-start { display: inline-flex; align-items: center; gap: 16px; font-family: var(--font-body); font-size: 16px; letter-spacing: .25em; color: var(--gold); background: transparent; border: 1px solid rgba(196,169,106,.25); padding: 14px 36px; cursor: none; transition: all .3s; }
+.btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
+.btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
+.btn-start:hover .btn-start-arrow { width: 44px; }
+
+/* ── Quiz ── */
+.progress-wrap { margin-bottom: 40px; }
+.progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
+.progress-total { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .3em; color: rgba(154,140,120,.45); text-transform: uppercase; }
+.progress-bar-bg { height: 1px; background: rgba(196,169,106,.1); }
+.progress-bar-fill { height: 1px; background: var(--gold); transition: width .6s cubic-bezier(.4,0,.2,1); position: relative; }
+.progress-bar-fill::after { content: ''; position: absolute; right: -3px; top: -3px; width: 7px; height: 7px; background: var(--gold); border-radius: 50%; }
+.question-text { font-family: 'LXGW WenKai TC', serif; font-size: 22px; line-height: 1.8; color: var(--text); margin-bottom: 36px; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option { display: flex; align-items: flex-start; gap: 16px; padding: 14px 18px; background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1); cursor: none; transition: all .25s; position: relative; overflow: hidden; }
+.option::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform .3s; }
+.option:hover { border-color: rgba(196,169,106,.28); background: rgba(16,12,8,.85); }
+.option:hover::before { transform: scaleY(1); }
+.option.selected { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); pointer-events: none; }
+.option.selected::before { transform: scaleY(1); }
+.option.fade-out { opacity: .25; transform: translateX(-6px); }
+.option-key { font-family: 'Kaushan Script', cursive; font-size: 18px; color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px; transition: color .25s; }
+.option:hover .option-key, .option.selected .option-key { color: var(--gold); }
+.option-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7; color: rgba(237,232,223,.7); transition: color .25s; }
+.option:hover .option-text, .option.selected .option-text { color: var(--text); }
+.quiz-nav { margin-top: 24px; }
+.btn-prev-q { background: transparent; border: 1px solid var(--border); border-radius: 100px; padding: 10px 22px; font-size: 13px; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .3s, color .3s; }
+.btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+
+/* ── Survey ── */
+.survey-type-teaser { text-align: center; margin-bottom: 28px; }
+.survey-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.survey-type-name { font-size: clamp(22px,5vw,32px); font-weight: 900; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.survey-type-brief { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.survey-divider { text-align: center; font-size: 11px; letter-spacing: .1em; color: var(--muted); margin: 24px 0 20px; }
+.survey-group { margin-bottom: 24px; }
+.survey-q { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.5; }
+.survey-opts { display: flex; flex-direction: column; gap: 8px; }
+.survey-opt { background: rgba(28,28,42,.6); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-family: var(--font-ui); font-size: 13px; color: var(--muted); cursor: none; text-align: left; transition: border-color .2s, color .2s; }
+.survey-opt:hover { border-color: rgba(196,169,106,.3); color: var(--text); }
+.survey-opt.picked { border-color: var(--gold); color: var(--text); background: rgba(196,169,106,.08); }
+.btn-unlock { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; font-family: var(--font-ui); font-size: 15px; font-weight: 900; border: none; border-radius: 100px; cursor: none; margin-top: 8px; opacity: .35; pointer-events: none; transition: opacity .25s; }
+.btn-unlock:not([disabled]) { opacity: 1; pointer-events: auto; }
+
+/* ── T6 結果：路線地圖 ── */
+.result-header { text-align: center; margin-bottom: 36px; opacity: 0; transform: translateY(16px); transition: opacity .6s ease .1s, transform .6s ease .1s; }
+.result-header.revealed { opacity: 1; transform: translateY(0); }
+.result-type-emoji { font-size: 48px; margin-bottom: 12px; }
+.result-badge { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 10px; }
+.result-type { font-family: var(--font-display); font-weight: 900; font-size: 48px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 6px; }
+.result-type-en { font-family: 'Kaushan Script', cursive; font-size: 18px; color: rgba(196,169,106,.45); margin-bottom: 16px; }
+.result-motto { font-family: 'LXGW WenKai TC', serif; font-size: 14px; color: rgba(196,169,106,.7); font-style: italic; letter-spacing: .03em; }
+
+/* ── 路線地圖視覺 ── */
+.route-wrap { margin: 32px 0 40px; opacity: 0; transform: translateY(10px); transition: opacity .5s ease .3s, transform .5s ease .3s; }
+.route-wrap.revealed { opacity: 1; transform: translateY(0); }
+.route-map { position: relative; padding: 4px 0; }
+.route-map::before { content: ''; position: absolute; left: 21px; top: 40px; bottom: 40px; width: 1px; background: linear-gradient(to bottom, rgba(196,169,106,.08), rgba(196,169,106,.25), rgba(196,169,106,.08)); }
+.route-stage { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 28px; position: relative; opacity: 0; transform: translateX(-12px); transition: opacity .4s ease, transform .4s ease; }
+.route-stage.show { opacity: 1; transform: translateX(0); }
+.route-stage:last-child { margin-bottom: 0; }
+.route-icon { width: 44px; height: 44px; border-radius: 50%; background: rgba(14,14,20,.9); border: 1px solid rgba(196,169,106,.18); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; position: relative; z-index: 1; }
+.route-body { flex: 1; padding-top: 8px; }
+.route-stage-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 5px; }
+.route-stage-title { font-family: 'Noto Sans TC', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; line-height: 1.4; }
+.route-stage-desc { font-family: 'LXGW WenKai TC', serif; font-size: 14px; color: rgba(237,232,223,.55); line-height: 1.8; }
+
+/* ── 結果文字區 ── */
+.result-content { opacity: 0; transform: translateY(10px); transition: opacity .5s ease .5s, transform .5s ease .5s; }
+.result-content.revealed { opacity: 1; transform: translateY(0); }
+.result-divider { height: 1px; background: rgba(196,169,106,.1); margin: 28px 0; }
+.result-section-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .45em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 14px; }
+.result-portrait { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.8); margin-bottom: 0; }
+.result-action { background: rgba(196,169,106,.06); border: 1px solid rgba(196,169,106,.18); border-left: 3px solid var(--gold); padding: 18px 20px; font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 1.9; color: rgba(237,232,223,.75); }
+.result-morview { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 2; color: rgba(237,232,223,.65); }
+
+/* ── Email CTA ── */
+.email-cta { margin-top: 36px; padding: 28px; border: 1px solid rgba(196,169,106,.18); background: rgba(14,14,20,.6); }
+.email-cta-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .45em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 14px; }
+.email-cta-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8; color: rgba(237,232,223,.7); margin-bottom: 20px; }
+.email-form { display: flex; gap: 10px; flex-wrap: wrap; }
+.email-input { flex: 1; min-width: 200px; background: rgba(16,12,8,.8); border: 1px solid rgba(196,169,106,.18); padding: 12px 16px; font-family: var(--font-ui); font-size: 14px; color: var(--text); outline: none; transition: border-color .2s; }
+.email-input:focus { border-color: rgba(196,169,106,.45); }
+.email-submit { background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; border: none; padding: 12px 24px; font-family: var(--font-ui); font-size: 14px; font-weight: 900; cursor: none; transition: opacity .2s; white-space: nowrap; }
+.email-submit:hover { opacity: .88; }
+#email-done { text-align: center; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: rgba(196,169,106,.7); letter-spacing: .1em; }
+
+/* ── Related / Actions ── */
+.result-actions { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.btn-share { background: transparent; border: 1px solid rgba(196,169,106,.2); padding: 10px 24px; font-family: var(--font-ui); font-size: 13px; color: rgba(196,169,106,.65); cursor: none; transition: all .2s; }
+.btn-share:hover { border-color: rgba(196,169,106,.5); color: var(--gold); }
+.btn-retry { background: transparent; border: none; font-family: var(--font-ui); font-size: 12px; color: rgba(154,140,120,.4); cursor: none; letter-spacing: .1em; text-transform: uppercase; padding: 4px; }
+.btn-retry:hover { color: var(--muted); }
+.related-quizzes { margin-top: 48px; padding-top: 36px; border-top: 1px solid rgba(196,169,106,.08); }
+.related-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .45em; color: rgba(196,169,106,.35); text-transform: uppercase; text-align: center; margin-bottom: 20px; }
+.related-grid { display: flex; flex-direction: column; gap: 10px; }
+.related-card { display: flex; align-items: center; gap: 16px; padding: 14px 18px; border: 1px solid rgba(196,169,106,.1); text-decoration: none; transition: border-color .2s, background .2s; }
+.related-card:hover { border-color: rgba(196,169,106,.28); background: rgba(196,169,106,.04); }
+.related-card-emoji { font-size: 20px; }
+.related-card-body { flex: 1; }
+.related-card-title { font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--text); margin-bottom: 2px; }
+.related-card-sub { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; color: var(--muted); }
+.related-card-arrow { color: rgba(196,169,106,.3); font-size: 14px; }
+
+/* ── PDF target (hidden) ── */
+#pdf-target { display: none; position: fixed; left: -9999px; }
+
+/* ── Preloader ── */
+#preloader { position: fixed; inset: 0; background: #090705; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity .6s ease; }
+#preloader.fade { opacity: 0; pointer-events: none; }
+.preloader-inner { text-align: center; }
+.preloader-logo { font-family: 'Kaushan Script', cursive; font-size: 32px; color: var(--gold); opacity: 0; animation: plFade 1.2s ease .3s forwards; }
+.preloader-bar { width: 80px; height: 1px; background: rgba(196,169,106,.15); margin: 16px auto 0; overflow: hidden; }
+.preloader-fill { height: 100%; background: var(--gold); animation: plBar 1.6s ease forwards; }
+@keyframes plFade { to { opacity: 1; } }
+@keyframes plBar { 0%{width:0} 100%{width:100%} }
+</style>
+</head>
+<body>
+
+<!-- ── 預載器 ── -->
+<div id="preloader">
+  <div class="preloader-inner">
+    <div class="preloader-logo">Mori</div>
+    <div class="preloader-bar"><div class="preloader-fill"></div></div>
+  </div>
+</div>
+
+<!-- ── 自定義滑鼠 ── -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ── 粒子 ── -->
+<canvas id="particleCanvas"></canvas>
+
+<div id="site">
+  <!-- ── Nav ── -->
+  <nav class="nav">
+    <a href="/" class="nav-logo">Mori</a>
+    <div class="nav-right">
+      <a href="https://instagram.com/mori1024_" target="_blank" rel="noopener" class="nav-link">IG</a>
+    </div>
+  </nav>
+
+  <main class="quiz-main">
+
+    <!-- ════ 開始畫面 ════ -->
+    <div class="screen active" id="screen-start">
+      <div class="start-eyebrow">副業基因診斷</div>
+      <h1 class="start-title">你的副業基因是哪一種？</h1>
+      <p class="start-desc">你不是沒有能力做副業——你只是還不知道自己最適合哪條路。<br>10 道情境題，找出你天生最強的副業基因。</p>
+      <div class="start-meta">10 題 · 約 3 分鐘 · 5 種副業類型</div>
+      <button class="btn-start" onclick="startQuiz()">
+        開始測驗 <span class="btn-start-arrow"></span>
+      </button>
+    </div>
+
+    <!-- ════ 答題畫面 ════ -->
+    <div class="screen" id="screen-quiz">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-num" id="q-num">01</span>
+          <span class="progress-total" id="q-total">/ 10</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <p class="question-text" id="q-text"></p>
+      <div class="options" id="options-wrap"></div>
+      <div class="quiz-nav">
+        <button class="btn-prev-q" id="btnPrev" onclick="prevQ()" style="display:none">← 上一題</button>
+      </div>
+    </div>
+
+    <!-- ════ 調查門 ════ -->
+    <div class="screen" id="screen-survey">
+      <div class="survey-type-teaser">
+        <div class="survey-eyebrow">你的副業基因</div>
+        <div class="survey-type-name" id="s-type-name"></div>
+        <div class="survey-type-brief" id="s-type-brief"></div>
+      </div>
+      <div class="survey-divider">— 在揭示完整分析前，我想多了解你一點 —</div>
+      <div class="survey-group">
+        <div class="survey-q">你目前的副業狀態？</div>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">完全沒有，正在考慮起步</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">有想法但還沒行動</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">已經在嘗試，但還沒有收入</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">已有副業收入，想擴大</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <div class="survey-q">你對副業收入的主要目標？</div>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">補貼生活，每月多 3,000-10,000 元</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">累積到可以養活自己的規模</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">打造被動收入，讓時間自由</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">還不確定，先找到方向再說</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <div class="survey-q">你每天能投入副業的時間？</div>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">不到 30 分鐘</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">30 分鐘到 1 小時</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">1-2 小時</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">2 小時以上</button>
+        </div>
+      </div>
+      <button class="btn-unlock" id="btnUnlock" disabled onclick="unlockResult()">揭示我的副業路線圖</button>
+    </div>
+
+    <!-- ════ 結果畫面 ════ -->
+    <div class="screen" id="screen-result">
+
+      <!-- 標題區 -->
+      <div class="result-header" id="result-header">
+        <div class="result-type-emoji" id="r-emoji"></div>
+        <div class="result-badge">你的副業基因</div>
+        <div class="result-type" id="r-type"></div>
+        <div class="result-type-en" id="r-type-en"></div>
+        <div class="result-motto" id="r-motto"></div>
+      </div>
+
+      <!-- 路線地圖 -->
+      <div class="route-wrap" id="route-wrap">
+        <div class="route-map" id="route-map"></div>
+      </div>
+
+      <!-- 結果文字 -->
+      <div class="result-content" id="result-content">
+        <div class="result-section-label">你是什麼樣的人</div>
+        <p class="result-portrait" id="r-portrait"></p>
+
+        <div class="result-divider"></div>
+
+        <div class="result-section-label">今天就做的第一步</div>
+        <div class="result-action" id="r-action"></div>
+
+        <div class="result-divider"></div>
+
+        <div class="result-section-label">Mori 的觀察</div>
+        <p class="result-morview" id="r-morview"></p>
+
+        <!-- Email CTA -->
+        <div class="email-cta">
+          <div class="email-cta-label">免費資源</div>
+          <p class="email-cta-text" id="r-cta-text"></p>
+          <div class="email-form">
+            <input type="email" class="email-input" id="emailInput" placeholder="your@email.com">
+            <button class="email-submit" onclick="submitEmail()">領取資源包</button>
+          </div>
+          <div id="email-done" style="display:none;">✓ 已傳送，請查收 Email</div>
+        </div>
+
+        <!-- 分享 / 重試 -->
+        <div class="result-actions">
+          <button class="btn-share" onclick="downloadPDF()">↓ 下載結果卡片</button>
+          <button class="btn-retry" onclick="retryQuiz()">重新測驗</button>
+        </div>
+
+        <!-- 相關測驗 -->
+        <div class="related-quizzes">
+          <div class="related-label">繼續探索</div>
+          <div class="related-grid">
+            <a href="/quiz/wealth-ladder/" class="related-card">
+              <span class="related-card-emoji">📈</span>
+              <div class="related-card-body">
+                <div class="related-card-title">你現在站在財富的哪一階？</div>
+                <div class="related-card-sub">財富階梯診斷 · T2 進度階梯</div>
+              </div>
+              <span class="related-card-arrow">›</span>
+            </a>
+            <a href="/quiz/start-with-why/" class="related-card">
+              <span class="related-card-emoji">🔥</span>
+              <div class="related-card-body">
+                <div class="related-card-title">你真正為了什麼在努力？</div>
+                <div class="related-card-sub">先問為什麼 · T7 核心解鎖</div>
+              </div>
+              <span class="related-card-arrow">›</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div id="pdf-target"></div>
+    </div>
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <span class="footer-copy">© 2025 Mori</span>
+    <div class="footer-links">
+      <a href="https://instagram.com/mori1024_" target="_blank" rel="noopener" class="footer-link">Instagram</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ── Scripts ── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://mori-homepage.pages.dev/shared/particles.js"></script>
+<script>
+/* ── 設定 ─────────────────────────────────────────────── */
+const ML_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZTY0ZmY0YjJhYzcyMzM0ZTVlZjNmMzBlYTVlZjE0OWE5Mzg1ZDI2NDNiM2EzZmU3ZGUxYWVlMTA0NWZmMjFhYTJmN2FhYzQ5ODIwZDlhZmMiLCJpYXQiOjE3ODIyMjYxNDQuNjU1MzAzLCJuYmYiOjE3ODIyMjYxNDQuNjU1MzA3LCJleHAiOjQ5Mzc4OTk3NDQuNjQ5MjQ5LCJzdWIiOiIyNDQ5MDA2Iiwic2NvcGVzIjpbXX0.gXowQcDS-zoaY-A1We4MOAcjeaJ7RGc5VPB4EuXq2RR3vMyFfUmzeucHkxeNNj2DFyjtREnqFUOvTPL-y_rpvBKgNt22pwDgjfvb5pz9KB1zV_x_ULdOyGDFPQvYvmOcnDeXRTbZKSNQ7BrYHh_o1hFMiqc7YtGL9F3tsnYVi3ZyeFJStmeAxHP0493VIrR_FzKZS7l2fPG5ltaMomShz6T3MhEUCsLsGTfZc92ufHU1bRhXYdzQMkDpzVrhtZtd-ix-P_ym12GrORv5k5LOm69ts38rUQyCZR5dPxIrTFv2J1kEhhF-8uhQ9R6i6x0hf0Yv2KMVF-cDhoI9w6MTB_zXR58IiQ0W0xaeEwrEseCOwhFEUs7UIeMBVl5sopJViSOZBYRXbv67COxej5rNZM-RD6BZfDbiWJ_MTYLmOJ7BCpDKkZ04SzALl5E0McPR645u-Znf4eXMRgNTYrLUTOdQ6ez3BmmOZ3hhwA7toi1rXXaQJCBWlgs9g6bZeYKVoPdT8suaK6bXA9vaaA4-6c8yAhEyeXReB3gWzaJmQ6XCdBk5MRVOJ-gHZNHpibBz03MYRtKL6R1HM3GRBELXYQt3puu5IlHP_m9xk9FHKwH8WVkzvnSmU2SpUbHabozMNKSNeuopT9r3CAnAnd5WYdpZFeSMFcpr8MTjYTXOhuE';
+const ML_GROUPS = {
+  K:'191078831405139402',
+  C:'191078832070985138',
+  S:'191078832705373972',
+  T:'191078833368073892',
+  M:'191078833968907429',
+};
+const TRACKER = 'https://quiz-tracker.mori1024.workers.dev/track';
+const TYPE_ORDER = ['K','C','S','T','M'];
+
+/* ── 題目 ────────────────────────────────────────────── */
+const QS = [
+  {t:'工作中你最享受的環節是什麼？',opts:[
+    {g:'K',txt:'深入研究一個主題，把它徹底搞清楚'},
+    {g:'C',txt:'把一個複雜的想法用簡單的方式讓別人懂'},
+    {g:'S',txt:'實際動手，完成一件有具體成果的事'},
+    {g:'T',txt:'找出流程裡的低效環節，然後優化它'},
+    {g:'M',txt:'把不同背景的人連結在一起，看到火花產生'},
+  ]},
+  {t:'朋友最可能找你幫什麼忙？',opts:[
+    {g:'K',txt:'解釋一個他們搞不懂的專業知識或概念'},
+    {g:'C',txt:'幫他們寫文案、設計貼文或說清楚一件事'},
+    {g:'S',txt:'幫他們完成一件他們不擅長的具體任務'},
+    {g:'T',txt:'推薦工具或幫他們解決技術和流程問題'},
+    {g:'M',txt:'介紹他們認識某個人，或幫他們找到某個資源'},
+  ]},
+  {t:'在一個新社群或平台，你最自然的角色是？',opts:[
+    {g:'K',txt:'深度內容輸出者——分享有分量的見解'},
+    {g:'C',txt:'故事敘說者——用創作和表達吸引人留下'},
+    {g:'S',txt:'問題解決者——直接幫人處理具體的麻煩'},
+    {g:'T',txt:'工具整合達人——分享提效方法和工具組合'},
+    {g:'M',txt:'社群活絡者——把大家連在一起的那個人'},
+  ]},
+  {t:'你在什麼情境下最有「這個副業我能做」的感覺？',opts:[
+    {g:'K',txt:'看到有人在教一件我比他懂更多的事'},
+    {g:'C',txt:'看到自己的一個貼文或影片被大量轉發'},
+    {g:'S',txt:'完成一個客戶任務，收到真誠的謝謝'},
+    {g:'T',txt:'一個自動化流程跑通了，不需要我介入'},
+    {g:'M',txt:'有人因為我的介紹完成了一件重要的事'},
+  ]},
+  {t:'如果副業只能有一個核心能力，你希望是？',opts:[
+    {g:'K',txt:'把複雜的事解釋得清楚讓人真正理解的能力'},
+    {g:'C',txt:'用內容讓陌生人對一件事產生共鳴的能力'},
+    {g:'S',txt:'承諾了什麼就可靠地做到的執行能力'},
+    {g:'T',txt:'讓同樣的事用更少時間完成的系統化能力'},
+    {g:'M',txt:'讓初次見面的人感覺被理解、被連結的能力'},
+  ]},
+  {t:'你最能接受的副業工作模式是？',opts:[
+    {g:'K',txt:'每天固定一段時間深度工作，不被打擾'},
+    {g:'C',txt:'每天都有創作的時間和自由表達的空間'},
+    {g:'S',txt:'有具體的客戶、明確的需求、清楚的交付'},
+    {g:'T',txt:'系統設定好後它自己跑，我只做關鍵決策'},
+    {g:'M',txt:'每天都有人際互動和新的連結在發生'},
+  ]},
+  {t:'你最不能接受副業裡出現什麼？',opts:[
+    {g:'K',txt:'必須做表面的內容，沒有深度'},
+    {g:'C',txt:'沒有創作空間，只能照指令複製執行'},
+    {g:'S',txt:'沒有真實的客戶和需求，只是理論'},
+    {g:'T',txt:'流程混亂、全靠手動、沒有任何系統'},
+    {g:'M',txt:'必須完全獨自悶頭做，完全沒有互動'},
+  ]},
+  {t:'你想到副業的理想日常，腦中浮現的畫面是？',opts:[
+    {g:'K',txt:'在一個安靜的空間深度工作，輸出有份量的成果'},
+    {g:'C',txt:'每天有一段創作時間，看到粉絲和互動在成長'},
+    {g:'S',txt:'每週服務幾個固定客戶，清楚知道每個人的進度'},
+    {g:'T',txt:'儀表板上的數字自動增長，系統在幫我工作'},
+    {g:'M',txt:'認識新朋友、媒合合作，每天有不同的連結在發生'},
+  ]},
+  {t:'別人最可能怎麼描述你？',opts:[
+    {g:'K',txt:'「跟他聊完，很多事情突然就想清楚了」'},
+    {g:'C',txt:'「他說的東西讓我忍不住一直看下去」'},
+    {g:'S',txt:'「他答應的事一定做到，非常可靠」'},
+    {g:'T',txt:'「他很會找到讓事情變簡單的方法」'},
+    {g:'M',txt:'「他認識的人超多，而且大家都願意幫他」'},
+  ]},
+  {t:'你覺得自己現在最需要的是什麼？',opts:[
+    {g:'K',txt:'一個把我的知識轉換成可售產品的具體方法'},
+    {g:'C',txt:'一個穩定產出內容並累積受眾的清楚策略'},
+    {g:'S',txt:'一個找到第一個付費客戶的具體行動方案'},
+    {g:'T',txt:'一套整合好的自動化工具和流程系統'},
+    {g:'M',txt:'一個可以深度合作的夥伴網絡或社群'},
+  ]},
+];
+
+/* ── 結果資料 ─────────────────────────────────────────── */
+const TYPES = {
+  K:{
+    name:'知識變現型', nameEn:'Knowledge Monetizer', emoji:'🎓',
+    color:'#7A9EC4',
+    motto:'你的專業，是你最有競爭力的資產',
+    portrait:'你有能力把複雜的知識解釋得讓別人懂，而「讓人懂」這件事，本身就是市場願意付錢的能力。你不需要成為某個領域的最頂尖，只需要比你的目標受眾懂得更深——然後把這個深度轉換成可交付的形式。',
+    route:[
+      {emoji:'🌱',stage:'Stage 1',title:'定義你的知識邊界',desc:'找出你比 80% 的人懂得更多的那個主題，不需要完美，需要的是「夠具體」'},
+      {emoji:'📦',stage:'Stage 2',title:'包裝成可售的形式',desc:'電子書、1 小時諮詢、短課程——選一個最低阻力的形式先跑出去'},
+      {emoji:'🎓',stage:'Stage 3',title:'建立第一個付費客戶',desc:'不需要完整課程，先幫一個真實的人解決問題，收一個合理的費用'},
+      {emoji:'🔄',stage:'Stage 4',title:'規模化為被動收入',desc:'把成功的服務錄製成課程，讓一份努力可以服務多個人'},
+    ],
+    action:'今天就做：選定一個你比多數人更懂的主題，打開備忘錄，寫下它的大綱或目錄。哪怕只有 5 個章節標題，這就是你第一個知識產品的雛形。',
+    mori:'知識變現最大的障礙不是「知識不夠深」，是「不相信自己的知識有人願意付費」。我觀察到一件事：知識變現型的人通常低估自己的深度，因為他們太清楚自己還不知道什麼了。但你比 80% 的人懂這件事的部分，就已經夠你做一個起點。那個起點，才是值得擔心的事，而不是「夠不夠格」。',
+  },
+  C:{
+    name:'內容引流型', nameEn:'Content Creator', emoji:'✍️',
+    color:'#C4778A',
+    motto:'你的表達力，就是你的流量機器',
+    portrait:'你天生擅長讓人想繼續看下去。這個能力在現在的環境裡比你想像的更稀缺——大多數人有東西說，但沒辦法讓人留下來聽。你有這個能力，問題只是還沒有找到一個穩定的形式和主題。',
+    route:[
+      {emoji:'🎯',stage:'Stage 1',title:'找到你的核心主題',desc:'選一個你可以持續說三個月以上、每週都有新東西說的主題'},
+      {emoji:'📱',stage:'Stage 2',title:'穩定輸出建立信任',desc:'頻率比品質更重要——先讓人記得你在，再讓人記得你說什麼'},
+      {emoji:'📈',stage:'Stage 3',title:'受眾轉換為客戶',desc:'看你內容的人中有一部分有需求，你需要一個清楚的「下一步」讓他們走'},
+      {emoji:'💰',stage:'Stage 4',title:'多元變現與授權',desc:'廣告、聯盟、課程、合作——受眾規模決定你有多少選項'},
+    ],
+    action:'今天就做：選定你的核心主題，今天發出第一篇。不需要完美，需要的是「出去了」。第一篇的存在比第一篇的品質更重要。',
+    mori:'內容引流型最常卡在「還沒有準備好」。但我觀察到一件事：幾乎所有成功的內容創作者，回頭看他們最早的作品都覺得很糟。這不是說品質不重要——是說你現在的問題不是品質，是「開始了沒有」。開始了，品質才有地方提升。',
+  },
+  S:{
+    name:'服務套件型', nameEn:'Service Packager', emoji:'🔧',
+    color:'#7AC47A',
+    motto:'你的執行力，是客戶願意付錢的理由',
+    portrait:'你不需要大受眾，不需要課程平台，不需要複雜的系統。你只需要幾個對的客戶，和一個清楚的交付流程。服務型副業的天花板低，但起步最快——你今天就可以接到第一個案子。',
+    route:[
+      {emoji:'📋',stage:'Stage 1',title:'定義一個具體服務',desc:'「幫 IG 帳號寫一個月的貼文文案，收費 6,000 元」——越具體越容易賣'},
+      {emoji:'🤝',stage:'Stage 2',title:'取得第一個付費客戶',desc:'從你現有的人脈開始，不要等陌生人找上門'},
+      {emoji:'⭐',stage:'Stage 3',title:'建立口碑與複購',desc:'做好一個客戶，他的推薦會帶來下一個——這是服務型最有效的增長'},
+      {emoji:'📦',stage:'Stage 4',title:'套件化並提高單價',desc:'把成功服務標準化成套餐，減少議價時間，提升利潤率'},
+    ],
+    action:'今天就做：寫下你能為別人解決的一個具體問題，定好收費（不要「看量決定」），今天傳訊給一個你認識的人說「我在提供這個服務，你或你認識的人有需要嗎？」',
+    mori:'服務套件型的人最常問我：「我要先有作品集才能接案嗎？」我的答案是：第一個客戶就是你的第一個作品。你不需要作品集才能接第一案，你需要第一案才能有作品集。去接那個「你沒有百分百把握但你知道你做得到」的案子。',
+  },
+  T:{
+    name:'工具整合型', nameEn:'Tool Integrator', emoji:'⚙️',
+    color:'#C4A96A',
+    motto:'你的系統思維，讓你用時間以外的東西換錢',
+    portrait:'你比多數人早一步看到新工具的價值，然後你知道怎麼把它們組合起來解決問題。這個「看得到 + 會整合」的能力，在 AI 工具爆炸的現在，需求是前所未有的高。',
+    route:[
+      {emoji:'🔬',stage:'Stage 1',title:'熟練 3 個核心工具',desc:'選你已經在用的工具，深入到可以教別人，而不是淺嘗多個'},
+      {emoji:'⚙️',stage:'Stage 2',title:'建立一套可複製的流程',desc:'把「用這些工具解決 X 問題」整理成可以交付的流程文件'},
+      {emoji:'📚',stage:'Stage 3',title:'教別人用這套工具',desc:'工作坊、線上課程、諮詢——教的方式比你想像的多'},
+      {emoji:'🚀',stage:'Stage 4',title:'套件授權或代理服務',desc:'你的流程可以賣給企業，你的工具整合可以成為代理服務'},
+    ],
+    action:'今天就做：選三個你已經在用的 AI 工具，花 30 分鐘整理「用它解決 X 問題的完整流程」。寫成一篇 Notion 筆記，這就是你第一個可以賣的東西的原型。',
+    mori:'工具整合型的人通常是「第一個用上某個工具的人」，但最後變現的不一定是他們，因為他們花太多時間研究下一個新工具，而不是把現有的工具變成別人願意付費的東西。你現在最值錢的不是你知道最多工具，是你能用工具幫別人省時間或省錢。',
+  },
+  M:{
+    name:'媒介橋梁型', nameEn:'Network Connector', emoji:'🌐',
+    color:'#9A7EC4',
+    motto:'你認識的每一個人，都是一個潛在的機會',
+    portrait:'你讓別人感覺被看見、被理解，這個能力比你想像的更值錢。在一個到處都是資訊的世界裡，「有人記得你、願意把你引薦給別人」是稀缺的社交資本。你已經在做這件事了，只差一個把它變現的結構。',
+    route:[
+      {emoji:'🌱',stage:'Stage 1',title:'深化一個核心社群',desc:'先成為某個圈子裡「大家都認識他」的那個人，而不是到處散播'},
+      {emoji:'🤝',stage:'Stage 2',title:'建立互補的合作網絡',desc:'主動把有互補資源的人連結起來，讓你成為生態系的核心節點'},
+      {emoji:'💼',stage:'Stage 3',title:'媒合推薦開始變現',desc:'聯盟行銷、媒合服務、社群付費——你的人脈是可以變現的'},
+      {emoji:'🌐',stage:'Stage 4',title:'規模化社群生意',desc:'付費社群、會員制、品牌合作——讓你的連結能力成為可擴展的生意'},
+    ],
+    action:'今天就做：找出你身邊 2 個有互補資源的人，今天傳訊把他們介紹認識。這個小動作的長期價值，遠超過你現在想像的。',
+    mori:'媒介橋梁型最常說的一句話是「我只是介紹大家認識而已，這有什麼好賺錢的？」但如果你在任何一個生態裡，是那個「想到某件事就會想到你」的人，那你已經是這個生態裡最難被取代的角色了。問題不是你有沒有價值，是你有沒有建立一個讓這個價值被看見並被支付的結構。',
+  },
+};
+
+/* ── 狀態變數 ────────────────────────────────────────── */
+let currentQIdx = 0, picked = null, answers = [], finalType = '';
+let surveyAnswers = {1:'',2:'',3:''};
+let answersHistory = [];
+
+/* ── 題目渲染 ─────────────────────────────────────────── */
+function renderQ(idx) {
+  const q = QS[idx];
+  document.getElementById('q-num').textContent = String(idx + 1).padStart(2, '0');
+  document.getElementById('q-total').textContent = '/ ' + QS.length;
+  const fill = ((idx) / QS.length) * 100;
+  document.getElementById('progress-fill').style.width = fill + '%';
+  document.getElementById('q-text').textContent = q.t;
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  const keys = ['a','b','c','d','e'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="option-key">${keys[i]}</span><span class="option-text">${opt.txt}</span>`;
+    btn.onclick = () => selectOption(btn, opt.g, idx);
+    wrap.appendChild(btn);
+  });
+  picked = null;
+  document.getElementById('btnPrev').style.display = idx > 0 ? 'inline-block' : 'none';
+}
+
+function selectOption(el, gene, idx) {
+  if (picked !== null) return;
+  picked = gene;
+  el.classList.add('selected');
+  document.querySelectorAll('.option').forEach(b => { if (b !== el) b.classList.add('fade-out'); });
+  setTimeout(() => {
+    answers[idx] = gene;
+    answersHistory[idx] = gene;
+    currentQIdx++;
+    if (currentQIdx >= QS.length) { showCalc(); }
+    else { renderQ(currentQIdx); showScreen('screen-quiz'); }
+  }, 480);
+}
+
+function prevQ() {
+  if (currentQIdx <= 0) return;
+  currentQIdx--;
+  answers.splice(currentQIdx, 1);
+  renderQ(currentQIdx);
+}
+
+/* ── 計算結果 ─────────────────────────────────────────── */
+function showCalc() {
+  const scores = {K:0,C:0,S:0,T:0,M:0};
+  answers.forEach(g => { if (scores[g] !== undefined) scores[g] += 2; });
+  finalType = TYPE_ORDER.reduce((a, b) => scores[a] >= scores[b] ? a : b);
+  showSurvey();
+}
+
+/* ── 調查門 ───────────────────────────────────────────── */
+function showSurvey() {
+  const t = TYPES[finalType];
+  document.getElementById('s-type-name').textContent = t.name;
+  document.getElementById('s-type-brief').textContent = t.motto;
+  surveyAnswers = {1:'',2:'',3:''};
+  document.getElementById('btnUnlock').disabled = true;
+  showScreen('screen-survey');
+}
+
+function surveyPick(q, val, btn) {
+  surveyAnswers[q] = val;
+  btn.closest('.survey-group').querySelectorAll('.survey-opt').forEach(b => b.classList.remove('picked'));
+  btn.classList.add('picked');
+  if (surveyAnswers[1] && surveyAnswers[2] && surveyAnswers[3]) document.getElementById('btnUnlock').disabled = false;
+}
+
+function unlockResult() { renderFullResult(); showScreen('screen-result'); }
+
+/* ── 結果渲染（T6）─────────────────────────────────────── */
+function renderFullResult() {
+  const t = TYPES[finalType];
+  document.getElementById('r-emoji').textContent = t.emoji;
+  document.getElementById('r-type').textContent = t.name;
+  document.getElementById('r-type-en').textContent = t.nameEn;
+  document.getElementById('r-motto').textContent = t.motto;
+  document.getElementById('r-portrait').textContent = t.portrait;
+  document.getElementById('r-action').textContent = t.action;
+  document.getElementById('r-morview').textContent = t.mori;
+  document.getElementById('r-cta-text').textContent = '留下 Email，我把「' + t.name + '」的副業啟動資源包寄給你。';
+  document.getElementById('email-done').style.display = 'none';
+  document.querySelector('.email-form').style.display = 'flex';
+  // 路線地圖
+  animateRouteMap(t.route);
+  // Reveal
+  setTimeout(() => {
+    document.getElementById('result-header').classList.add('revealed');
+    document.getElementById('route-wrap').classList.add('revealed');
+    document.getElementById('result-content').classList.add('revealed');
+  }, 150);
+}
+
+function animateRouteMap(route) {
+  const map = document.getElementById('route-map');
+  map.innerHTML = '';
+  route.forEach((stage, i) => {
+    const div = document.createElement('div');
+    div.className = 'route-stage';
+    div.innerHTML =
+      `<div class="route-icon">${stage.emoji}</div>` +
+      `<div class="route-body">` +
+        `<div class="route-stage-label">${stage.stage}</div>` +
+        `<div class="route-stage-title">${stage.title}</div>` +
+        `<div class="route-stage-desc">${stage.desc}</div>` +
+      `</div>`;
+    map.appendChild(div);
+    setTimeout(() => div.classList.add('show'), 300 + i * 150);
+  });
+}
+
+function retryQuiz() {
+  document.getElementById('result-header').classList.remove('revealed');
+  document.getElementById('route-wrap').classList.remove('revealed');
+  document.getElementById('result-content').classList.remove('revealed');
+  currentQIdx = 0; answers = []; answersHistory = []; finalType = '';
+  renderQ(0);
+  showScreen('screen-start');
+}
+
+/* ── Email 訂閱 ──────────────────────────────────────── */
+async function submitEmail() {
+  const email = document.getElementById('emailInput').value.trim();
+  if (!email || !email.includes('@')) return;
+  const btn = document.querySelector('.email-submit');
+  btn.textContent = '傳送中…'; btn.disabled = true;
+  const {1:q1,2:q2,3:q3} = surveyAnswers;
+  const seg = (q1==='C'||q1==='D')&&q2==='C'&&(q3==='C'||q3==='D') ? 'partner' :
+              q2==='A'&&(q3==='A'||q3==='B') ? 'client' :
+              q1==='A'||q3==='D' ? 'warm' : 'cold';
+  try {
+    await fetch('https://connect.mailerlite.com/api/subscribers', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + ML_KEY },
+      body: JSON.stringify({ email, groups:[ML_GROUPS[finalType]] })
+    });
+    fetch(TRACKER, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ quiz:'side-gene', result: TYPES[finalType].name, q1,q2,q3, segment: seg, email })
+    }).catch(()=>{});
+  } catch(e) {}
+  document.querySelector('.email-form').style.display = 'none';
+  document.getElementById('email-done').style.display = 'block';
+}
+
+/* ── PDF 下載 ────────────────────────────────────────── */
+function buildPDFHTML(t) {
+  return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
+    '<div style="height:5px;background:' + t.color + '"></div>' +
+    '<div style="padding:36px 28px 44px">' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 16px">Mori · 副業基因診斷</p>' +
+      '<p style="font-size:40px;margin:0 0 8px">' + t.emoji + '</p>' +
+      '<h2 style="font-size:32px;font-weight:900;color:#EDE8DF;margin:0 0 6px">' + t.name + '</h2>' +
+      '<p style="font-size:14px;color:' + t.color + ';margin:0 0 6px">' + t.nameEn + '</p>' +
+      '<p style="font-size:13px;color:#9A8C78;margin:0 0 24px">' + t.motto + '</p>' +
+      '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
+      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 40px">' + t.portrait.substring(0,180) + '…</p>' +
+      '<p style="font-size:10px;color:rgba(154,140,120,0.4);letter-spacing:.06em;margin:0">mori-homepage.pages.dev</p>' +
+    '</div></div>';
+}
+
+async function downloadPDF() {
+  if (!finalType) return;
+  const t = TYPES[finalType], target = document.getElementById('pdf-target');
+  const btn = document.querySelector('.btn-share'), origHTML = btn ? btn.innerHTML : '';
+  target.style.display = 'block'; target.innerHTML = buildPDFHTML(t);
+  if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
+  try {
+    const canvas = await html2canvas(target, {backgroundColor:'#090705',scale:2,useCORS:true,logging:false});
+    const imgData = canvas.toDataURL('image/png'), {jsPDF} = window.jspdf;
+    const w = canvas.width/2, h = canvas.height/2, pdf = new jsPDF({orientation:'portrait',unit:'px',format:[w,h]});
+    pdf.addImage(imgData,'PNG',0,0,w,h); pdf.save('mori-sidebiz-' + finalType.toLowerCase() + '.pdf');
+  } catch(e) { alert('下載失敗，請稍後再試'); }
+  target.style.display = 'none';
+  if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
+}
+
+/* ── 畫面切換 ────────────────────────────────────────── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  currentQIdx = 0; answers = []; answersHistory = []; finalType = '';
+  renderQ(0);
+  showScreen('screen-quiz');
+}
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded', () => {
+  MoriParticles.init('quiz');
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', e => {
+    dot.style.left = e.clientX + 'px'; dot.style.top = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
+  });
+  const pl = document.getElementById('preloader');
+  setTimeout(() => { pl.classList.add('fade'); setTimeout(() => pl.style.display='none', 700); }, 1800);
+});
+</script>
+</body>
+</html>

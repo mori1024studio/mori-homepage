@@ -156,7 +156,36 @@
 
 ### 待辦
 - MailerLite 串接（anti-fragile F1-F5 / start-with-why W1-W5）
-- Port 財富階梯 (T2 L1-L6) 至 CF Pages
-- Port 副業基因 (T6 5型) 至 CF Pages
+
+---
+
+## 2026-06-24｜Session：財富階梯 + 副業基因 CF Port + 首頁 17 張
+
+### 完成
+
+- **財富階梯 CF 版** `quiz/wealth-ladder/index.html`
+  - T2 CSS 進度階梯，18 題（S×6/B×6/M×4/G×2）
+  - L1-L6 六階結果，加權計分（Sp×0.40 + Bp×0.30 + Mp×0.20 + Gp×0.10）
+  - Q1=D 觸發 SUB_Q1 注入 → 直接映射 L4/L5/L6
+  - 維度分數視覺化（L1-L3 顯示，L4-L6 隱藏）
+  - 調查門 3 題，PDF 下載，ML 串接
+
+- **副業基因 CF 版** `quiz/sidebiz/index.html`
+  - T6 路線地圖，10 題，5 型（K知識變現/C內容引流/S服務套件/T工具整合/M媒介橋梁）
+  - 每題各選項對應基因類型 +2 分，同分取 K>C>S>T>M 優先
+  - 每型結果含 4 stage 路線地圖（emoji + 標題 + 說明）+ 今日行動 + Mori 觀察
+  - 調查門 3 題，PDF 下載，ML 串接
+  - 相關測驗 → /quiz/wealth-ladder/ 和 /quiz/start-with-why/
+
+- **首頁更新** `index.html`
+  - 卡片從 15 → 17 張
+  - 卡片 16：財富階梯 → `/quiz/wealth-ladder/`
+  - 卡片 17：副業基因 → `/quiz/sidebiz/`
+  - 所有卡片序號更新為「XX / 17」
+  - 新增 pip 15 和 pip 16
+
+### 待辦
+- MailerLite 串接（anti-fragile F1-F5 / start-with-why W1-W5）
+- Notion 同步（測驗漏斗工作室）
 
 ---
