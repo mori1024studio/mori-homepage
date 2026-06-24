@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- v1.0 | 2026-06-24 | 原子習慣 T3 雷達圖 6型 -->
+<title>MORI — 你的習慣為什麼一直斷掉？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+/* ══ 測驗頁專屬樣式 ══════════════════════════════════════════ */
+
+#site { min-height: 100vh; display: flex; flex-direction: column; }
+.quiz-main {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 100px 24px 80px;
+}
+.screen {
+  width: 100%; max-width: 640px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+  pointer-events: none; position: absolute;
+}
+.screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
+
+.start-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px; text-transform: uppercase; }
+.start-title { font-family: var(--font-display); font-weight: 900; font-size: 48px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; margin-bottom: 28px; }
+.start-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.55); margin-bottom: 48px; }
+.start-meta { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em; color: rgba(154,140,120,.4); margin-bottom: 48px; }
+.btn-start { display: inline-flex; align-items: center; gap: 16px; font-family: var(--font-body); font-size: 16px; letter-spacing: .25em; color: var(--gold); background: transparent; border: 1px solid rgba(196,169,106,.25); padding: 14px 36px; cursor: none; transition: all .3s; }
+.btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
+.btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
+.btn-start:hover .btn-start-arrow { width: 44px; }
+
+.progress-wrap { margin-bottom: 40px; }
+.progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
+.progress-total { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .3em; color: rgba(154,140,120,.45); text-transform: uppercase; }
+.progress-bar-bg { height: 1px; background: rgba(196,169,106,.1); position: relative; overflow: visible; }
+.progress-bar-fill { height: 1px; background: var(--gold); transition: width .6s cubic-bezier(.4,0,.2,1); position: relative; }
+.progress-bar-fill::after { content: ''; position: absolute; right: -3px; top: -3px; width: 7px; height: 7px; background: var(--gold); border-radius: 50%; }
+
+.question-tag { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px; }
+.question-text { font-family: 'LXGW WenKai TC', serif; font-size: 24px; line-height: 1.75; color: var(--text); margin-bottom: 36px; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option { display: flex; align-items: flex-start; gap: 16px; padding: 14px 18px; background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1); cursor: none; transition: all .25s; position: relative; overflow: hidden; }
+.option::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform .3s; }
+.option:hover { border-color: rgba(196,169,106,.28); background: rgba(16,12,8,.85); }
+.option:hover::before { transform: scaleY(1); }
+.option.selected { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); pointer-events: none; }
+.option.selected::before { transform: scaleY(1); }
+.option.fade-out { opacity: .25; transform: translateX(-6px); }
+.option-key { font-family: 'Kaushan Script', cursive; font-size: 18px; color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px; transition: color .25s; }
+.option:hover .option-key, .option.selected .option-key { color: var(--gold); }
+.option-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7; color: rgba(237,232,223,.7); transition: color .25s; }
+.option:hover .option-text, .option.selected .option-text { color: var(--text); }
+.quiz-nav { display: flex; align-items: center; margin-top: 24px; }
+.btn-prev-q { background: transparent; border: 1px solid var(--border); border-radius: 100px; padding: 10px 22px; font-size: 13px; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .3s, color .3s; }
+.btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+
+/* ── 調查門 ── */
+.survey-type-teaser { text-align: center; margin-bottom: 28px; }
+.survey-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.survey-type-name { font-size: clamp(24px,5vw,34px); font-weight: 900; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.survey-type-brief { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.survey-divider { text-align: center; font-size: 11px; letter-spacing: .1em; color: var(--muted); margin: 24px 0 20px; }
+.survey-group { margin-bottom: 24px; }
+.survey-q { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.5; }
+.survey-opts { display: flex; flex-direction: column; gap: 8px; }
+.survey-opt { background: rgba(28,28,42,.6); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-family: var(--font-ui); font-size: 13px; color: var(--muted); cursor: none; text-align: left; transition: border-color .2s, color .2s; }
+.survey-opt:hover { border-color: rgba(196,169,106,.3); color: var(--text); }
+.survey-opt.picked { border-color: var(--gold); color: var(--text); background: rgba(196,169,106,.08); }
+.btn-unlock { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; font-family: var(--font-ui); font-size: 15px; font-weight: 900; border: none; border-radius: 100px; cursor: none; margin-top: 8px; opacity: .35; pointer-events: none; transition: opacity .25s; }
+.btn-unlock:not([disabled]) { opacity: 1; pointer-events: auto; }
+
+/* ════ T3 雷達圖 ════ */
+.radar-wrap {
+  margin: 24px auto 36px;
+  width: 280px; height: 280px; position: relative;
+}
+.radar-svg { width: 100%; height: 100%; overflow: visible; }
+
+/* 雷達圖軸標籤 */
+.radar-label {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 11px; fill: rgba(154,140,120,.6);
+  text-anchor: middle; dominant-baseline: middle;
+}
+.radar-label.highlight { fill: var(--gold); font-weight: 700; }
+
+/* 雷達多邊形動畫 */
+.radar-shape {
+  fill: rgba(196,169,106,.12);
+  stroke: rgba(196,169,106,.7);
+  stroke-width: 1.5;
+  clip-path: circle(0% at 50% 50%);
+  transition: clip-path 1.4s cubic-bezier(.4,0,.2,1) .3s;
+}
+.radar-shape.revealed { clip-path: circle(60% at 50% 50%); }
+
+/* 雷達頂點圓點 */
+.radar-dot {
+  fill: var(--gold);
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.radar-shape.revealed ~ .radar-dot { opacity: 1; }
+
+/* 分數標籤 */
+.score-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border: 1px solid rgba(196,169,106,.2);
+  border-radius: 100px; background: rgba(196,169,106,.06);
+  font-family: 'Noto Sans TC', sans-serif; font-size: 11px;
+  color: var(--muted);
+}
+.score-badge.weak { border-color: rgba(196,169,106,.55); color: var(--gold); }
+.score-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(196,169,106,.4); }
+.score-badge.weak .score-badge-dot { background: var(--gold); }
+.scores-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+
+/* ── 結果 ── */
+.result-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 16px; }
+.result-type { font-family: var(--font-display); font-weight: 900; font-size: 52px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 8px; }
+.result-subtitle { font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em; color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 32px; }
+.result-divider { width: 48px; height: 1px; background: rgba(196,169,106,.25); margin-bottom: 32px; }
+.result-desc { font-family: 'LXGW WenKai TC', serif; font-size: 17px; line-height: 2; color: rgba(237,232,223,.65); margin-bottom: 32px; }
+.result-analysis-block { margin-bottom: 32px; }
+.result-analysis-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 14px; }
+.result-analysis-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 2; color: rgba(237,232,223,.62); white-space: pre-line; }
+.result-morview-block { margin-bottom: 32px; padding: 20px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); }
+.result-morview-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
+.result-morview-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); white-space: pre-line; }
+.btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+.btn-sec-row { display: flex; gap: 10px; }
+.btn-line { display: flex; align-items: center; justify-content: center; gap: 10px; background: #06C755; color: #fff; border: none; border-radius: 100px; padding: 16px; font-size: 15px; font-weight: 900; cursor: none; font-family: var(--font-ui); transition: opacity .2s; width: 100%; }
+.btn-line:hover { opacity: .88; }
+.btn-ghost-sec { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1.5px solid var(--border); border-radius: 100px; padding: 13px 16px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .2s, color .2s; }
+.btn-ghost-sec:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+.btn-ghost-full { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1.5px solid var(--border); border-radius: 100px; padding: 13px 16px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .2s, color .2s; }
+.btn-ghost-full:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+.btn-retry { background: transparent; border: 1px solid rgba(196,169,106,.12); color: rgba(154,140,120,.6); border-radius: 100px; padding: 12px 28px; font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; cursor: none; transition: all .25s; }
+.btn-retry:hover { color: rgba(154,140,120,.9); border-color: rgba(196,169,106,.25); }
+#pdf-target { position: fixed; top: -9999px; left: -9999px; width: 390px; display: none; }
+.result-cta { margin-top: 40px; padding: 24px; border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5); }
+.result-cta-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 12px; }
+.result-cta-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8; color: rgba(237,232,223,.55); margin-bottom: 16px; }
+.email-form { display: flex; gap: 8px; }
+.email-input { flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8); border: 1px solid rgba(196,169,106,.2); color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .25px; }
+.email-input:focus { border-color: rgba(196,169,106,.45); }
+.email-input::placeholder { color: rgba(154,140,120,.35); }
+.btn-email { padding: 10px 20px; background: rgba(196,169,106,.12); border: 1px solid rgba(196,169,106,.3); color: var(--gold); font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s; }
+.btn-email:hover { background: rgba(196,169,106,.2); }
+
+.related { margin-top: 48px; border-top: 1px solid rgba(196,169,106,.15); padding-top: 32px; }
+.related-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px; }
+.related-links { display: flex; flex-direction: column; gap: 12px; }
+.related-link { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border: 1px solid rgba(196,169,106,.18); border-radius: 10px; background: rgba(196,169,106,.04); text-decoration: none; transition: background .2s, border-color .2s; }
+.related-link:hover { background: rgba(196,169,106,.09); border-color: rgba(196,169,106,.35); }
+.related-link-title { font-family: 'LXGW WenKai TC', serif; font-size: 14px; color: rgba(237,232,223,.75); }
+.related-link-tag { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .1em; color: rgba(196,169,106,.5); white-space: nowrap; margin-left: 12px; }
+</style>
+</head>
+<body>
+
+<div id="god-ray"></div>
+<div id="vignette"></div>
+
+<div id="preloader">
+  <div id="pre-top"></div>
+  <div id="pre-bot"></div>
+  <div id="pre-corner-tl"></div>
+  <div id="pre-corner-br"></div>
+  <div id="pre-center">
+    <div class="pre-line" id="line-l"></div>
+    <span id="pre-text">Loading</span>
+    <div class="pre-line" id="line-r"></div>
+  </div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<div id="site">
+
+  <nav>
+    <a href="/" class="logo" style="text-decoration:none">Mori</a>
+    <div class="nav-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+  </nav>
+
+  <main class="quiz-main">
+
+    <!-- 開始畫面 -->
+    <div class="screen active" id="screen-start">
+      <div class="ornament" style="margin-bottom:36px">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+      <p class="start-eyebrow">Mori Studio · 習慣診斷</p>
+      <h1 class="start-title">你的習慣為什麼<br>一直斷掉？</h1>
+      <p class="start-desc">James Clear 說：壞習慣不是意志力問題，是系統問題。10 道情境題，找出你習慣崩潰的真正斷點。</p>
+      <p class="start-meta">共 10 題 · 約 4 分鐘 · 六維雷達分析</p>
+      <button class="btn-start" onclick="startQuiz()">
+        開始診斷
+        <span class="btn-start-arrow"></span>
+      </button>
+    </div>
+
+    <!-- 作答畫面 -->
+    <div class="screen" id="screen-quiz">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-num" id="q-num">Q1</span>
+          <span class="progress-total" id="q-total">/ 10 題</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <p class="question-tag">原子習慣診斷</p>
+      <p class="question-text" id="q-text"></p>
+      <div class="options" id="options-wrap"></div>
+      <div class="quiz-nav">
+        <button class="btn-prev-q" id="btnPrev" onclick="prevQ()">← 返回首頁</button>
+      </div>
+    </div>
+
+    <!-- 調查門 -->
+    <div class="screen" id="screen-survey">
+      <div class="survey-type-teaser">
+        <p class="survey-eyebrow">診斷完成</p>
+        <h2 class="survey-type-name" id="s-type-name"></h2>
+        <p class="survey-type-brief" id="s-type-brief"></p>
+      </div>
+      <div class="survey-divider">✦ 最後 3 個問題，讓診斷更精準</div>
+      <div class="survey-group">
+        <p class="survey-q">你目前最想建立的習慣是什麼類型？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">健康類（運動、飲食、睡眠）</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">學習類（閱讀、語言、技能）</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">副業類（創作、經營、輸出）</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">心理類（冥想、日記、整理）</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你的習慣平均能維持多久？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">不到一週就斷</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">一到兩週</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">一個月左右</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">超過三個月，但偶爾還是中斷</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你覺得習慣斷掉最主要的原因是？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">忘記做，沒有提醒</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">太累了，提不起勁</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">做起來太麻煩，步驟太多</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">看不到成果，失去動力</button>
+        </div>
+      </div>
+      <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看你的雷達分析 →</button>
+    </div>
+
+    <!-- 結果畫面（T3 雷達圖）-->
+    <div class="screen" id="screen-result">
+      <div class="ornament" style="margin-bottom:32px">
+        <span class="orn-line orn-line-l"></span>
+        <span class="orn-diamond"></span>
+        <span class="orn-line orn-line-r"></span>
+      </div>
+
+      <p class="result-eyebrow">你的習慣斷點</p>
+      <h2 class="result-type" id="r-type"></h2>
+      <p class="result-subtitle" id="r-subtitle"></p>
+      <div class="result-divider"></div>
+
+      <!-- T3 雷達圖 -->
+      <div class="radar-wrap">
+        <svg class="radar-svg" id="radar-svg" viewBox="-10 -10 220 220">
+          <!-- 底層網格（5層六邊形）-->
+          <g id="radar-grid"></g>
+          <!-- 軸線 -->
+          <g id="radar-axes"></g>
+          <!-- 使用者分數多邊形 -->
+          <polygon class="radar-shape" id="radar-shape" points="100,100"/>
+          <!-- 頂點圓點 -->
+          <g id="radar-dots"></g>
+          <!-- 軸標籤 -->
+          <g id="radar-labels"></g>
+        </svg>
+      </div>
+
+      <!-- 維度分數標籤 -->
+      <div class="scores-row" id="scores-row"></div>
+
+      <p class="result-desc" id="r-desc"></p>
+      <div class="result-analysis-block">
+        <p class="result-analysis-label">雷達解讀</p>
+        <p class="result-analysis-text" id="r-analysis"></p>
+      </div>
+      <div class="result-morview-block">
+        <p class="result-morview-label">Mori 觀點</p>
+        <p class="result-morview-text" id="r-morview"></p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-line" onclick="openLine()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true" style="flex-shrink:0"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          追蹤 LINE@
+        </button>
+        <div class="btn-sec-row">
+          <button class="btn-ghost-sec" onclick="openIG()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            追蹤 IG
+          </button>
+          <button class="btn-ghost-sec" onclick="shareResult()">分享結果</button>
+        </div>
+        <button class="btn-ghost-full" id="dlBtn" onclick="downloadPDF()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          下載結果
+        </button>
+        <button class="btn-retry" onclick="retryQuiz()">重新測驗</button>
+      </div>
+
+      <div class="result-cta">
+        <p class="result-cta-label">下一步</p>
+        <p class="result-cta-text" id="r-cta-text"></p>
+        <div class="email-form">
+          <input class="email-input" type="email" placeholder="你的 Email" id="email-input">
+          <button class="btn-email" onclick="submitEmail()">送出</button>
+        </div>
+        <p id="email-done" style="display:none;color:var(--gold);font-size:13px;text-align:center;margin-top:12px;">✓ 收到了，稍後寄到你的信箱。</p>
+      </div>
+
+      <div class="related">
+        <p class="related-label">繼續探索</p>
+        <div class="related-links">
+          <a class="related-link" href="/quiz/logic-layers/">
+            <span class="related-link-title">你在用哪個層次思考？</span>
+            <span class="related-link-tag">底層邏輯</span>
+          </a>
+          <a class="related-link" href="/quiz/start-with-why/">
+            <span class="related-link-title">你真正為了什麼在努力？</span>
+            <span class="related-link-tag">先問為什麼</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-logo">Mori</div>
+    <div class="footer-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+    <p class="footer-copy">© 2025 Mori Studio · 底層邏輯 × AI 工具 × 副業思維</p>
+  </footer>
+
+</div>
+
+<!-- ══ 測驗資料 ══════════════════════════════════════════════ -->
+<script>
+/* ── 六個維度（對應習慣四法則 + 身份 + 環境）── */
+// DIM: 提示 渴望 執行 獎勵 身份 環境
+const DIMS = ['提示', '渴望', '執行', '獎勵', '身份', '環境'];
+const DIM_FULL = ['提示穩定度', '渴望深度', '執行簡易度', '獎勵滿足感', '身份一致性', '環境設計'];
+
+/* 六個結果類型，每個對應一個最弱維度 */
+const RESULTS = {
+  H1: {
+    type:     '衝動啟動型',
+    subtitle: 'Impulse Starter',
+    weakDim:  1, // 渴望：一開始很熱血，但渴望消退後就停
+    desc:     '你的啟動能量很強，但維持動力的結構不夠穩固。每次習慣的開始都像一把火，燒得很旺，但沒有持續的燃料補充。問題不在熱情不夠，而在你把「感覺很想做」當作習慣的引擎——但感覺本來就是一次性的。',
+    analysis: '你的雷達在「渴望」維度明顯偏低，但「提示」和「環境」相對穩定。這告訴我們：你知道要做什麼、也有適合做的環境，但維持行動的內在動力結構不夠穩定。\n\n衝動啟動型最常見的崩潰模式是：在一個特定的情境下（看到某篇文章、看到別人的成果、某個特定心情）產生強烈的行動欲望，這個欲望驅動了最初幾天的行動，但當那個特定情境消失後，動力也跟著消失了。',
+    morview:  '我也是這樣的人，直到我學會把「我為什麼要做這件事」的答案變得更深。衝動是啟動的火花，但讓你繼續的不是火花，是燃料。你的燃料是什麼？\n\n把「我要養成這個習慣」改成「這個習慣讓我成為什麼樣的人」——這個轉換，就是從衝動啟動型升級的關鍵。',
+    cta:      '留下 Email，我寄給你「衝動啟動型」的習慣燃料重建框架。'
+  },
+  H2: {
+    type:     '環境依賴型',
+    subtitle: 'Environment Dependent',
+    weakDim:  5, // 環境
+    desc:     '你的習慣能不能維持，高度取決於你身處什麼環境。在對的環境裡，你做得很好；換個地方、出差、放假、搬家——習慣就瞬間消失。James Clear 說環境是行為的無聲建築師，而你的問題是：你讓環境替你做決定，而不是你替環境做設計。',
+    analysis: '你的雷達在「環境」維度最弱，但「身份」和「執行」相對不錯。這個組合說明了一件事：你知道自己要做什麼、也有做的意願，但當外部情境改變時，你沒有辦法把習慣帶過去。\n\n環境依賴型最典型的崩潰場景：出差兩週回來後，習慣全部消失；搬家後，原本的日常節奏完全打亂；朋友來訪打亂行程後，再也沒有回到軌道。',
+    morview:  '環境設計是習慣裡最被低估的環節。大多數人把精力放在「我要更自律」，但其實更有效的是「讓環境讓我不得不做」。\n\n我的建議很具體：列出你的習慣需要哪些環境條件，然後問自己：如果這些條件消失了，我的最小版本習慣是什麼？那個最小版本，才是你真正的習慣核心。',
+    cta:      '留下 Email，我寄給你「環境依賴型」的習慣可攜帶性設計指南。'
+  },
+  H3: {
+    type:     '身份衝突型',
+    subtitle: 'Identity Conflict',
+    weakDim:  4, // 身份
+    desc:     '你在做一件跟你對自己的認知不一致的事。習慣要長久，必須成為你認同的身份的一部分——但你還沒有走到那一步。你在「想養成習慣的你」和「認為自己不是這種人的你」之間拉扯，每次習慣中斷，都是那個舊身份贏了。',
+    analysis: '你的雷達在「身份」維度最弱，其他維度相對均衡。這個診斷意味著：外部條件大致OK，但你內心深處還沒有真正相信「這個習慣是我的」。\n\n身份衝突型的典型聲音：「我本來就不是那種早起的人」「我試過運動，堅持不了」「這對我來說太難了」。這些不是事實陳述，是身份宣告——而且它們在替你做決定。',
+    morview:  'James Clear 說最有效的習慣策略是：每次你按時做到，就投票給那個你想成為的自己。習慣的本質是身份的累積證據，不是成果的累積。\n\n你現在需要做的不是「更努力做習慣」，而是先回答：做了這個習慣的人是什麼樣的人？你願意成為那樣的人嗎？',
+    cta:      '留下 Email，我寄給你「身份衝突型」的身份重建實戰框架。'
+  },
+  H4: {
+    type:     '獎勵錯位型',
+    subtitle: 'Reward Mismatch',
+    weakDim:  3, // 獎勵
+    desc:     '你做完了，但沒有「完成感」。習慣的神經迴路需要獎勵信號來強化——大腦要知道這件事值得再做一次。但你的獎勵系統出了問題：要嘛獎勵太遠（六個月後才有結果）、要嘛獎勵太弱（你根本感覺不到完成了）、要嘛獎勵錯位（做了之後反而覺得累）。',
+    analysis: '你的雷達在「獎勵」維度最弱，提示和執行都還不錯。這個組合說明你能開始、能執行，但做完之後大腦沒有接收到「這件事值得重複」的信號。\n\n獎勵錯位型最常見的心聲：「我知道對我有好處，但就是不想做」「做完也沒什麼感覺」「看不到成效所以就放棄了」。這不是懶，是你的大腦沒有得到它需要的反饋。',
+    morview:  '很多習慣書只告訴你「習慣很重要」，卻不告訴你大腦是怎麼做決定的。大腦不在乎「對你長期有好處」，它在乎「現在有沒有好處」。\n\n你需要設計一個即時獎勵：做完之後立刻做一件讓你感覺好的事，哪怕只是在日曆上打一個勾。讓大腦學會這個連結，習慣才能自動化。',
+    cta:      '留下 Email，我寄給你「獎勵錯位型」的即時獎勵設計清單。'
+  },
+  H5: {
+    type:     '觸發缺失型',
+    subtitle: 'Missing Cue',
+    weakDim:  0, // 提示
+    desc:     '你的習慣沒有清楚的觸發點。每次「想做的時候才做」——但問題是，想做的念頭太容易被其他事情蓋過。James Clear 的習慣堆疊（Habit Stacking）說的就是這個：新習慣需要一個舊習慣作為錨點，否則它每次都要重新靠意志力召喚出來。',
+    analysis: '你的雷達在「提示」維度最弱，但渴望和身份相對完整。這個組合說明你真的想做、也知道為什麼做，但「做」的這個動作需要每次都靠意識決定，沒有自動觸發。\n\n觸發缺失型的典型場景：某天想起來做了，但第二天忙起來就忘了。設置了提醒，但提醒出現的時機不對（正在開會、正在通勤）。沒有一個固定的「之前做了X，然後做這個」的鏈接。',
+    morview:  '習慣設計最被低估的一步，就是「觸發點設計」。不是「我要記得做」，而是「當我做了Y，我就做X」。把習慣掛在一個已經穩定的行為上。\n\n具體建議：找出你每天一定會做的 3 件事，選一個作為新習慣的觸發點。試一週，你會發現差別很大。',
+    cta:      '留下 Email，我寄給你「觸發缺失型」的習慣堆疊設計模板。'
+  },
+  H6: {
+    type:     '過度設計型',
+    subtitle: 'Overthought System',
+    weakDim:  2, // 執行
+    desc:     '你的系統比你的行動更複雜。你花很多時間研究如何養成習慣、設計系統、選工具、規劃流程——但實際的行動步驟太多，任何一個環節出問題都可能讓你停下來。James Clear 說習慣的容易度比強度更重要：讓它變得簡單到不得不做，而不是複雜到需要動力才能做。',
+    analysis: '你的雷達在「執行」維度最弱，但提示和渴望都很強。這個組合說明你有動力、也知道要做，但每次到了真正執行的時候，會卡在步驟太多、條件太複雜、或是進入「讓我先準備一下」的循環。\n\n過度設計型的典型聲音：「等我找到完美的習慣追蹤 App 再開始」「我要先把環境佈置好」「這個計畫不夠完整，再想一下」。這些都是執行門檻過高的症狀。',
+    morview:  '我對過度設計型有特別深的感受，因為我自己也是。我發現一個有效的破局方式：把你計畫中的習慣版本縮小到「可笑地小」。想做30分鐘運動？先做2分鐘。想每天閱讀？先讀一頁。\n\n「開始」本身就是最難的部分。一旦你開始了，繼續通常比你預期的容易。把精力從「設計完美系統」移到「降低開始的門檻」。',
+    cta:      '留下 Email，我寄給你「過度設計型」的最小可行習慣設計框架。'
+  }
+};
+
+const QUESTIONS = [
+  {
+    text: '你決定要養成一個新習慣。最常讓你在第一週就放棄的是什麼？',
+    options: [
+      { key:'A', text:'熱情很快就退了，沒有了當初的感覺',           scores:{ H1:3 } },
+      { key:'B', text:'忘記做，或者做的時機對不上',                  scores:{ H5:3 } },
+      { key:'C', text:'步驟太多，準備起來很麻煩',                    scores:{ H6:3 } },
+      { key:'D', text:'做了但沒什麼感覺，不知道有沒有用',            scores:{ H4:3 } }
+    ]
+  },
+  {
+    text: '你曾經在某個環境裡（健身房、辦公室、特定城市）把習慣維持很好，但一換到另一個地方就全部瓦解。這種狀況發生過嗎？',
+    options: [
+      { key:'A', text:'是的，很常發生，我的習慣非常依賴環境',        scores:{ H2:3 } },
+      { key:'B', text:'有過，但我知道是環境問題，會想辦法調整',      scores:{ H2:1, H3:2 } },
+      { key:'C', text:'偶爾有，但主要問題不在環境',                  scores:{ H1:1, H4:2 } },
+      { key:'D', text:'這不是我的主要問題，我在不同環境都一樣',      scores:{ H5:2, H6:1 } }
+    ]
+  },
+  {
+    text: '當有人說「你是一個自律的人」或「你看起來很健康」，你的第一反應是？',
+    options: [
+      { key:'A', text:'「我才不是，我只是在努力假裝」',              scores:{ H3:3 } },
+      { key:'B', text:'「謝謝，但我其實一直在掙扎」',               scores:{ H1:2, H3:1 } },
+      { key:'C', text:'「嗯，我有在做某些事，但不確定能維持」',      scores:{ H4:2, H5:1 } },
+      { key:'D', text:'「確實，這是我認同的自我形象的一部分」',      scores:{ H2:1, H6:2 } }
+    ]
+  },
+  {
+    text: '你完成了今天的習慣。做完之後最常出現的感覺是？',
+    options: [
+      { key:'A', text:'還好，做完了，但沒什麼特別的感受',            scores:{ H4:3 } },
+      { key:'B', text:'輕鬆，今天的任務完成了',                      scores:{ H5:2, H3:1 } },
+      { key:'C', text:'有點累，但有成就感',                          scores:{ H1:2, H2:1 } },
+      { key:'D', text:'覺得「終於做完了」，下次不確定有沒有動力再做', scores:{ H4:2, H6:1 } }
+    ]
+  },
+  {
+    text: '你有沒有為了「養成習慣」研究過很多方法、買過工具或 App，但真正做到的比計畫少很多？',
+    options: [
+      { key:'A', text:'是的，我是那種先研究很久才開始的人',          scores:{ H6:3 } },
+      { key:'B', text:'有過，但我有意識到問題，正在改',              scores:{ H6:1, H3:2 } },
+      { key:'C', text:'偶爾，但我的問題主要不在這',                  scores:{ H1:2, H5:1 } },
+      { key:'D', text:'不是，我更常是衝動開始，然後快速放棄',        scores:{ H1:3 } }
+    ]
+  },
+  {
+    text: '如果習慣有一個固定的「觸發點」（例如：刷牙後運動、早餐後閱讀），你認為這對你有幫助嗎？',
+    options: [
+      { key:'A', text:'應該很有幫助，我很缺這種自動觸發',            scores:{ H5:3 } },
+      { key:'B', text:'我試過，但觸發點本身也常常被跳過',            scores:{ H2:2, H5:1 } },
+      { key:'C', text:'觸發點不是我的問題，問題是做下去的動力',      scores:{ H1:2, H4:1 } },
+      { key:'D', text:'我有觸發點，但做完之後不想繼續做明天的',      scores:{ H4:2, H3:1 } }
+    ]
+  },
+  {
+    text: '你最想養成的那個習慣，你覺得「做這件事的人是什麼樣的人」？',
+    options: [
+      { key:'A', text:'是比我更自律、更有毅力的人，我還不是',        scores:{ H3:3 } },
+      { key:'B', text:'是有時間、有條件的人，我現在沒辦法',          scores:{ H2:2, H3:1 } },
+      { key:'C', text:'是普通人，我只是沒有找到對的方式',            scores:{ H5:2, H6:1 } },
+      { key:'D', text:'就是我本來應該成為的樣子',                   scores:{ H1:1, H4:2 } }
+    ]
+  },
+  {
+    text: '你因為某件事（出差、生病、特別忙的一週）中斷了習慣。回來要重新開始時，你最常遇到什麼阻礙？',
+    options: [
+      { key:'A', text:'已經不在當初的環境裡，節奏完全打亂了',        scores:{ H2:3 } },
+      { key:'B', text:'中斷太久感覺很陌生，不知道從哪裡重新開始',   scores:{ H5:2, H3:1 } },
+      { key:'C', text:'要重新開始好麻煩，覺得要先「準備好」',        scores:{ H6:3 } },
+      { key:'D', text:'失去了當初的感覺，再也提不起那個動力',        scores:{ H1:3 } }
+    ]
+  },
+  {
+    text: '「我知道這對我有好處，但就是不想做」——這個句子描述你習慣的準確度是？',
+    options: [
+      { key:'A', text:'非常準確，這就是我的日常',                   scores:{ H4:2, H3:1 } },
+      { key:'B', text:'有時候，但問題不只這樣',                      scores:{ H1:2, H4:1 } },
+      { key:'C', text:'我通常還是有動力，只是做的方式很複雜',        scores:{ H6:3 } },
+      { key:'D', text:'不準確，我的問題是忘記做或沒有機會做',        scores:{ H5:2, H2:1 } }
+    ]
+  },
+  {
+    text: '如果你的習慣今天只能花 2 分鐘做，你願意這樣做嗎？',
+    options: [
+      { key:'A', text:'願意，這樣至少做了',                          scores:{ H5:2, H2:1 } },
+      { key:'B', text:'不願意，做 2 分鐘沒有意義',                  scores:{ H4:2, H6:1 } },
+      { key:'C', text:'猶豫，但可能最後還是做了完整版',              scores:{ H6:2, H1:1 } },
+      { key:'D', text:'願意，但 2 分鐘後通常會繼續做下去',          scores:{ H3:2, H1:1 } }
+    ]
+  }
+];
+
+/* ── 雷達圖繪製 ── */
+const CX = 100, CY = 100, R = 80;
+const N = 6;
+
+function polarToXY(angle, r) {
+  const rad = (angle - 90) * Math.PI / 180;
+  return { x: CX + r * Math.cos(rad), y: CY + r * Math.sin(rad) };
+}
+
+function buildGrid() {
+  const grid = document.getElementById('radar-grid');
+  for (let lvl = 1; lvl <= 5; lvl++) {
+    const r = R * lvl / 5;
+    const pts = Array.from({length: N}, (_, i) => {
+      const p = polarToXY(i * 60, r);
+      return `${p.x},${p.y}`;
+    }).join(' ');
+    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    poly.setAttribute('points', pts);
+    poly.setAttribute('fill', 'none');
+    poly.setAttribute('stroke', `rgba(196,169,106,${0.04 + lvl * 0.03})`);
+    poly.setAttribute('stroke-width', '0.5');
+    grid.appendChild(poly);
+  }
+  const axes = document.getElementById('radar-axes');
+  for (let i = 0; i < N; i++) {
+    const p = polarToXY(i * 60, R);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', CX); line.setAttribute('y1', CY);
+    line.setAttribute('x2', p.x); line.setAttribute('y2', p.y);
+    line.setAttribute('stroke', 'rgba(196,169,106,.08)');
+    line.setAttribute('stroke-width', '0.5');
+    axes.appendChild(line);
+  }
+}
+
+function buildLabels(dimScores, weakIdx) {
+  const labelsEl = document.getElementById('radar-labels');
+  labelsEl.innerHTML = '';
+  for (let i = 0; i < N; i++) {
+    const p = polarToXY(i * 60, R + 18);
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', p.x);
+    text.setAttribute('y', p.y);
+    text.setAttribute('class', 'radar-label' + (i === weakIdx ? ' highlight' : ''));
+    text.textContent = DIMS[i];
+    labelsEl.appendChild(text);
+  }
+}
+
+function buildShape(dimScores) {
+  const pts = dimScores.map((s, i) => {
+    const r = R * s / 100;
+    const p = polarToXY(i * 60, r);
+    return `${p.x},${p.y}`;
+  }).join(' ');
+  document.getElementById('radar-shape').setAttribute('points', pts);
+  const dotsEl = document.getElementById('radar-dots');
+  dotsEl.innerHTML = '';
+  dimScores.forEach((s, i) => {
+    const r = R * s / 100;
+    const p = polarToXY(i * 60, r);
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', p.x); circle.setAttribute('cy', p.y);
+    circle.setAttribute('r', 3); circle.setAttribute('class', 'radar-dot');
+    dotsEl.appendChild(circle);
+  });
+}
+
+function buildScoreRow(dimScores, weakIdx) {
+  const row = document.getElementById('scores-row');
+  row.innerHTML = '';
+  dimScores.forEach((s, i) => {
+    const badge = document.createElement('div');
+    badge.className = 'score-badge' + (i === weakIdx ? ' weak' : '');
+    badge.innerHTML = `<span class="score-badge-dot"></span>${DIMS[i]} ${s}`;
+    row.appendChild(badge);
+  });
+}
+
+function revealRadar() {
+  setTimeout(() => {
+    document.getElementById('radar-shape').classList.add('revealed');
+  }, 300);
+}
+
+/* ── 共用引擎 ── */
+const ML_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZTY0ZmY0YjJhYzcyMzM0ZTVlZjNmMzBlYTVlZjE0OWE5Mzg1ZDI2NDNiM2EzZmU3ZGUxYWVlMTA0NWZmMjFhYTJmN2FhYzQ5ODIwZDlhZmMiLCJpYXQiOjE3ODIyMjYxNDQuNjU1MzAzLCJuYmYiOjE3ODIyMjYxNDQuNjU1MzA3LCJleHAiOjQ5Mzc4OTk3NDQuNjQ5MjQ5LCJzdWIiOiIyNDQ5MDA2Iiwic2NvcGVzIjpbXX0.gXowQcDS-zoaY-A1We4MOAcjeaJ7RGc5VPB4EuXq2RR3vMyFfUmzeucHkxeNNj2DFyjtREnqFUOvTPL-y_rpvBKgNt22pwDgjfvb5pz9KB1zV_x_ULdOyGDFPQvYvmOcnDeXRTbZKSNQ7BrYHh_o1hFMiqc7YtGL9F3tsnYVi3ZyeFJStmeAxHP0493VIrR_FzKZS7l2fPG5ltaMomShz6T3MhEUCsLsGTfZc92ufHU1bRhXYdzQMkDpzVrhtZtd-ix-P_ym12GrORv5k5LOm69ts38rUQyCZR5dPxIrTFv2J1kEhhF-8uhQ9R6i6x0hf0Yv2KMVF-cDhoI9w6MTB_zXR58IiQ0W0xaeEwrEseCOwhFEUs7UIeMBVl5sopJViSOZBYRXbv67COxej5rNZM-RD6BZfDbiWJ_MTYLmOJ7BCpDKkZ04SzALl5E0McPR645u-Znf4eXMRgNTYrLUTOdQ6ez3BmmOZ3hhwA7toi1rXXaQJCBWlgs9g6bZeYKVoPdT8suaK6bXA9vaaA4-6c8yAhEyeXReB3gWzaJmQ6XCdBk5MRVOJ-gHZNHpibBz03MYRtKL6R1HM3GRBELXYQt3puu5IlHP_m9xk9FHKwH8WVkzvnSmU2SpUbHabozMNKSNeuopT9r3CAnAnd5WYdpZFeSMFcpr8MTjYTXOhuE';
+const ML_GROUPS = {
+  H1: '191150925527648151',
+  H2: '191150926707295623',
+  H3: '191150927373140998',
+  H4: '191150928010675969',
+  H5: '191150928885188564',
+  H6: '191150929493361769',
+};
+const CFG = { lineUrl: 'https://line.me/R/ti/p/@507wvwbz', igUrl: 'https://instagram.com/mori1024_' };
+function openLine() { window.open(CFG.lineUrl, '_blank'); }
+function openIG()   { window.open(CFG.igUrl,   '_blank'); }
+
+let currentQ = 0, answersHistory = [], currentResultKey = null;
+const rawScores = { H1:0, H2:0, H3:0, H4:0, H5:0, H6:0 };
+const dimScores = [0,0,0,0,0,0]; // 提示 渴望 執行 獎勵 身份 環境
+let surveyAnswers = {1:'',2:'',3:''};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  setTimeout(() => document.getElementById(id).classList.add('active'), 50);
+}
+function startQuiz() {
+  currentQ = 0; answersHistory = [];
+  Object.keys(rawScores).forEach(k => { rawScores[k] = 0; });
+  surveyAnswers = {1:'',2:'',3:''};
+  showScreen('screen-quiz');
+  setTimeout(renderQuestion, 300);
+}
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const total = QUESTIONS.length;
+  document.getElementById('q-num').textContent   = 'Q' + (currentQ + 1);
+  document.getElementById('q-total').textContent = '/ ' + total + ' 題';
+  document.getElementById('progress-fill').style.width = (currentQ / total * 100) + '%';
+  document.getElementById('q-text').textContent  = q.text;
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="option-key">${opt.key}</span><span class="option-text">${opt.text}</span>`;
+    btn.addEventListener('click', () => selectOption(btn, opt, i));
+    wrap.appendChild(btn);
+  });
+  const prevIdx = answersHistory[currentQ];
+  if (prevIdx !== undefined) {
+    const opts = document.querySelectorAll('.option');
+    if (opts[prevIdx]) opts[prevIdx].classList.add('selected');
+  }
+  const pb = document.getElementById('btnPrev');
+  if (pb) pb.textContent = currentQ === 0 ? '← 返回首頁' : '← 上一題';
+}
+function selectOption(el, opt, idx) {
+  answersHistory[currentQ] = idx;
+  document.querySelectorAll('.option').forEach((o, i) => {
+    o.classList.add(i === idx ? 'selected' : 'fade-out');
+  });
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < QUESTIONS.length) renderQuestion();
+    else computeAndShowSurvey();
+  }, 520);
+}
+function prevQ() {
+  if (currentQ === 0) { showScreen('screen-start'); return; }
+  currentQ--;
+  renderQuestion();
+}
+
+function computeAndShowSurvey() {
+  Object.keys(rawScores).forEach(k => { rawScores[k] = 0; });
+  answersHistory.forEach((optIdx, qIdx) => {
+    if (optIdx !== undefined && QUESTIONS[qIdx]) {
+      Object.entries(QUESTIONS[qIdx].options[optIdx].scores).forEach(([k,v]) => {
+        rawScores[k] = (rawScores[k] || 0) + v;
+      });
+    }
+  });
+  const topKey = Object.entries(rawScores).sort((a,b)=>b[1]-a[1])[0][0];
+  currentResultKey = topKey;
+  const r = RESULTS[topKey];
+  document.getElementById('s-type-name').textContent  = r.type;
+  document.getElementById('s-type-brief').textContent = r.subtitle;
+  surveyAnswers = {1:'',2:'',3:''};
+  document.getElementById('btnUnlock').disabled = true;
+  showScreen('screen-survey');
+}
+function surveyPick(q, val, btn) {
+  surveyAnswers[q] = val;
+  btn.closest('.survey-group').querySelectorAll('.survey-opt').forEach(b => b.classList.remove('picked'));
+  btn.classList.add('picked');
+  if (surveyAnswers[1] && surveyAnswers[2] && surveyAnswers[3]) {
+    document.getElementById('btnUnlock').disabled = false;
+  }
+}
+function unlockResult() {
+  renderFullResult();
+  showScreen('screen-result');
+}
+
+function computeDimScores() {
+  /* 每個 result type 對應一個最弱維度，用 rawScore 推算六維分數 */
+  const total = Object.values(rawScores).reduce((a,b) => a+b, 0) || 1;
+  const keys  = ['H5','H1','H6','H4','H3','H2']; // 提示,渴望,執行,獎勵,身份,環境
+  keys.forEach((k, i) => {
+    const base = Math.round((rawScores[k] / total) * 100);
+    dimScores[i] = Math.min(95, Math.max(15, base));
+  });
+  const weakDim = RESULTS[currentResultKey].weakDim;
+  dimScores[weakDim] = Math.min(dimScores[weakDim], 30);
+}
+
+function renderFullResult() {
+  computeDimScores();
+  const r = RESULTS[currentResultKey];
+  document.getElementById('r-type').textContent      = r.type;
+  document.getElementById('r-subtitle').textContent  = r.subtitle;
+  document.getElementById('r-desc').textContent      = r.desc;
+  document.getElementById('r-analysis').textContent  = r.analysis;
+  document.getElementById('r-morview').textContent   = r.morview;
+  document.getElementById('r-cta-text').textContent  = r.cta;
+  document.getElementById('email-done').style.display = 'none';
+  document.querySelector('.email-form').style.display = 'flex';
+
+  buildLabels(dimScores, r.weakDim);
+  buildShape(dimScores);
+  buildScoreRow(dimScores, r.weakDim);
+  revealRadar();
+}
+
+function retryQuiz() {
+  document.getElementById('radar-shape').classList.remove('revealed');
+  showScreen('screen-start');
+}
+
+function buildPDFHTML(r) {
+  return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
+    '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
+    '<div style="padding:36px 28px 44px">' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 習慣診斷</p>' +
+      '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
+      '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 28px;line-height:1.6">' + r.subtitle + '</p>' +
+      '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 28px"></div>' +
+      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 40px">' + r.desc.substring(0, 220) + '…</p>' +
+      '<p style="font-size:10px;color:rgba(154,140,120,0.4);letter-spacing:.06em;margin:0">mori-homepage.pages.dev</p>' +
+    '</div></div>';
+}
+async function downloadPDF() {
+  if (!currentResultKey) return;
+  const r = RESULTS[currentResultKey];
+  const target = document.getElementById('pdf-target');
+  const btn = document.getElementById('dlBtn');
+  const origHTML = btn ? btn.innerHTML : '';
+  target.style.display = 'block';
+  target.innerHTML = buildPDFHTML(r);
+  if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
+  try {
+    const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const w = canvas.width / 2, h = canvas.height / 2;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [w, h] });
+    pdf.addImage(imgData, 'PNG', 0, 0, w, h);
+    pdf.save('mori-atomic-habits-' + currentResultKey.toLowerCase() + '.pdf');
+  } catch(e) { console.error(e); }
+  finally {
+    target.style.display = 'none';
+    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
+  }
+}
+async function shareResult() {
+  if (!currentResultKey) return;
+  const r = RESULTS[currentResultKey];
+  const target = document.getElementById('pdf-target');
+  target.style.display = 'block';
+  target.innerHTML = buildPDFHTML(r);
+  try {
+    const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
+    canvas.toBlob(async (blob) => {
+      const fname = 'mori-atomic-habits-' + currentResultKey.toLowerCase() + '.png';
+      const file = new File([blob], fname, { type: 'image/png' });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Mori 習慣診斷結果' });
+      } else {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+      }
+    }, 'image/png');
+  } catch(e) { console.error(e); }
+  finally { target.style.display = 'none'; }
+}
+async function submitEmail() {
+  const emailEl = document.getElementById('email-input');
+  const email = emailEl.value.trim();
+  if (!email || !email.includes('@')) return;
+  const btn = document.querySelector('.btn-email');
+  btn.disabled = true; btn.textContent = '送出中…';
+  try {
+    const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ML_KEY}`, 'Accept': 'application/json' },
+      body: JSON.stringify({ email, groups: ML_GROUPS[currentResultKey] ? [ML_GROUPS[currentResultKey]] : [] }),
+    });
+    if (res.ok) {
+      document.querySelector('.email-form').style.display = 'none';
+      document.getElementById('email-done').style.display = 'block';
+    } else { btn.disabled = false; btn.textContent = '送出'; }
+  } catch(err) { btn.disabled = false; btn.textContent = '送出'; }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  buildGrid();
+  const lL = document.getElementById('line-l'), lR = document.getElementById('line-r'), pt = document.getElementById('pre-text');
+  setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
+  setTimeout(() => { pt.classList.add('ready'); pt.textContent = 'Enter'; }, 1600);
+  pt.addEventListener('click', () => {
+    if (!pt.classList.contains('ready')) return;
+    document.getElementById('preloader').style.opacity = '0';
+    setTimeout(() => { document.getElementById('preloader').style.display = 'none'; document.getElementById('site').style.opacity = '1'; }, 600);
+  });
+  const cur = document.getElementById('cursor'), ring = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function tick(){ rx+=(mx-rx)*.18; ry+=(my-ry)*.18;
+    cur.style.left=mx+'px'; cur.style.top=my+'px';
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(tick); })();
+  document.querySelectorAll('button,a').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+  MoriParticles.init('quiz');
+});
+</script>
+<div id="pdf-target"></div>
+<script src="/shared/particles.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>
