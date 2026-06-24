@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- v1.0 | 2026-06-24 | 暗黑心智 T1 7型 CF版 port -->
+<title>MORI — 哪條人性一直在操縱你的決定？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+/* ══ 測驗頁專屬樣式 ══════════════════════════════════════════ */
+
+#site { min-height: 100vh; display: flex; flex-direction: column; }
+.quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
+.screen { width: 100%; max-width: 640px; opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s ease; pointer-events: none; position: absolute; }
+.screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
+
+.start-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px; text-transform: uppercase; }
+.start-title { font-family: var(--font-display); font-weight: 900; font-size: 48px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; margin-bottom: 28px; }
+.start-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.55); margin-bottom: 48px; }
+.start-meta { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em; color: rgba(154,140,120,.4); margin-bottom: 48px; }
+.btn-start { display: inline-flex; align-items: center; gap: 16px; font-family: var(--font-body); font-size: 16px; letter-spacing: .25em; color: var(--gold); background: transparent; border: 1px solid rgba(196,169,106,.25); padding: 14px 36px; cursor: none; transition: all .3s; }
+.btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
+.btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
+.btn-start:hover .btn-start-arrow { width: 44px; }
+
+.section-banner { display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px; border: 1px solid rgba(196,169,106,.15); margin-bottom: 20px; }
+.section-banner-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.section-banner-text { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .35em; color: rgba(196,169,106,.5); text-transform: uppercase; }
+.progress-wrap { margin-bottom: 40px; }
+.progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
+.progress-total { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .3em; color: rgba(154,140,120,.45); text-transform: uppercase; }
+.progress-bar-bg { height: 1px; background: rgba(196,169,106,.1); position: relative; overflow: visible; }
+.progress-bar-fill { height: 1px; background: var(--gold); transition: width .6s cubic-bezier(.4,0,.2,1); position: relative; }
+.progress-bar-fill::after { content: ''; position: absolute; right: -3px; top: -3px; width: 7px; height: 7px; background: var(--gold); border-radius: 50%; }
+.question-text { font-family: 'LXGW WenKai TC', serif; font-size: 22px; line-height: 1.8; color: var(--text); margin-bottom: 36px; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option { display: flex; align-items: flex-start; gap: 16px; padding: 14px 18px; background: rgba(16,12,8,.6); border: 1px solid rgba(196,169,106,.1); cursor: none; transition: all .25s; position: relative; overflow: hidden; }
+.option::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform .3s; }
+.option:hover { border-color: rgba(196,169,106,.28); background: rgba(16,12,8,.85); }
+.option:hover::before { transform: scaleY(1); }
+.option.selected { border-color: rgba(196,169,106,.4); background: rgba(196,169,106,.06); pointer-events: none; }
+.option.selected::before { transform: scaleY(1); }
+.option.fade-out { opacity: .25; transform: translateX(-6px); }
+.option-key { font-family: 'Kaushan Script', cursive; font-size: 18px; color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px; transition: color .25s; }
+.option:hover .option-key, .option.selected .option-key { color: var(--gold); }
+.option-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7; color: rgba(237,232,223,.7); transition: color .25s; }
+.option:hover .option-text, .option.selected .option-text { color: var(--text); }
+.quiz-nav { display: flex; align-items: center; margin-top: 24px; }
+.btn-prev-q { background: transparent; border: 1px solid var(--border); border-radius: 100px; padding: 10px 22px; font-size: 13px; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .3s, color .3s; }
+.btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+
+/* ── 調查門 ── */
+.survey-type-teaser { text-align: center; margin-bottom: 28px; }
+.survey-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.survey-type-name { font-size: clamp(24px,5vw,34px); font-weight: 900; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.survey-type-brief { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.survey-divider { text-align: center; font-size: 11px; letter-spacing: .1em; color: var(--muted); margin: 24px 0 20px; }
+.survey-group { margin-bottom: 24px; }
+.survey-q { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.5; }
+.survey-opts { display: flex; flex-direction: column; gap: 8px; }
+.survey-opt { background: rgba(28,28,42,.6); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-family: var(--font-ui); font-size: 13px; color: var(--muted); cursor: none; text-align: left; transition: border-color .2s, color .2s; }
+.survey-opt:hover { border-color: rgba(196,169,106,.3); color: var(--text); }
+.survey-opt.picked { border-color: var(--gold); color: var(--text); background: rgba(196,169,106,.08); }
+.btn-unlock { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; font-family: var(--font-ui); font-size: 15px; font-weight: 900; border: none; border-radius: 100px; cursor: none; margin-top: 8px; opacity: .35; pointer-events: none; transition: opacity .25s; }
+.btn-unlock:not([disabled]) { opacity: 1; pointer-events: auto; }
+
+/* ── T1 結果卡片 ── */
+.result-card {
+  padding: 32px; border: 1px solid rgba(196,169,106,.18);
+  background: rgba(16,12,8,.85); position: relative; overflow: hidden;
+  margin-bottom: 32px;
+  opacity: 0; transform: scale(.97) translateY(12px);
+  transition: opacity .7s ease .2s, transform .7s cubic-bezier(.34,1.2,.64,1) .2s;
+}
+.result-card.revealed { opacity: 1; transform: scale(1) translateY(0); }
+.result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--card-accent, var(--gold)); }
+.result-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(196,169,106,.04) 0%, transparent 60%); pointer-events: none; }
+.result-emoji { font-size: 40px; margin-bottom: 16px; display: block; }
+.result-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 14px; }
+.result-type { font-family: var(--font-display); font-weight: 900; font-size: 52px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 8px; }
+.result-subtitle { font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em; color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 20px; }
+.result-motto { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8; color: rgba(196,169,106,.8); border-left: 2px solid rgba(196,169,106,.3); padding-left: 16px; margin-bottom: 24px; }
+.result-divider { width: 48px; height: 1px; background: rgba(196,169,106,.25); margin-bottom: 24px; }
+.result-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.65); margin-bottom: 28px; }
+.result-section-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 14px; }
+.result-strength { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.9; color: rgba(237,232,223,.62); margin-bottom: 28px; }
+.result-breakthrough { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.9; color: rgba(237,232,223,.62); margin-bottom: 28px; }
+.result-morview { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); padding: 18px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); margin-bottom: 28px; }
+.result-triggers { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.trigger-chip { font-family: 'Noto Sans TC', sans-serif; font-size: 11px; padding: 4px 12px; border: 1px solid rgba(196,169,106,.2); color: rgba(196,169,106,.55); border-radius: 100px; }
+
+.btn-row { display: flex; flex-direction: column; gap: 10px; }
+.btn-sec-row { display: flex; gap: 10px; }
+.btn-line { display: flex; align-items: center; justify-content: center; gap: 10px; background: #06C755; color: #fff; border: none; border-radius: 100px; padding: 16px; font-size: 15px; font-weight: 900; cursor: none; font-family: var(--font-ui); transition: opacity .2s; width: 100%; }
+.btn-line:hover { opacity: .88; }
+.btn-ghost-sec { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1.5px solid var(--border); border-radius: 100px; padding: 13px 16px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .2s, color .2s; }
+.btn-ghost-sec:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+.btn-ghost-full { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1.5px solid var(--border); border-radius: 100px; padding: 13px 16px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .2s, color .2s; }
+.btn-ghost-full:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
+.btn-retry { background: transparent; border: 1px solid rgba(196,169,106,.12); color: rgba(154,140,120,.6); border-radius: 100px; padding: 12px 28px; font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; cursor: none; transition: all .25s; }
+.btn-retry:hover { color: rgba(154,140,120,.9); border-color: rgba(196,169,106,.25); }
+#pdf-target { position: fixed; top: -9999px; left: -9999px; width: 390px; display: none; }
+.result-cta { margin-top: 40px; padding: 24px; border: 1px solid rgba(196,169,106,.1); background: rgba(16,12,8,.5); }
+.result-cta-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 12px; }
+.result-cta-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8; color: rgba(237,232,223,.55); margin-bottom: 16px; }
+.email-form { display: flex; gap: 8px; }
+.email-input { flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8); border: 1px solid rgba(196,169,106,.2); color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .25s; }
+.email-input:focus { border-color: rgba(196,169,106,.45); }
+.email-input::placeholder { color: rgba(154,140,120,.35); }
+.btn-email { padding: 10px 20px; background: rgba(196,169,106,.12); border: 1px solid rgba(196,169,106,.3); color: var(--gold); font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s; }
+.btn-email:hover { background: rgba(196,169,106,.2); }
+.related { margin-top: 48px; border-top: 1px solid rgba(196,169,106,.15); padding-top: 32px; }
+.related-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 20px; }
+.related-links { display: flex; flex-direction: column; gap: 12px; }
+.related-link { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border: 1px solid rgba(196,169,106,.18); border-radius: 10px; background: rgba(196,169,106,.04); text-decoration: none; transition: background .2s, border-color .2s; }
+.related-link:hover { background: rgba(196,169,106,.09); border-color: rgba(196,169,106,.35); }
+.related-link-title { font-family: 'LXGW WenKai TC', serif; font-size: 14px; color: rgba(237,232,223,.75); }
+.related-link-tag { font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .1em; color: rgba(196,169,106,.5); white-space: nowrap; margin-left: 12px; }
+</style>
+</head>
+<body>
+
+<div id="god-ray"></div>
+<div id="vignette"></div>
+
+<div id="preloader">
+  <div id="pre-top"></div><div id="pre-bot"></div>
+  <div id="pre-corner-tl"></div><div id="pre-corner-br"></div>
+  <div id="pre-center">
+    <div class="pre-line" id="line-l"></div>
+    <span id="pre-text">Loading</span>
+    <div class="pre-line" id="line-r"></div>
+  </div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<div id="site">
+  <nav>
+    <a href="/" class="logo" style="text-decoration:none">Mori</a>
+    <div class="nav-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+  </nav>
+
+  <main class="quiz-main">
+
+    <!-- 開始畫面 -->
+    <div class="screen active" id="screen-start">
+      <div class="ornament" style="margin-bottom:36px">
+        <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
+      </div>
+      <p class="start-eyebrow">Mori Studio · 心理模式診斷</p>
+      <h1 class="start-title">哪條人性<br>一直在操縱<br>你的決定？</h1>
+      <p class="start-desc">副業、職場、關係——三個場景，21 道情境題。找出那個你看不見、卻一直在影響你行動的思維模式。</p>
+      <p class="start-meta">共 21 題 · 約 6 分鐘 · 7 種暗黑模式</p>
+      <button class="btn-start" onclick="startQuiz()">開始診斷<span class="btn-start-arrow"></span></button>
+    </div>
+
+    <!-- 作答畫面 -->
+    <div class="screen" id="screen-quiz">
+      <div class="section-banner" id="section-banner">
+        <div class="section-banner-dot"></div>
+        <span class="section-banner-text" id="section-label">副業啟動</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-num" id="q-num">Q1</span>
+          <span class="progress-total" id="q-total">/ 21 題</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <p class="question-text" id="q-text"></p>
+      <div class="options" id="options-wrap"></div>
+      <div class="quiz-nav">
+        <button class="btn-prev-q" id="btnPrev" onclick="prevQ()">← 返回首頁</button>
+      </div>
+    </div>
+
+    <!-- 調查門 -->
+    <div class="screen" id="screen-survey">
+      <div class="survey-type-teaser">
+        <p class="survey-eyebrow">你的模式出來了</p>
+        <h2 class="survey-type-name" id="s-type-name"></h2>
+        <p class="survey-type-brief" id="s-type-brief"></p>
+      </div>
+      <div class="survey-divider">✦ 最後 3 個問題，讓分析更精準</div>
+      <div class="survey-group">
+        <p class="survey-q">你最常在哪個場景感受到這個模式的影響？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">副業或創業的嘗試上</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">職場的日常決策上</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">人際關係的互動上</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">三個場景都差不多</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你認為這個模式形成多久了？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">從很小就有，一直是這樣</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">某次具體的經歷之後</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">近幾年才越來越明顯</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">不確定，但感覺一直都有</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你現在最想改變的是？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">讓自己更敢行動，不再被這個模式卡住</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">更了解自己為什麼會這樣反應</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">在人際關係上更自在</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">在副業或工作上有所突破</button>
+        </div>
+      </div>
+      <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看你的暗黑模式全解析 →</button>
+    </div>
+
+    <!-- 結果畫面（T1 類型卡片）-->
+    <div class="screen" id="screen-result">
+      <div class="result-card" id="result-card">
+        <span class="result-emoji" id="r-emoji"></span>
+        <p class="result-eyebrow">你的心理模式</p>
+        <h2 class="result-type" id="r-type"></h2>
+        <p class="result-subtitle" id="r-subtitle"></p>
+        <p class="result-motto" id="r-motto"></p>
+        <div class="result-divider"></div>
+        <p class="result-desc" id="r-desc"></p>
+
+        <p class="result-section-label">容易觸發的情境</p>
+        <div class="result-triggers" id="r-triggers"></div>
+
+        <p class="result-section-label" style="margin-top:20px">你的優勢</p>
+        <p class="result-strength" id="r-strength"></p>
+
+        <p class="result-section-label">突破口</p>
+        <p class="result-breakthrough" id="r-breakthrough"></p>
+
+        <p class="result-section-label">Mori 觀點</p>
+        <div class="result-morview" id="r-morview"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-line" onclick="openLine()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true" style="flex-shrink:0"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          追蹤 LINE@
+        </button>
+        <div class="btn-sec-row">
+          <button class="btn-ghost-sec" onclick="openIG()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            追蹤 IG
+          </button>
+          <button class="btn-ghost-sec" onclick="shareResult()">分享結果</button>
+        </div>
+        <button class="btn-ghost-full" id="dlBtn" onclick="downloadPDF()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          下載結果
+        </button>
+        <button class="btn-retry" onclick="retryQuiz()">重新測驗</button>
+      </div>
+
+      <div class="result-cta">
+        <p class="result-cta-label">深度資源</p>
+        <p class="result-cta-text" id="r-cta-text"></p>
+        <div class="email-form">
+          <input class="email-input" type="email" placeholder="你的 Email" id="email-input">
+          <button class="btn-email" onclick="submitEmail()">送出</button>
+        </div>
+        <p id="email-done" style="display:none;color:var(--gold);font-size:13px;text-align:center;margin-top:12px;">✓ 收到了，稍後寄到你的信箱。</p>
+      </div>
+
+      <div class="related">
+        <p class="related-label">繼續探索</p>
+        <div class="related-links">
+          <a class="related-link" href="/quiz/human-nature/">
+            <span class="related-link-title">哪條人性一直在操縱你？</span>
+            <span class="related-link-tag">人性18法則</span>
+          </a>
+          <a class="related-link" href="/quiz/not-enough/">
+            <span class="related-link-title">你的「不夠好」從哪裡來？</span>
+            <span class="related-link-tag">自我價值</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-logo">Mori</div>
+    <div class="footer-links">
+      <a href="https://instagram.com/mori1024_" target="_blank">Instagram</a>
+      <a href="#" target="_blank">Line</a>
+    </div>
+    <p class="footer-copy">© 2025 Mori Studio · 底層邏輯 × AI 工具 × 副業思維</p>
+  </footer>
+</div>
+
+<!-- ══ 測驗資料 ══════════════════════════════════════════════ -->
+<script>
+const SECTIONS = ['副業啟動','職場日常','人際關係'];
+const SECTION_BREAKS = [0, 7, 14]; // 每段起始題號
+
+const QUESTIONS = [
+  // S: 副業啟動 Q1-Q7
+  { s:0, text:'你下定決心要研究副業，打開電腦卻遲遲沒有開始查。那一刻腦中的念頭是？', options:[
+    { key:'A', text:'「我要做就做到最好，三個月內看不到成果，就代表我根本不適合。」', p:'P', s:'D' },
+    { key:'B', text:'「那些副業做起來的人，到底比我多了什麼？他們的起點跟我一樣嗎？」', p:'E', s:'P' },
+    { key:'C', text:'「先把資料搜集齊全、工具準備好、規劃出來，才能動工。」', p:'R', s:'D' },
+    { key:'D', text:'「這樣會不會佔用到陪家人的時間？萬一他們覺得被冷落？」', p:'N', s:'O' }
+  ]},
+  { s:0, text:'你把想開副業的計畫說給一個親近的人聽，對方反應很淡漠。你心裡的第一個想法？', options:[
+    { key:'A', text:'「是我說得不夠清楚。回去重新整理，下次準備得更完整再說。」', p:'P', s:'R' },
+    { key:'B', text:'「萬一大家都是這種反應怎麼辦？是不是這個方向本來就走不通？」', p:'D', s:'U' },
+    { key:'C', text:'「他只是還不懂，等我做出成績，他自然就會理解了。」', p:'O', s:'N' },
+    { key:'D', text:'「果然。以後這種事不要再跟別人說，說出去只會讓自己難堪。」', p:'U', s:'N' }
+  ]},
+  { s:0, text:'副業方向確定了，但已經兩週沒發出任何內容。真正的原因是？', options:[
+    { key:'A', text:'「我覺得自己還不夠好，等程度再高一點，說的東西才對別人有意義。」', p:'N', s:'O' },
+    { key:'B', text:'「我想像過各種人看到內容的反應……大多數版本都不太樂觀。」', p:'D', s:'U' },
+    { key:'C', text:'「看了幾個做得好的帳號，感覺自己的水準跟他們差距太大。」', p:'E', s:'P' },
+    { key:'D', text:'「就算發了，應該也不會有人真的看，或者真的有興趣。」', p:'U', s:'R' }
+  ]},
+  { s:0, text:'你終於發出第一篇內容，24小時後只有3個讚，沒有留言。你的反應？', options:[
+    { key:'A', text:'「沒關係，第一篇本來就是這樣，這只是開始，一切會愈來愈好的！」', p:'O', s:'N' },
+    { key:'B', text:'「是哪裡出問題？時間點？標籤？我要逐一排查再優化。」', p:'R', s:'P' },
+    { key:'C', text:'「得更努力，今晚再寫一篇，這週要發五篇，用量來彌補。」', p:'P', s:'E' },
+    { key:'D', text:'「還好只有少數人看到。我想我要更低調一點。」', p:'N', s:'U' }
+  ]},
+  { s:0, text:'副業做了三個月，收入幾乎是零。你和自己說的話是？', options:[
+    { key:'A', text:'「別人三個月都已經有一定成果了，我到底哪裡做錯了？」', p:'E', s:'P' },
+    { key:'B', text:'「照這個速度下去，我真的不知道這條路走不走得通，可能只會越來越難。」', p:'D', s:'U' },
+    { key:'C', text:'「成功的人都是熬過低潮期的，相信過程，保持正能量！」', p:'O', s:'N' },
+    { key:'D', text:'「執行方式是不是有問題？要系統性地重新檢視整個策略。」', p:'R', s:'P' }
+  ]},
+  { s:0, text:'你的貼文收到一則留言，說你的內容「根本是在浪費時間」。第一反應？', options:[
+    { key:'A', text:'「被這樣說，有點受傷……也許我真的對別人沒什麼幫助。」', p:'N', s:'D' },
+    { key:'B', text:'「好，那我就讓他看看。我要加倍努力，用成果證明給他看。」', p:'P', s:'E' },
+    { key:'C', text:'「他說的也許有道理……我開始懷疑選的方向是不是真的有問題。」', p:'D', s:'R' },
+    { key:'D', text:'「不意外。這就是我當初猶豫要不要公開的原因。」', p:'U', s:'D' }
+  ]},
+  { s:0, text:'你看上一個副業相關課程，要價 NT$8,000。腦中的第一個念頭？', options:[
+    { key:'A', text:'「買就對了！投資自己最重要，這個肯定有用！」', p:'O', s:'N' },
+    { key:'B', text:'「先看完所有評價，問過買過的人，確認退款政策，再決定。」', p:'R', s:'U' },
+    { key:'C', text:'「那些買了這個課的人，成效都怎樣？有沒有比我更適合的受眾？」', p:'E', s:'P' },
+    { key:'D', text:'「花出去萬一沒效怎麼辦？這個老師真的值得信任嗎？」', p:'U', s:'D' }
+  ]},
+  // W: 職場日常 Q8-Q14
+  { s:1, text:'主管突然交代你一個超出現有能力的任務，要求週五前完成。第一反應？', options:[
+    { key:'A', text:'「我必須在期限內完成，而且不能有任何失誤。」', p:'P', s:'E' },
+    { key:'B', text:'「其他同事拿到這種任務是怎麼做的？我的水準能跟上嗎？」', p:'E', s:'P' },
+    { key:'C', text:'「先把任務拆解成步驟，把每個環節搞清楚，再按順序執行。」', p:'R', s:'D' },
+    { key:'D', text:'「我不確定自己能做好……但我不想讓主管失望，所以我不說我不確定。」', p:'N', s:'U' }
+  ]},
+  { s:1, text:'你在會議上提出一個想法，主管當場否定，同事也沉默沒有支持。你心裡怎麼想？', options:[
+    { key:'A', text:'「沒關係！我下次再提出更好的，他們一定會看到的！」', p:'O', s:'N' },
+    { key:'B', text:'「這種情況會不會繼續發生？我在這個團隊，是不是根本沒有話語權？」', p:'D', s:'U' },
+    { key:'C', text:'「下次我要準備更多數據，讓他沒辦法這樣輕易否定我。」', p:'P', s:'R' },
+    { key:'D', text:'「我就知道……在這邊說什麼都不太有用，還是少說為妙。」', p:'U', s:'D' }
+  ]},
+  { s:1, text:'你得知一個年資比你短的同事獲得升職，而你沒有。最真實的感受？', options:[
+    { key:'A', text:'「我哪裡輸給他？他做了什麼我沒做到的？」', p:'E', s:'P' },
+    { key:'B', text:'「也許我確實還不夠好……主管不選我，一定有他的原因。」', p:'N', s:'D' },
+    { key:'C', text:'「這個公司的評選標準根本不透明，讓我開始懷疑這裡值不值得繼續待。」', p:'D', s:'U' },
+    { key:'D', text:'「這個決定背後可能有很多我不知道的事，我不確定能相信表面上看到的。」', p:'U', s:'N' }
+  ]},
+  { s:1, text:'你手上的專案做不下去，需要向同事請求協助。你怎麼開口？', options:[
+    { key:'A', text:'「先把卡住的地方整理好，列清楚我需要什麼，再找人談。」', p:'R', s:'P' },
+    { key:'B', text:'「再自己試幾次，不行才去問，不想讓人覺得我能力不足。」', p:'N', s:'U' },
+    { key:'C', text:'「直接去找最厲害的同事，說不定能從中學到很多，這是好機會！」', p:'O', s:'N' },
+    { key:'D', text:'「開口之前先把解法思考到某個程度，讓對方知道我有認真嘗試過。」', p:'P', s:'R' }
+  ]},
+  { s:1, text:'年度績效評估比你預期的低，主管的評語很模糊。你怎麼看這件事？', options:[
+    { key:'A', text:'「我要把自己的成果和同職級的人比較，搞清楚差距在哪裡。」', p:'E', s:'P' },
+    { key:'B', text:'「評語這麼模糊，這個評估系統到底可不可信？我對這裡越來越不確定了。」', p:'D', s:'U' },
+    { key:'C', text:'「沒關係，這次是個提醒，下次我會做得更好，保持正向！」', p:'O', s:'N' },
+    { key:'D', text:'「把評估內容逐條拆解，找出每一項的改善方向，列出執行計畫。」', p:'R', s:'P' }
+  ]},
+  { s:1, text:'公司突然宣布因業績下滑，未來三個月可能進行人員調整。你的第一個動作？', options:[
+    { key:'A', text:'「立刻盤點自己對公司的貢獻，想辦法讓自己成為不可取代的人。」', p:'P', s:'E' },
+    { key:'B', text:'「默默開始更新履歷，但不確定外面的機會是不是真的比這裡好。」', p:'D', s:'U' },
+    { key:'C', text:'「先觀察主管和同事的反應，不想在這個時候說錯話讓人對我有想法。」', p:'N', s:'R' },
+    { key:'D', text:'「這種消息搞不清楚是真是假，公司的說法我也不太信。」', p:'U', s:'D' }
+  ]},
+  { s:1, text:'你做了大量工作的專案，報告時卻是另一位同事獲得所有肯定。你怎麼處理？', options:[
+    { key:'A', text:'「這不公平。我要讓主管知道我的貢獻是什麼，說清楚誰做了什麼。」', p:'E', s:'P' },
+    { key:'B', text:'「下次合作前先建立貢獻記錄機制，讓每個人的輸出都有文件可查。」', p:'R', s:'U' },
+    { key:'C', text:'「信任別人只會讓自己吃虧，以後在職場上要更謹慎。」', p:'U', s:'D' },
+    { key:'D', text:'「沒關係，只要做出好的結果，最終大家都會知道是誰的功勞的。」', p:'O', s:'N' }
+  ]},
+  // R: 人際關係 Q15-Q21
+  { s:2, text:'在朋友聚會上，有人當著大家的面說你的某個人生決定是錯的。你的反應？', options:[
+    { key:'A', text:'「我當場跟他理論，把我的理由說清楚，不能讓這件事就這樣過去。」', p:'P', s:'E' },
+    { key:'B', text:'「大家都是這樣看我的決定嗎？還是只有他一個人？」', p:'E', s:'N' },
+    { key:'C', text:'「我不會當場反駁，但事後會找時間私下跟他好好說清楚。」', p:'R', s:'N' },
+    { key:'D', text:'「笑著帶過，但心裡記下來了，也更不想在這群人面前分享自己的事。」', p:'N', s:'U' }
+  ]},
+  { s:2, text:'有個曾經很親近的朋友，已經超過半年沒聯絡。你想主動傳訊息，但一直沒傳。是什麼讓你停下來？', options:[
+    { key:'A', text:'「萬一他已經不想理我了怎麼辦？萬一他覺得我很奇怪？」', p:'D', s:'U' },
+    { key:'B', text:'「不確定他對我們的關係還有沒有在乎，先觀察一下再說。」', p:'U', s:'D' },
+    { key:'C', text:'「他收到一定會很開心的，就等我找到最好的時機傳！」', p:'O', s:'N' },
+    { key:'D', text:'「想先把要說的話組織好，讓它聽起來自然不尷尬，再傳。」', p:'P', s:'R' }
+  ]},
+  { s:2, text:'你出於好意幫朋友的忙，他卻誤解你的動機，覺得你有私心。你怎麼反應？', options:[
+    { key:'A', text:'「我心裡很受傷，但還是會問自己：我真的完全沒有任何私心嗎？」', p:'N', s:'D' },
+    { key:'B', text:'「這讓我開始想：他對我的了解，還有我對他的信任，也許都不如我以為的。」', p:'U', s:'D' },
+    { key:'C', text:'「我想知道他為什麼會這樣想——我需要了解我在他眼中的形象。」', p:'E', s:'N' },
+    { key:'D', text:'「如果好意換來誤解，我開始懷疑主動幫人到底值不值得。」', p:'D', s:'U' }
+  ]},
+  { s:2, text:'你和親近的人發生一次不小的爭執，對方主動傳訊息道歉了。你怎麼回應？', options:[
+    { key:'A', text:'「太好了！往前看最重要，這種事多想也沒用。」', p:'O', s:'N' },
+    { key:'B', text:'「謝謝他道歉，但我需要確認我們已經說清楚，才算真的沒事了。」', p:'R', s:'P' },
+    { key:'C', text:'「他道歉了，那就接受。我不想讓這件事繼續拖下去，讓對方為難。」', p:'N', s:'O' },
+    { key:'D', text:'「好，但我想趁這個機會把當時沒說完的話說清楚。」', p:'P', s:'E' }
+  ]},
+  { s:2, text:'你發現一個很親近的朋友最近瞞著你一件事，而且是你覺得他應該告訴你的事。', options:[
+    { key:'A', text:'「他告訴其他人了嗎？如果有，那我在他心裡算什麼？」', p:'E', s:'N' },
+    { key:'B', text:'「朋友之間本來就應該分享這種事，他沒說，代表我們的關係可能沒我以為的那麼深。」', p:'R', s:'D' },
+    { key:'C', text:'「我開始懷疑他是不是還隱瞞了其他事，還有他對這段關係的真實態度。」', p:'D', s:'U' },
+    { key:'D', text:'「可能他有他的苦衷，我繼續保持正面，等他願意說的時候自然會說。」', p:'O', s:'N' }
+  ]},
+  { s:2, text:'家人對你某個重要的人生選擇強烈反對。你怎麼應對？', options:[
+    { key:'A', text:'「準備一份完整的論述，把我的理由說到他們真的理解為止。」', p:'P', s:'R' },
+    { key:'B', text:'「先讓他們發洩，我不想為了這件事傷了家庭和氣。」', p:'N', s:'O' },
+    { key:'C', text:'「家人反對，代表這件事可能有我沒考慮到的風險，我需要再想想。」', p:'D', s:'R' },
+    { key:'D', text:'「他們的看法和我完全不同，我開始懷疑他們是不是真的了解我。」', p:'U', s:'D' }
+  ]},
+  { s:2, text:'一個不太熟的人請你幫一個大忙，你其實沒時間，但還是答應了。事後的感受？', options:[
+    { key:'A', text:'「希望他能感受到我的用心，也希望這讓他對我的印象好一點。」', p:'E', s:'N' },
+    { key:'B', text:'「我明明可以拒絕的……下次這種情況要先設定好條件再說好。」', p:'R', s:'P' },
+    { key:'C', text:'「如果我拒絕，他會怎麼看我？這種想法讓我說不出口。」', p:'U', s:'D' },
+    { key:'D', text:'「幫人是好事，說不定這件事會有意想不到的收穫，就當作結緣！」', p:'O', s:'N' }
+  ]}
+];
+
+const RESULTS = {
+  D: {
+    emoji:'🌪️', type:'災難式思維', subtitle:'Catastrophizing',
+    motto:'凡事往最壞的方向想，是你給自己的保護，也是你的監獄',
+    desc:'你的大腦是一台高效的風險偵測機。在做任何決定前，你會自動模擬所有可能出錯的版本——如果我失敗了、如果別人嘲笑我、如果情況比現在更糟。這種思考模式讓你非常謹慎，不輕易衝動，但也讓你付出了巨大的代價：你在行動之前，就已經被自己製造的「最壞情境」嚇退了。',
+    triggers:['改變','未知情境','無法掌控的結果','嘗試新事物','公開表現'],
+    strength:'你的風險評估能力遠超過一般人。你能在別人還沒看到問題的時候，就預先識別出潛在的漏洞，這讓你在需要謹慎判斷的場合非常可靠。',
+    breakthrough:'給自己做一個「最壞情境存活測試」：如果最壞的情況真的發生了，我能熬過去嗎？大多數時候，答案是肯定的。這不是要你忽略風險，而是讓你把「評估風險」和「被風險癱瘓」這兩件事分開。',
+    morview:'作為一個 INTJ，我非常理解這種思考模式——它讓我做事前的準備比大多數人都更完整。但我也發現，如果讓這個模式全面掌控，它會把所有「可能出錯的地方」放大到遠超它在現實中的比重。真正讓我改變的一個問題是：「如果我五年後回頭看今天猶豫的這件事，我會後悔沒做，還是慶幸沒做？」',
+    cta:'留下 Email，我寄給你「災難式思維」的突破工具包。', color:'#5B92C4'
+  },
+  N: {
+    emoji:'🫥', type:'自我否定式', subtitle:'Self-denial',
+    motto:'你一直在成全別人，是時候也成全自己一次',
+    desc:'你不是沒有想法、沒有需求，你只是習慣把它們壓下去。在日常中，你常常不確定自己「有沒有資格」要求這件事，或者擔心說出來會讓別人不舒服。你可能在開副業前先問家人同意，在投資前擔心影響其他人，在表達意見前先想「這樣說會不會太自私」。',
+    triggers:['需要為自己發聲','做出「看起來自私」的選擇','接受別人的幫助','拒絕別人的要求'],
+    strength:'你對他人情緒的感知力極高。你能在大多數人還沒察覺的時候就感受到別人的需要，這讓你在人際關係中成為真正可靠的存在。',
+    breakthrough:'練習「說出一個需求，不附帶任何道歉或解釋」。不是「你方便的話我可以……」而是「我需要……」需求不需要理由，感受不需要辯護。',
+    morview:'我觀察到一件有趣的事：自我否定型的人往往是最有深度的人，但他們把大部分的深度都花在理解別人上，而不是理解自己。試著把對待好朋友的那種耐心和理解，用在自己身上一次。',
+    cta:'留下 Email，我寄給你「自我否定式」的邊界重建指南。', color:'#9482C4'
+  },
+  P: {
+    emoji:'🔥', type:'自我施壓式', subtitle:'Self-pressure',
+    motto:'你的鞭策讓你走得很快，但你知道在跑向哪裡嗎',
+    desc:'你不是懶惰的人，你太不懶惰了。你設定的目標永遠比現在高一點，達到了就立刻調高，永遠不讓自己停下來。這種模式讓你表面上高效、有生產力，但在內部，你幾乎從未真正感受過「夠了」。你常常在睡前想明天要做什麼、在完成一件事後立刻轉向下一件、在休息時感到隱隱的罪惡感。',
+    triggers:['截止日期','設定目標','被評估績效','感到閒下來','看到別人更努力'],
+    strength:'你的執行力是真實的優勢。在需要高強度衝刺的場合，你能維持別人難以匹敵的產出水準。你對品質的要求讓你的工作成果通常高於平均。',
+    breakthrough:'試著給自己設定一個「夠了的基準」：今天完成了 X 就算完成，不需要繼續。休息不是放棄，是讓下一次更好的準備。',
+    morview:'我自己也有很強的壓力式傾向，所以我特別能理解這種模式的誘惑——它確實有效，你確實可以用它驅動自己做到很多事。但我後來發現，如果沒有一個「知道夠了在哪裡」的能力，這個模式會讓你永遠在跑，卻不知道終點在哪。',
+    cta:'留下 Email，我寄給你「自我施壓式」的節奏重建工具包。', color:'#C47060'
+  },
+  E: {
+    emoji:'🪞', type:'外部比較式', subtitle:'Comparison',
+    motto:'你一直在看別人的地圖，走的卻是自己的路',
+    desc:'你不是沒有自信，你只是習慣需要對照組。在決定一件事之前，你習慣看看「其他人怎麼做」「做到這個程度算不算達標」「別人的成果和我比起來怎麼樣」。這讓你非常敏感於外部反饋，但它讓你的內在動力變得脆弱：一旦看到某個「更優秀的人」，你的信心就會動搖。',
+    triggers:['看到他人成就','績效評估','社群媒體','找不到外部標準的情境'],
+    strength:'你能從環境中快速學習，對品質和標準有高度的敏感度。你很少做出完全脫離現實的判斷，因為你一直在追蹤外部訊號。',
+    breakthrough:'建立一個「個人基準」而非「外部基準」：你三個月前的自己，比任何比較對象都更適合作為你的參照點。問自己：我現在做到的事，是三個月前的我做不到的嗎？',
+    morview:'評價式的陷阱是：你一直在用別人的尺量自己的路。我在做 IG 的過程中非常深刻地體會到這件事——看到別人粉絲暴增，很容易就覺得「我是不是做錯了」。後來我設定了一個規則：每週只對比上週的自己，不對比任何其他帳號。',
+    cta:'留下 Email，我寄給你「外部比較式」的自我錨定練習。', color:'#C4A040'
+  },
+  R: {
+    emoji:'📐', type:'規則框架式', subtitle:'Rule-bound',
+    motto:'那些規則保護了過去的你，但可能正在限制現在的你',
+    desc:'你對「應該」和「不應該」非常敏感。你有一套運作世界的內部規則：準備好了才行動、所有條件確認了才決定、遵循正確的流程才有結果。這套規則讓你可靠、可預測，但它也讓你在面對不確定情境時變得僵化——當需要在資訊不完整時做決定，你會感到強烈的不適，甚至完全停頓。',
+    triggers:['不確定性','規則不清晰的情境','需要在資訊不完整時行動','打破慣例'],
+    strength:'你的系統思考能力是真正的優勢。你能把複雜的問題分解成清晰的步驟，你的執行穩定，不容易因情緒衝動犯錯，在需要精確度的場合特別可靠。',
+    breakthrough:'給自己設定一個「夠好的決策門檻」：當你有 70% 的資訊時，你就可以行動了。剩下的 30% 只能在行動中獲得，不是在等待中獲得。',
+    morview:'INTJ 天生喜歡規則和系統，所以我對這個類型特別有共鳴。我的轉折點是某次意識到：「我設定的規則，有些是基於合理的推論，有些只是習慣。」從那時候開始，我每隔一段時間會問自己：這條規則現在還適用嗎？',
+    cta:'留下 Email，我寄給你「規則框架式」的彈性決策訓練框架。', color:'#5876C4'
+  },
+  U: {
+    emoji:'🔒', type:'慣性不信任式', subtitle:'Distrust',
+    motto:'你的懷疑保護了你，但也讓你越來越孤立',
+    desc:'你不是悲觀的人，你是謹慎的人。在信任一個人、一件事、一個機會之前，你需要看到足夠多的證據，感受到足夠多的一致性。這讓你很少被表面現象騙到，但它也讓你錯過了一些只有「願意先相信」才能打開的機會。你可能對別人的好意保持懷疑，對自己的判斷也不完全信任。',
+    triggers:['新關係','需要信任他人的情境','不透明的系統','熱情過頭的承諾','不可逆的承諾'],
+    strength:'你的批判思考能力是稀有的資產。你能識別出別人忽視的風險，能在大多數人被表象吸引時看到底層的問題。這在需要客觀判斷的場合讓你非常可靠。',
+    breakthrough:'學習區分「合理懷疑」和「習慣性防衛」。問自己：我這次的懷疑，有具體的證據，還是只是一種感覺？讓你對自己的懷疑也保持同等的批判——懷疑本身，也需要被懷疑。',
+    morview:'不信任式的人通常都有一個「讓他們變成這樣」的故事，而那個故事是真實的，是值得被尊重的。但讓你受傷的那個情境，和你現在面對的情境，通常不是同一個。當你的防衛系統把它們都當成一樣的威脅來處理，你錯過了那些真正安全的連結。',
+    cta:'留下 Email，我寄給你「慣性不信任式」的信任重建練習。', color:'#C45068'
+  },
+  O: {
+    emoji:'✨', type:'過度正向式', subtitle:'Toxic Positivity',
+    motto:'你的正能量是禮物，但它也在幫你逃避一些必要的痛苦',
+    desc:'你相信積極是解決問題的一部分，這是對的。但你的模式更進一步：在面對任何困難、衝突、或負面情緒時，你的第一反應是把它轉換成正面的框架——「這是學習機會」「一切都會好的」「保持正向就好」。這讓你在短期內感覺更好，但它也讓你迴避了一些必要的訊號。',
+    triggers:['面對失敗','人際衝突','被要求面對負面情緒','不確定的未來'],
+    strength:'你在逆境中的情緒韌性是真實的優勢。你能在困難中找到繼續前進的理由，這讓你成為身邊人的穩定力量，尤其在集體低潮期。',
+    breakthrough:'允許自己有一個「不加詮釋的感受時段」——感受它，不需要立刻把它變成正面的框架。你不需要讓每一個負面感受都有意義，有時候它就是不舒服，允許它不舒服，是它消化的方式。',
+    morview:'過度正向式的人通常是讓身邊人最舒服的人，但他們自己卻不一定舒服。最讓我印象深刻的是：這個類型的人最難察覺自己的疲憊，因為他們太擅長把疲憊「轉譯」成積極的話語了。你上次不用把感受轉成正向敘述，直接說「我今天很累、很沮喪」是什麼時候？',
+    cta:'留下 Email，我寄給你「過度正向式」的情緒真實感受工具包。', color:'#5EC47A'
+  }
+};
+
+const ML_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZTY0ZmY0YjJhYzcyMzM0ZTVlZjNmMzBlYTVlZjE0OWE5Mzg1ZDI2NDNiM2EzZmU3ZGUxYWVlMTA0NWZmMjFhYTJmN2FhYzQ5ODIwZDlhZmMiLCJpYXQiOjE3ODIyMjYxNDQuNjU1MzAzLCJuYmYiOjE3ODIyMjYxNDQuNjU1MzA3LCJleHAiOjQ5Mzc4OTk3NDQuNjQ5MjQ5LCJzdWIiOiIyNDQ5MDA2Iiwic2NvcGVzIjpbXX0.gXowQcDS-zoaY-A1We4MOAcjeaJ7RGc5VPB4EuXq2RR3vMyFfUmzeucHkxeNNj2DFyjtREnqFUOvTPL-y_rpvBKgNt22pwDgjfvb5pz9KB1zV_x_ULdOyGDFPQvYvmOcnDeXRTbZKSNQ7BrYHh_o1hFMiqc7YtGL9F3tsnYVi3ZyeFJStmeAxHP0493VIrR_FzKZS7l2fPG5ltaMomShz6T3MhEUCsLsGTfZc92ufHU1bRhXYdzQMkDpzVrhtZtd-ix-P_ym12GrORv5k5LOm69ts38rUQyCZR5dPxIrTFv2J1kEhhF-8uhQ9R6i6x0hf0Yv2KMVF-cDhoI9w6MTB_zXR58IiQ0W0xaeEwrEseCOwhFEUs7UIeMBVl5sopJViSOZBYRXbv67COxej5rNZM-RD6BZfDbiWJ_MTYLmOJ7BCpDKkZ04SzALl5E0McPR645u-Znf4eXMRgNTYrLUTOdQ6ez3BmmOZ3hhwA7toi1rXXaQJCBWlgs9g6bZeYKVoPdT8suaK6bXA9vaaA4-6c8yAhEyeXReB3gWzaJmQ6XCdBk5MRVOJ-gHZNHpibBz03MYRtKL6R1HM3GRBELXYQt3puu5IlHP_m9xk9FHKwH8WVkzvnSmU2SpUbHabozMNKSNeuopT9r3CAnAnd5WYdpZFeSMFcpr8MTjYTXOhuE';
+const ML_GROUPS = { D:'191078819105343401', N:'191078819683107946', P:'191078820270311013', E:'191078820848076088', R:'191078821546427748', U:'191078822178718847', O:'191078822759630014' };
+const CFG = { lineUrl:'https://line.me/R/ti/p/@507wvwbz', igUrl:'https://instagram.com/mori1024_' };
+function openLine() { window.open(CFG.lineUrl,'_blank'); }
+function openIG()   { window.open(CFG.igUrl,'_blank'); }
+
+let currentQ=0, answersHistory=[], currentResultKey=null, surveyAnswers={1:'',2:'',3:''};
+const scores={D:0,N:0,P:0,E:0,R:0,U:0,O:0};
+const firstSeen={D:null,N:null,P:null,E:null,R:null,U:null,O:null};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  setTimeout(()=>document.getElementById(id).classList.add('active'),50);
+}
+function startQuiz() {
+  currentQ=0; answersHistory=[];
+  Object.keys(scores).forEach(k=>{scores[k]=0;});
+  Object.keys(firstSeen).forEach(k=>{firstSeen[k]=null;});
+  surveyAnswers={1:'',2:'',3:''};
+  showScreen('screen-quiz');
+  setTimeout(renderQuestion,300);
+}
+function renderQuestion() {
+  const q=QUESTIONS[currentQ], total=QUESTIONS.length;
+  // 更新段落標籤
+  const secIdx = SECTION_BREAKS.filter(b=>b<=currentQ).length-1;
+  document.getElementById('section-label').textContent=SECTIONS[secIdx];
+  document.getElementById('q-num').textContent='Q'+(currentQ+1);
+  document.getElementById('q-total').textContent='/ '+total+' 題';
+  document.getElementById('progress-fill').style.width=(currentQ/total*100)+'%';
+  document.getElementById('q-text').textContent=q.text;
+  const wrap=document.getElementById('options-wrap'); wrap.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const btn=document.createElement('button'); btn.className='option';
+    btn.innerHTML=`<span class="option-key">${opt.key}</span><span class="option-text">${opt.text}</span>`;
+    btn.addEventListener('click',()=>selectOption(btn,opt,i)); wrap.appendChild(btn);
+  });
+  const prevIdx=answersHistory[currentQ];
+  if(prevIdx!==undefined){ const opts=document.querySelectorAll('.option'); if(opts[prevIdx]) opts[prevIdx].classList.add('selected'); }
+  const pb=document.getElementById('btnPrev');
+  if(pb) pb.textContent=currentQ===0?'← 返回首頁':'← 上一題';
+}
+function selectOption(el,opt,idx) {
+  answersHistory[currentQ]=idx;
+  scores[opt.p]=(scores[opt.p]||0)+2;
+  scores[opt.s]=(scores[opt.s]||0)+1;
+  if(firstSeen[opt.p]===null) firstSeen[opt.p]=currentQ;
+  document.querySelectorAll('.option').forEach((o,i)=>o.classList.add(i===idx?'selected':'fade-out'));
+  setTimeout(()=>{ currentQ++; if(currentQ<QUESTIONS.length) renderQuestion(); else showSurvey(); },520);
+}
+function prevQ() {
+  if(currentQ===0){showScreen('screen-start');return;}
+  currentQ--; renderQuestion();
+}
+function showSurvey() {
+  const sorted=Object.keys(scores).sort((a,b)=>{
+    if(scores[b]!==scores[a]) return scores[b]-scores[a];
+    return (firstSeen[a]??99)-(firstSeen[b]??99);
+  });
+  currentResultKey=sorted[0];
+  const r=RESULTS[currentResultKey];
+  document.getElementById('s-type-name').textContent=r.type;
+  document.getElementById('s-type-brief').textContent=r.subtitle;
+  surveyAnswers={1:'',2:'',3:''};
+  document.getElementById('btnUnlock').disabled=true;
+  showScreen('screen-survey');
+}
+function surveyPick(q,val,btn) {
+  surveyAnswers[q]=val;
+  btn.closest('.survey-group').querySelectorAll('.survey-opt').forEach(b=>b.classList.remove('picked'));
+  btn.classList.add('picked');
+  if(surveyAnswers[1]&&surveyAnswers[2]&&surveyAnswers[3]) document.getElementById('btnUnlock').disabled=false;
+}
+function unlockResult() { renderFullResult(); showScreen('screen-result'); }
+function renderFullResult() {
+  const r=RESULTS[currentResultKey];
+  const card=document.getElementById('result-card');
+  card.style.setProperty('--card-accent', r.color);
+  card.classList.remove('revealed');
+  document.getElementById('r-emoji').textContent=r.emoji;
+  document.getElementById('r-type').textContent=r.type;
+  document.getElementById('r-subtitle').textContent=r.subtitle;
+  document.getElementById('r-motto').textContent=r.motto;
+  document.getElementById('r-desc').textContent=r.desc;
+  document.getElementById('r-strength').textContent=r.strength;
+  document.getElementById('r-breakthrough').textContent=r.breakthrough;
+  document.getElementById('r-morview').textContent=r.morview;
+  document.getElementById('r-cta-text').textContent=r.cta;
+  document.getElementById('email-done').style.display='none';
+  document.querySelector('.email-form').style.display='flex';
+  const triggers=document.getElementById('r-triggers'); triggers.innerHTML='';
+  r.triggers.forEach(t=>{ const chip=document.createElement('span'); chip.className='trigger-chip'; chip.textContent=t; triggers.appendChild(chip); });
+  setTimeout(()=>card.classList.add('revealed'),100);
+}
+function retryQuiz() {
+  document.getElementById('result-card').classList.remove('revealed');
+  Object.keys(scores).forEach(k=>{scores[k]=0;}); Object.keys(firstSeen).forEach(k=>{firstSeen[k]=null;});
+  showScreen('screen-start');
+}
+function buildPDFHTML(r) {
+  return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
+    '<div style="height:5px;background:'+r.color+'"></div>' +
+    '<div style="padding:36px 28px 44px">' +
+      '<p style="font-size:28px;margin:0 0 8px">'+r.emoji+'</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 20px">Mori · 暗黑心智診斷</p>' +
+      '<h2 style="font-size:28px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">'+r.type+'</h2>' +
+      '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 24px">'+r.subtitle+'</p>' +
+      '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 24px"></div>' +
+      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 40px">'+r.desc.substring(0,200)+'…</p>' +
+      '<p style="font-size:10px;color:rgba(154,140,120,0.4);letter-spacing:.06em;margin:0">mori-homepage.pages.dev</p>' +
+    '</div></div>';
+}
+async function downloadPDF() {
+  if(!currentResultKey) return;
+  const r=RESULTS[currentResultKey], target=document.getElementById('pdf-target'), btn=document.getElementById('dlBtn');
+  const origHTML=btn?btn.innerHTML:'';
+  target.style.display='block'; target.innerHTML=buildPDFHTML(r);
+  if(btn){btn.disabled=true;btn.textContent='生成中…';}
+  try {
+    const canvas=await html2canvas(target,{backgroundColor:'#090705',scale:2,useCORS:true,logging:false});
+    const imgData=canvas.toDataURL('image/png'), {jsPDF}=window.jspdf;
+    const w=canvas.width/2,h=canvas.height/2, pdf=new jsPDF({orientation:'portrait',unit:'px',format:[w,h]});
+    pdf.addImage(imgData,'PNG',0,0,w,h); pdf.save('mori-mindfuck-'+currentResultKey.toLowerCase()+'.pdf');
+  }catch(e){console.error(e);}
+  finally{target.style.display='none';if(btn){btn.disabled=false;btn.innerHTML=origHTML;}}
+}
+async function shareResult() {
+  if(!currentResultKey) return;
+  const r=RESULTS[currentResultKey], target=document.getElementById('pdf-target');
+  target.style.display='block'; target.innerHTML=buildPDFHTML(r);
+  try {
+    const canvas=await html2canvas(target,{backgroundColor:'#090705',scale:2,useCORS:true,logging:false});
+    canvas.toBlob(async(blob)=>{
+      const fname='mori-mindfuck-'+currentResultKey.toLowerCase()+'.png', file=new File([blob],fname,{type:'image/png'});
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})) await navigator.share({files:[file],title:'Mori 暗黑心智診斷結果'});
+      else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();}
+    },'image/png');
+  }catch(e){console.error(e);}
+  finally{target.style.display='none';}
+}
+async function submitEmail() {
+  const emailEl=document.getElementById('email-input'), email=emailEl.value.trim();
+  if(!email||!email.includes('@')) return;
+  const btn=document.querySelector('.btn-email'); btn.disabled=true; btn.textContent='送出中…';
+  try {
+    const res=await fetch('https://connect.mailerlite.com/api/subscribers',{
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+ML_KEY,'Accept':'application/json'},
+      body:JSON.stringify({email,groups:ML_GROUPS[currentResultKey]?[ML_GROUPS[currentResultKey]]:[]}),
+    });
+    if(res.ok){document.querySelector('.email-form').style.display='none';document.getElementById('email-done').style.display='block';}
+    else{btn.disabled=false;btn.textContent='送出';}
+  }catch(err){btn.disabled=false;btn.textContent='送出';}
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  const lL=document.getElementById('line-l'),lR=document.getElementById('line-r'),pt=document.getElementById('pre-text');
+  setTimeout(()=>{lL.classList.add('open');lR.classList.add('open');},200);
+  setTimeout(()=>{pt.classList.add('ready');pt.textContent='Enter';},1600);
+  pt.addEventListener('click',()=>{
+    if(!pt.classList.contains('ready')) return;
+    document.getElementById('preloader').style.opacity='0';
+    setTimeout(()=>{document.getElementById('preloader').style.display='none';document.getElementById('site').style.opacity='1';},600);
+  });
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+  (function tick(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;cur.style.left=mx+'px';cur.style.top=my+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(tick);})();
+  document.querySelectorAll('button,a').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+  });
+  MoriParticles.init('quiz');
+});
+</script>
+<div id="pdf-target"></div>
+<script src="/shared/particles.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>

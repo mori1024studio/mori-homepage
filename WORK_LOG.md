@@ -125,6 +125,38 @@
 
 ### 待辦
 - MailerLite 串接
-- 追加測驗：原子習慣 / 副業基因
+- 追加測驗：副業基因 / 財富階梯
+
+---
+
+## 2026-06-24｜Session：暗黑心智 CF 版 + 首頁第 15 張卡片
+
+### 完成
+
+- **先問為什麼（WHY測驗）** `quiz/start-with-why/index.html`
+  - T7 核心解鎖，5 型（W1-W5），10 題逆境情境
+  - ML Groups 已建立，Email 串接完成
+
+- **原子習慣 T3 雷達圖** `quiz/atomic-habits/index.html`
+  - 六軸 SVG 雷達圖（提示/渴望/執行/獎勵/身份/環境）
+  - clip-path circle animation，弱點軸高亮
+  - ML Groups 已建立，6 型結果完整
+
+- **暗黑心智 CF 版** `quiz/mindfuck/index.html`
+  - T1 類型卡片，21 題，7 型（D/N/P/E/R/U/O）
+  - 三段情境（副業啟動 Q1-7 / 職場日常 Q8-14 / 人際關係 Q15-21）
+  - p/s 雙分計分 + firstSeen 平局決勝
+  - 調查門（3 題），結果卡 + CTA + 相關測驗
+  - 使用既有 ML Groups（從 GH 版繼承）
+
+- **首頁第 15 張卡片** `index.html`
+  - 新增卡片 15：暗黑心智 → `/quiz/mindfuck/`
+  - 所有卡片序號更新為「XX / 15」
+  - 新增 pip 14
+
+### 待辦
+- MailerLite 串接（anti-fragile F1-F5 / start-with-why W1-W5）
+- Port 財富階梯 (T2 L1-L6) 至 CF Pages
+- Port 副業基因 (T6 5型) 至 CF Pages
 
 ---
