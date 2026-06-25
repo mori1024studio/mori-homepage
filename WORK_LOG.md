@@ -189,3 +189,22 @@
 - Notion 同步（測驗漏斗工作室）
 
 ---
+
+## 2026-06-25｜Session：首頁 GH→CF 連結更新 + 返回鈕確認
+
+### 完成
+
+- **首頁卡片 1-5 連結更新** `index.html`
+  - card 1: GH mbti-shadow-quiz → `/quiz/mbti-shadow/`
+  - card 2: GH mindfuck-quiz → `/quiz/mindfuck/`
+  - card 3: GH wealth-ladder → `/quiz/wealth-ladder/`
+  - card 4: GH atomic-habits-quiz → `/quiz/atomic-habits/`
+  - card 5: GH sidebiz-quiz → `/quiz/sidebiz/`
+  - 同時移除 `target="_blank" rel="noopener"`（改為同站內部連結）
+
+- **返回鈕確認**：6 個舊版 CF 測驗（not-enough / wealth-mindset / human-nature / mbti-shadow / logic-layers / scarcity-mode）全部已有 `prevQ()` 實作，無需補做
+
+### 待辦
+- MailerLite 串接（anti-fragile F1-F5 / start-with-why W1-W5）
+
+---
