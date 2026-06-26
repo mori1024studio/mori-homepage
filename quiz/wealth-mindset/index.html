@@ -678,14 +678,14 @@ async function downloadPDF() {
 
 /* ── MailerLite 串接設定 ── */
 /* 本機預覽無效，需在 HTTPS 真實環境才能運作 */
-const ML_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZTY0ZmY0YjJhYzcyMzM0ZTVlZjNmMzBlYTVlZjE0OWE5Mzg1ZDI2NDNiM2EzZmU3ZGUxYWVlMTA0NWZmMjFhYTJmN2FhYzQ5ODIwZDlhZmMiLCJpYXQiOjE3ODIyMjYxNDQuNjU1MzAzLCJuYmYiOjE3ODIyMjYxNDQuNjU1MzA3LCJleHAiOjQ5Mzc4OTk3NDQuNjQ5MjQ5LCJzdWIiOiIyNDQ5MDA2Iiwic2NvcGVzIjpbXX0.gXowQcDS-zoaY-A1We4MOAcjeaJ7RGc5VPB4EuXq2RR3vMyFfUmzeucHkxeNNj2DFyjtREnqFUOvTPL-y_rpvBKgNt22pwDgjfvb5pz9KB1zV_x_ULdOyGDFPQvYvmOcnDeXRTbZKSNQ7BrYHh_o1hFMiqc7YtGL9F3tsnYVi3ZyeFJStmeAxHP0493VIrR_FzKZS7l2fPG5ltaMomShz6T3MhEUCsLsGTfZc92ufHU1bRhXYdzQMkDpzVrhtZtd-ix-P_ym12GrORv5k5LOm69ts38rUQyCZR5dPxIrTFv2J1kEhhF-8uhQ9R6i6x0hf0Yv2KMVF-cDhoI9w6MTB_zXR58IiQ0W0xaeEwrEseCOwhFEUs7UIeMBVl5sopJViSOZBYRXbv67COxej5rNZM-RD6BZfDbiWJ_MTYLmOJ7BCpDKkZ04SzALl5E0McPR645u-Znf4eXMRgNTYrLUTOdQ6ez3BmmOZ3hhwA7toi1rXXaQJCBWlgs9g6bZeYKVoPdT8suaK6bXA9vaaA4-6c8yAhEyeXReB3gWzaJmQ6XCdBk5MRVOJ-gHZNHpibBz03MYRtKL6R1HM3GRBELXYQt3puu5IlHP_m9xk9FHKwH8WVkzvnSmU2SpUbHabozMNKSNeuopT9r3CAnAnd5WYdpZFeSMFcpr8MTjYTXOhuE';
-const ML_GROUPS = {
-  F: '191078249801975611',  // wealth-F（恐懼守門型）
-  B: '191078250400712098',  // wealth-B（短視型）
-  C: '191078250993157249',  // wealth-C（攀比型）
-  S: '191078251607623264',  // wealth-S（穩健型）
-  P: '191078252218943446',  // wealth-P（複利型）
-  K: '191078252874303331',  // wealth-K（匱乏型）
+const KIT_API_KEY = 'kit_93b22fb0f80af4cea111f76cc8f011b7';
+const KIT_MAPPING = {
+  'F': { tag_id: 20663620, seq_id: 2807606 },
+  'B': { tag_id: 20663622, seq_id: 2807607 },
+  'S': { tag_id: 20663623, seq_id: 2807608 },
+  'P': { tag_id: 20663624, seq_id: 2807609 },
+  'K': { tag_id: 20663625, seq_id: 2807610 },
+  'C': { tag_id: 20663628, seq_id: 2807612 },
 };
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
@@ -836,16 +836,20 @@ async function submitEmail() {
   btn.disabled = true;
   btn.textContent = '送出中…';
   try {
-    const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
+    const { tag_id: _tid, seq_id: _sid } = KIT_MAPPING[currentResultKey] || {};
+    const kitRes = await fetch('https://api.kit.com/v4/subscribers', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ML_KEY}`,
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({ email, groups: ML_GROUPS[currentResultKey] ? [ML_GROUPS[currentResultKey]] : [] }),
+      headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email_address: email, tags: _tid ? [_tid] : [] }),
     });
-    if (res.ok) {
+    if (_sid) {
+      await fetch(`https://api.kit.com/v4/sequences/${_sid}/subscribers`, {
+        method: 'POST',
+        headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email_address: email }),
+      });
+    }
+    if (kitRes.ok) {
       document.querySelector('.email-form').style.display = 'none';
       document.getElementById('email-done').style.display = 'block';
     } else {

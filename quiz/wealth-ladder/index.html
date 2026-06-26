@@ -382,8 +382,15 @@
 
 <script>
 /* ══ 資料區 ══════════════════════════════════════════════════ */
-const ML_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZTY0ZmY0YjJhYzcyMzM0ZTVlZjNmMzBlYTVlZjE0OWE5Mzg1ZDI2NDNiM2EzZmU3ZGUxYWVlMTA0NWZmMjFhYTJmN2FhYzQ5ODIwZDlhZmMiLCJpYXQiOjE3ODIyMjYxNDQuNjU1MzAzLCJuYmYiOjE3ODIyMjYxNDQuNjU1MzA3LCJleHAiOjQ5Mzc4OTk3NDQuNjQ5MjQ5LCJzdWIiOiIyNDQ5MDA2Iiwic2NvcGVzIjpbXX0.gXowQcDS-zoaY-A1We4MOAcjeaJ7RGc5VPB4EuXq2RR3vMyFfUmzeucHkxeNNj2DFyjtREnqFUOvTPL-y_rpvBKgNt22pwDgjfvb5pz9KB1zV_x_ULdOyGDFPQvYvmOcnDeXRTbZKSNQ7BrYHh_o1hFMiqc7YtGL9F3tsnYVi3ZyeFJStmeAxHP0493VIrR_FzKZS7l2fPG5ltaMomShz6T3MhEUCsLsGTfZc92ufHU1bRhXYdzQMkDpzVrhtZtd-ix-P_ym12GrORv5k5LOm69ts38rUQyCZR5dPxIrTFv2J1kEhhF-8uhQ9R6i6x0hf0Yv2KMVF-cDhoI9w6MTB_zXR58IiQ0W0xaeEwrEseCOwhFEUs7UIeMBVl5sopJViSOZBYRXbv67COxej5rNZM-RD6BZfDbiWJ_MTYLmOJ7BCpDKkZ04SzALl5E0McPR645u-Znf4eXMRgNTYrLUTOdQ6ez3BmmOZ3hhwA7toi1rXXaQJCBWlgs9g6bZeYKVoPdT8suaK6bXA9vaaA4-6c8yAhEyeXReB3gWzaJmQ6XCdBk5MRVOJ-gHZNHpibBz03MYRtKL6R1HM3GRBELXYQt3puu5IlHP_m9xk9FHKwH8WVkzvnSmU2SpUbHabozMNKSNeuopT9r3CAnAnd5WYdpZFeSMFcpr8MTjYTXOhuE';
-const ML_GROUPS = { l1:'191078823526139756', l2:'191078824131167783', l3:'191078824802256318', l4:'191078825522628440', l5:'191078826208396302', l6:'191078826889971230' };
+const KIT_API_KEY = 'kit_93b22fb0f80af4cea111f76cc8f011b7';
+const KIT_MAPPING = {
+  'l1': { tag_id: 20663614, seq_id: 2807600 },
+  'l2': { tag_id: 20663615, seq_id: 2807601 },
+  'l3': { tag_id: 20663616, seq_id: 2807602 },
+  'l4': { tag_id: 20663617, seq_id: 2807603 },
+  'l5': { tag_id: 20663618, seq_id: 2807604 },
+  'l6': { tag_id: 20663619, seq_id: 2807605 },
+};
 const CFG = { lineUrl:'https://line.me/R/ti/p/@507wvwbz', igUrl:'https://instagram.com/mori1024_' };
 const DIM_MAX = {S:18, B:18, M:12, G:6};
 const LVL_ORDER = ['l1','l2','l3','l4','l5','l6'];
@@ -719,12 +726,20 @@ async function submitEmail() {
   if (!email || !email.includes('@')) return;
   const btn = document.querySelector('.btn-email'); btn.disabled = true; btn.textContent = '送出中…';
   try {
-    const groupId = ML_GROUPS[currentResultKey];
-    const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
-      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer ' + ML_KEY,'Accept':'application/json'},
-      body: JSON.stringify({email, groups: groupId ? [groupId] : []}),
+    const { tag_id: _tid, seq_id: _sid } = KIT_MAPPING[currentResultKey] || {};
+    const kitRes = await fetch('https://api.kit.com/v4/subscribers', {
+      method: 'POST',
+      headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email_address: email, tags: _tid ? [_tid] : [] }),
     });
-    if (res.ok) { document.querySelector('.email-form').style.display = 'none'; document.getElementById('email-done').style.display = 'block'; }
+    if (_sid) {
+      await fetch(`https://api.kit.com/v4/sequences/${_sid}/subscribers`, {
+        method: 'POST',
+        headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email_address: email }),
+      });
+    }
+    if (kitRes.ok) { document.querySelector('.email-form').style.display = 'none'; document.getElementById('email-done').style.display = 'block'; }
     else { btn.disabled = false; btn.textContent = '送出'; }
   } catch(err) { btn.disabled = false; btn.textContent = '送出'; }
 }
