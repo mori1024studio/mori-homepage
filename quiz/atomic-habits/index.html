@@ -812,19 +812,27 @@ async function submitEmail() {
   btn.disabled = true; btn.textContent = '送出中…';
   try {
     const { tag_id: _tid, seq_id: _sid } = KIT_MAPPING[currentResultKey] || {};
-    const kitTagRes = _tid ? await fetch(`https://api.kit.com/v4/tags/${_tid}/subscribers`, {
+    const kitSubRes = await fetch('https://api.kit.com/v4/subscribers', {
       method: 'POST',
       headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ email_address: email }),
-    }) : null;
-    if (_sid) {
+    });
+    const kitSubId = kitSubRes.ok ? (await kitSubRes.json()).subscriber?.id : null;
+    if (kitSubId && _tid) {
+      await fetch(`https://api.kit.com/v4/tags/${_tid}/subscribers`, {
+        method: 'POST',
+        headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: kitSubId }),
+      });
+    }
+    if (kitSubId && _sid) {
       await fetch(`https://api.kit.com/v4/sequences/${_sid}/subscribers`, {
         method: 'POST',
         headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email_address: email }),
+        body: JSON.stringify({ id: kitSubId }),
       });
     }
-    if (kitTagRes && kitTagRes.ok) {
+    if (kitSubRes.ok) {
       document.querySelector('.email-form').style.display = 'none';
       document.getElementById('email-done').style.display = 'block';
     } else { btn.disabled = false; btn.textContent = '送出'; }

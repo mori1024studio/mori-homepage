@@ -624,16 +624,24 @@ async function submitEmail() {
               q1==='A'||q3==='D' ? 'warm' : 'cold';
   try {
     const { tag_id: _tid, seq_id: _sid } = KIT_MAPPING[finalType] || {};
-    if (_tid) await fetch(`https://api.kit.com/v4/tags/${_tid}/subscribers`, {
+    const kitSubRes = await fetch('https://api.kit.com/v4/subscribers', {
       method: 'POST',
       headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ email_address: email }),
     });
-    if (_sid) {
+    const kitSubId = kitSubRes.ok ? (await kitSubRes.json()).subscriber?.id : null;
+    if (kitSubId && _tid) {
+      await fetch(`https://api.kit.com/v4/tags/${_tid}/subscribers`, {
+        method: 'POST',
+        headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: kitSubId }),
+      });
+    }
+    if (kitSubId && _sid) {
       await fetch(`https://api.kit.com/v4/sequences/${_sid}/subscribers`, {
         method: 'POST',
         headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email_address: email }),
+        body: JSON.stringify({ id: kitSubId }),
       });
     }
     fetch(TRACKER, {
