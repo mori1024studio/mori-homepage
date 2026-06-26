@@ -727,11 +727,11 @@ async function submitEmail() {
   const btn = document.querySelector('.btn-email'); btn.disabled = true; btn.textContent = '送出中…';
   try {
     const { tag_id: _tid, seq_id: _sid } = KIT_MAPPING[currentResultKey] || {};
-    const kitRes = await fetch('https://api.kit.com/v4/subscribers', {
+    const kitTagRes = _tid ? await fetch(`https://api.kit.com/v4/tags/${_tid}/subscribers`, {
       method: 'POST',
       headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email_address: email, tags: _tid ? [_tid] : [] }),
-    });
+      body: JSON.stringify({ email_address: email }),
+    }) : null;
     if (_sid) {
       await fetch(`https://api.kit.com/v4/sequences/${_sid}/subscribers`, {
         method: 'POST',
@@ -739,7 +739,7 @@ async function submitEmail() {
         body: JSON.stringify({ email_address: email }),
       });
     }
-    if (kitRes.ok) { document.querySelector('.email-form').style.display = 'none'; document.getElementById('email-done').style.display = 'block'; }
+    if (kitTagRes && kitTagRes.ok) { document.querySelector('.email-form').style.display = 'none'; document.getElementById('email-done').style.display = 'block'; }
     else { btn.disabled = false; btn.textContent = '送出'; }
   } catch(err) { btn.disabled = false; btn.textContent = '送出'; }
 }
