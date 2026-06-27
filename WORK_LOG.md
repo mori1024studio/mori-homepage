@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-06-27｜Session：Kit Email Sequences 補全
+
+### 完成
+- **anti-fragile 5 個 sequence（F1-F5）**：各寫 Day 1-7 共 35 封 Email，已上傳至 Kit（seq_id 2808410-2808414）
+- **start-with-why 5 個 sequence（W1-W5）**：各寫 Day 1-7 共 35 封 Email，已上傳至 Kit（seq_id 2808415-2808419）
+- 本地 markdown 存放於 `100_Todo/drafts/email-sequences/anti-fragile-quiz/` 和 `start-with-why-quiz/`
+
+### 狀態
+- 全部 12 個測驗 × 全部 sequence 現在均有完整 Email 內容（共 70 封新 Email + 既有 Email）
+- Kit 上 anti-fragile 和 start-with-why 的 sequence 從 0 emails → 7 emails
+
+---
+
 ## 2026-06-22｜Session：CSS 模組化 + 粒子引擎 + 字體確認
 
 ### 完成
@@ -187,6 +200,26 @@
 ### 待辦
 - MailerLite 串接（anti-fragile F1-F5 / start-with-why W1-W5）
 - Notion 同步（測驗漏斗工作室）
+
+---
+
+## 2026-06-27｜Session：Notion 引流品 + 測驗狀態同步
+
+### 完成
+- **反脆弱 Notion 引流品** `200_Reference/lead-magnets/反脆弱-notion.md`
+  - 5 大洞見（三分法/槓鈴策略/Via Negativa/選擇性/皮膚在遊戲裡）
+  - 10 句精選金句
+  - 5 個核心 Prompt（脆弱點分析/槓鈴策略設計/Via Negativa/不對稱機會/反脆弱成長策略）
+
+- **先問為什麼 Notion 引流品** `200_Reference/lead-magnets/先問為什麼-notion.md`
+  - 5 大洞見（黃金圈/邊緣系統/早期採用者/WHY 稀缺性/方向 vs 速度）
+  - 10 句精選金句
+  - 5 個核心 Prompt（找 WHY/重設自我介紹/目標受眾/找回 WHY/WHY 傳播設計）
+
+### 待辦
+- Notion 同步：手動將以下兩個測驗補入測驗漏斗工作室父頁面（見下方內容）
+- 下一個測驗（待定主題）
+- 確認 Email 實際寄送（測試帳號跑完 anti-fragile 測驗）
 
 ---
 
