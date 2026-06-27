@@ -655,7 +655,7 @@ async function submitEmail() {
 }
 
 /* ── PDF 下載 ────────────────────────────────────────── */
-function buildPDFHTML(t) {
+function buildShareHTML(t) {
   return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:' + t.color + '"></div>' +
     '<div style="padding:36px 28px 44px">' +
@@ -663,25 +663,51 @@ function buildPDFHTML(t) {
       '<p style="font-size:40px;margin:0 0 8px">' + t.emoji + '</p>' +
       '<h2 style="font-size:32px;font-weight:900;color:#EDE8DF;margin:0 0 6px">' + t.name + '</h2>' +
       '<p style="font-size:14px;color:' + t.color + ';margin:0 0 6px">' + t.nameEn + '</p>' +
-      '<p style="font-size:13px;color:#9A8C78;margin:0 0 24px">' + t.motto + '</p>' +
+      '<p style="font-size:13px;color:#9A8C78;margin:0 0 20px">' + t.motto + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
-      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 40px">' + t.portrait.substring(0,180) + '…</p>' +
+      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 32px">' + t.portrait.substring(0,160) + '…</p>' +
       '<p style="font-size:10px;color:rgba(154,140,120,0.4);letter-spacing:.06em;margin:0">mori-homepage.pages.dev</p>' +
     '</div></div>';
+}
+function buildFullPDFHTML(t) {
+  let h = '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
+    '<div style="height:5px;background:' + t.color + '"></div>' +
+    '<div style="padding:36px 28px 48px">' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 16px">Mori · 副業基因診斷報告</p>' +
+      '<p style="font-size:40px;margin:0 0 8px">' + t.emoji + '</p>' +
+      '<h2 style="font-size:32px;font-weight:900;color:#EDE8DF;margin:0 0 6px">' + t.name + '</h2>' +
+      '<p style="font-size:14px;color:' + t.color + ';margin:0 0 6px">' + t.nameEn + '</p>' +
+      '<p style="font-size:13px;color:#9A8C78;margin:0 0 16px">' + t.motto + '</p>' +
+      '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 16px"></div>' +
+      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 16px">' + t.portrait + '</p>';
+  if (t.action) {
+    h += '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;text-transform:uppercase;margin:0 0 10px">今天就做</p>' +
+      '<p style="font-size:12px;color:rgba(154,140,120,.85);line-height:1.9;margin:0 0 16px">' + t.action + '</p>';
+  }
+  if (t.mori) {
+    h += '<div style="border-left:2px solid rgba(196,169,106,.35);padding-left:16px;margin:0 0 24px">' +
+      '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;margin:0 0 8px">Mori 觀點</p>' +
+      '<p style="font-size:12px;color:rgba(154,140,120,.85);line-height:1.9;margin:0">' + t.mori + '</p>' +
+    '</div>';
+  }
+  h += '<p style="font-size:10px;color:rgba(154,140,120,0.4);letter-spacing:.06em;margin:0">mori-homepage.pages.dev</p>' +
+    '</div></div>';
+  return h;
 }
 
 async function downloadPDF() {
   if (!finalType) return;
   const t = TYPES[finalType], target = document.getElementById('pdf-target');
   const btn = document.querySelector('.btn-share'), origHTML = btn ? btn.innerHTML : '';
-  target.style.display = 'block'; target.innerHTML = buildPDFHTML(t);
+  target.style.display = 'block'; target.innerHTML = buildFullPDFHTML(t);
   if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
   try {
+    await document.fonts.ready;
     const canvas = await html2canvas(target, {backgroundColor:'#090705',scale:2,useCORS:true,logging:false});
     const imgData = canvas.toDataURL('image/png'), {jsPDF} = window.jspdf;
     const w = canvas.width/2, h = canvas.height/2, pdf = new jsPDF({orientation:'portrait',unit:'px',format:[w,h]});
     pdf.addImage(imgData,'PNG',0,0,w,h); pdf.save('mori-sidebiz-' + finalType.toLowerCase() + '.pdf');
-  } catch(e) { alert('下載失敗，請稍後再試'); }
+  } catch(e) { console.error(e); }
   target.style.display = 'none';
   if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
 }

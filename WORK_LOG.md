@@ -5,6 +5,38 @@
 
 ---
 
+## 2026-06-27｜Session：PDF 完整內容修復 + 社群分享字型修正
+
+### 完成
+- **全站 15 個測驗**：將 `buildPDFHTML` 拆分為 `buildShareHTML`（社群分享，精簡版）和 `buildFullPDFHTML`（PDF 下載，完整內容）
+- **PDF 完整內容**：各測驗類型根據資料結構加入完整欄位（analysis/morview/focus/strategy/mori/action 等）
+- **字型修正**：所有 html2canvas 呼叫前加入 `await document.fonts.ready`，確保 Noto Sans TC 等字型完整載入
+- **wealth-ladder**：移除 desc 200 字截斷，完整輸出 desc + strategy + focus + mori 觀點
+- **sidebiz**：移除 portrait 180 字截斷，完整輸出 portrait + action + mori 觀點
+- **mindfuck/anti-fragile/atomic-habits/start-with-why**：移除截斷，加入完整 morview
+
+### 影響範圍
+`quiz/*/index.html`（15 個）
+
+---
+
+## 2026-06-27｜Session：13 個新 Email Sequence 完成（3 新測驗）
+
+### 完成
+- **beyond-origins O1-O5**：5 個 sequence × 7 封 = 35 封（seq_id 2808445-2808449）
+  - O1 鏡像重演型 / O2 反向逃離型 / O3 愧疚承擔型 / O4 過度補償型 / O5 界線清醒型
+- **die-with-zero D1-D4**：4 個 sequence × 7 封 = 28 封（seq_id 2808450-2808453）
+  - D1 安全囤積型 / D2 延遲滿足型 / D3 平衡探索型 / D4 體驗優先型
+- **anxiety-resolve X1-X4**：4 個 sequence × 7 封 = 28 封（seq_id 2808454/2808456-2808458）
+  - X1 迴避逃逸型 / X2 過度控制型 / X3 反芻思考型 / X4 接觸轉化型
+- 本地存放於 `100_Todo/drafts/email-sequences/beyond-origins-quiz/`、`die-with-zero-quiz/`、`anxiety-resolve-quiz/`
+
+### 待辦
+- Kit 後台手動匯入 91 封 Email 到對應 sequence（seq_id 已對照）
+- Notion 同步（測驗漏斗工作室需分享給 n8n Integration 才能 API 存取）
+
+---
+
 ## 2026-06-27｜Session：Kit Email Sequences 補全
 
 ### 完成
@@ -200,6 +232,37 @@
 ### 待辦
 - MailerLite 串接（anti-fragile F1-F5 / start-with-why W1-W5）
 - Notion 同步（測驗漏斗工作室）
+
+---
+
+## 2026-06-27｜Session：三個新測驗上線 + Notion 引流品
+
+### 完成
+- **超越原生家庭** `quiz/beyond-origins/index.html`
+  - T7 核心解鎖，10 題，5 型（O1鏡像重演/O2反向逃離/O3愧疚承擔/O4過度補償/O5界線清醒）
+  - Kit 串接完成（tag:20673926-20673930 / seq:2808445-2808449）
+
+- **別把你的錢留到死** `quiz/die-with-zero/index.html`
+  - T4 光譜，8 題，4 型（D1安全囤積/D2延遲滿足/D3平衡探索/D4體驗優先）
+  - Kit 串接完成（tag:20673931,20674010-12 / seq:2808450-2808453）
+
+- **與焦慮和解** `quiz/anxiety-resolve/index.html`
+  - T4 光譜，8 題，4 型（X1迴避逃逸/X2過度控制/X3反芻思考/X4接觸轉化）
+  - Kit 串接完成（tag:20674024-27 / seq:2808454,2808456-2808458）
+
+- **首頁更新** `index.html`
+  - 卡片從 17 → 20 張
+  - 新增卡片 18：超越原生家庭 → `/quiz/beyond-origins/`
+  - 新增卡片 19：別把你的錢留到死 → `/quiz/die-with-zero/`
+  - 新增卡片 20：與焦慮和解 → `/quiz/anxiety-resolve/`
+  - 所有卡片序號更新為「XX / 20」，新增 pip 17-19
+
+- **Git Push** commit `bfdd466` 已推送，Cloudflare Pages 部署中
+
+### 待辦
+- Notion 同步（anti-fragile + start-with-why 子頁面）手動補入
+- 確認 Email 實際寄送（測試帳號跑完一個測驗）
+- O1-O5 / D1-D4 / X1-X4 共 13 個 Email Sequence 內容待寫
 
 ---
 

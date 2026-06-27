@@ -586,17 +586,40 @@ const CFG = {
 function openLine() { window.open(CFG.lineUrl, '_blank'); }
 function openIG()   { window.open(CFG.igUrl,   '_blank'); }
 /* ── PDF 下載（本機預覽無效，需 HTTPS 真實環境）── */
-function buildPDFHTML(r) {
+function buildShareHTML(r) {
   return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 44px">' +
       '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
-      '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 28px;line-height:1.6">' + r.subtitle + '</p>' +
-      '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 28px"></div>' +
-      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 40px">' + r.desc + '</p>' +
+      '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 20px;line-height:1.6">' + r.subtitle + '</p>' +
+      '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
+      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 32px">' + r.desc.substring(0,160) + '…</p>' +
       '<p style="font-size:10px;color:rgba(154,140,120,0.4);letter-spacing:.06em;margin:0">mori-homepage.pages.dev</p>' +
     '</div></div>';
+}
+function buildFullPDFHTML(r) {
+  let h = '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
+    '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
+    '<div style="padding:36px 28px 48px">' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 診斷報告</p>' +
+      '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
+      '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 24px;line-height:1.6">' + r.subtitle + '</p>' +
+      '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
+      '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 20px">' + r.desc + '</p>';
+  if (r.analysis) {
+    h += '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;text-transform:uppercase;margin:0 0 10px">深度分析</p>' +
+      '<p style="font-size:12px;color:rgba(154,140,120,.85);line-height:1.9;margin:0 0 20px;white-space:pre-line">' + r.analysis + '</p>';
+  }
+  if (r.morview) {
+    h += '<div style="border-left:2px solid rgba(196,169,106,.35);padding-left:16px;margin:0 0 24px">' +
+      '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;margin:0 0 8px">Mori 觀點</p>' +
+      '<p style="font-size:12px;color:rgba(154,140,120,.85);line-height:1.9;margin:0">' + r.morview + '</p>' +
+    '</div>';
+  }
+  h += '<p style="font-size:10px;color:rgba(154,140,120,0.4);letter-spacing:.06em;margin:0">mori-homepage.pages.dev</p>' +
+    '</div></div>';
+  return h;
 }
 async function downloadPDF() {
   if (!currentResultKey) return;
@@ -605,9 +628,10 @@ async function downloadPDF() {
   const btn = document.getElementById('dlBtn');
   const origHTML = btn ? btn.innerHTML : '';
   target.style.display = 'block';
-  target.innerHTML = buildPDFHTML(r);
+  target.innerHTML = buildFullPDFHTML(r);
   if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
   try {
+    await document.fonts.ready;
     const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
     const imgData = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
@@ -767,8 +791,9 @@ async function shareResult() {
   const r = RESULTS[currentResultKey];
   const target = document.getElementById('pdf-target');
   target.style.display = 'block';
-  target.innerHTML = buildPDFHTML(r);
+  target.innerHTML = buildShareHTML(r);
   try {
+    await document.fonts.ready;
     const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
     canvas.toBlob(async (blob) => {
       const fname = 'mori-result-' + currentResultKey.toLowerCase() + '.png';
@@ -785,6 +810,7 @@ async function shareResult() {
   } catch(e) { console.error(e); }
   finally { target.style.display = 'none'; }
 }
+
 async function submitEmail() {
   const emailEl = document.getElementById('email-input');
   const email = emailEl.value.trim();
