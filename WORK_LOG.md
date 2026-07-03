@@ -32,6 +32,13 @@
 - ✅ 終驗：125/125 email_count=7、時區正確、active
 - 剩餘：寄件域名/DMARC（需自有網域）、Kit 方案試用期確認、email 商業出口、寄達驗證（明早 09:00 後查 proxytest 信箱）
 
+### 同日第三批（閉環出口 + 衝刺準備）
+- ✅ **交棒信**：125 個 sequence 尾端各追加第 8 封（Day 15）＝下一步測驗連結（UTM）+ 回信/15分鐘對談邀請；終驗 125/125 全部 8 封已發佈
+- ✅ 發現並記錄 Kit API 限制：PUT 改不了 content（回 200 但靜默忽略），要改內容須刪除重建
+- ✅ **30 天 IG 日曆**：`100_Todo/projects/ig-500-sprint/30day-calendar.md`（07-04 起，支柱 40/30/20/10，KPI 檢查點 Day 7/14/21/30）
+- Kit key 已二次旋轉並更新 CF secret + redeploy 驗證
+- 待 Mori：Kit From name 改「Mori」、CF Web Analytics 開通（token 權限不足無法代辦）、7/7 看數據決定 Kit 付費
+
 ---
 
 ## 2026-06-29｜Session：新測驗 + 內容資產補全
