@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-07-03｜Session：安全修復 + 全漏斗稽核（Fable 5）
+
+### 完成
+- **Kit API key 移出前端**：新建 `functions/api/kit/[[path]].js` 同源代理（白名單三端點、POST-only、key 存 CF 環境變數 `KIT_API_KEY`）；27 個測驗頁改打 `/api/kit/`，前端零 key；JS 語法全數驗證；deploy 後線上驗證（405/403 防護 + 真實訂閱 201）
+- **舊 GH Pages repo key 清理**：wealth-ladder index-v3.html 的 MailerLite JWT 移除並 push；其餘 7 個 repo 遠端 6/27 已清（本地過期副本已同步遠端）
+- **git 同步**：mori-homepage 全部變更 commit `bbc23b0` 推上 GitHub（含 deploy.yml，待 CLOUDFLARE_API_TOKEN secret）
+- **Kit 名單備份**：38 訂閱者 / 127 tags / 125 sequences → `000_Agent/backups/`
+- **清理**：147 張根目錄截圖歸檔、MailerLite todo 作廢移 archive、memory 更新
+
+### ⚠️ 稽核發現（未解）
+- **102/125 個 sequence 是空殼**（email_count=0），只有 23 個有內容；32 訂閱者人次卡在空殼序列
+- 發送時間全是 America/New_York 11:00（台灣半夜）；寄件人 gmail.com 無 DMARC；creator 方案疑為試用（6/25 建立）
+- Email 序列內容全部沒有商品/CTA 出口（Day 7 連回測驗本身）——商業閉環未閉合
+
+### 待 Mori
+- Kit 後台旋轉 API key（舊 key 在 git 歷史）→ 給 Claude 更新 CF secret
+- CF 建 API token → `gh secret set CLOUDFLARE_API_TOKEN`
+- 決定空殼 sequence 補內容的方式（Playwright 自動化 vs 手動）
+
+---
+
 ## 2026-06-29｜Session：新測驗 + 內容資產補全
 
 ### 完成
