@@ -3,19 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MORI — 你的焦慮模式是哪種？</title>
+<title>MORI — 你的習慣為什麼總是失敗？</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
 <link rel="stylesheet" href="/shared/style.css">
 <style>
-/* v1.0 | 2026-06-27 | 與焦慮和解測驗 · T4 光譜 */
-
+/* v1.0 | 2026-07-02 | Tiny Habits測驗 · T4 光譜 */
 #site { min-height: 100vh; display: flex; flex-direction: column; }
 .quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
 .screen { width: 100%; max-width: 640px; opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s ease; pointer-events: none; position: absolute; }
 .screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
-
 .start-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px; text-transform: uppercase; }
 .start-title { font-family: var(--font-display); font-weight: 900; font-size: 52px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.15; margin-bottom: 28px; }
 .start-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.55); margin-bottom: 48px; }
@@ -24,7 +22,6 @@
 .btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
 .btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
 .btn-start:hover .btn-start-arrow { width: 44px; }
-
 .progress-wrap { margin-bottom: 40px; }
 .progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
@@ -49,7 +46,6 @@
 .quiz-nav { display: flex; align-items: center; margin-top: 24px; }
 .btn-prev-q { background: transparent; border: 1px solid var(--border); border-radius: 100px; padding: 10px 22px; font-size: 13px; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .3s, color .3s; }
 .btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
-
 .survey-type-teaser { text-align: center; margin-bottom: 28px; }
 .survey-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 .survey-type-name { font-size: clamp(24px,5vw,34px); font-weight: 900; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
@@ -63,7 +59,6 @@
 .survey-opt.picked { border-color: var(--gold); color: var(--text); background: rgba(196,169,106,.08); }
 .btn-unlock { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; font-family: var(--font-ui); font-size: 15px; font-weight: 900; border: none; border-radius: 100px; cursor: none; margin-top: 8px; opacity: .35; pointer-events: none; transition: opacity .25s; }
 .btn-unlock:not([disabled]) { opacity: 1; pointer-events: auto; }
-
 .result-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 16px; }
 .result-type { font-family: var(--font-display); font-weight: 900; font-size: 64px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 8px; }
 .result-subtitle { font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em; color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 32px; }
@@ -75,8 +70,6 @@
 .result-morview-block { margin-bottom: 32px; padding: 20px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); }
 .result-morview-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
 .result-morview-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); white-space: pre-line; }
-
-/* ── 光譜 ── */
 .spectrum-wrap { margin: 36px 0 44px; }
 .spectrum-labels-top { display: flex; justify-content: space-between; margin-bottom: 8px; }
 .spectrum-label-item { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .08em; color: rgba(154,140,120,.45); text-align: center; max-width: 80px; line-height: 1.4; }
@@ -87,7 +80,6 @@
 .spectrum-zone-labels { display: flex; justify-content: space-between; margin-top: 10px; }
 .spectrum-zone-label { flex: 1; text-align: center; font-family: 'Noto Sans TC', sans-serif; font-size: 10px; font-weight: 700; color: rgba(154,140,120,.35); letter-spacing: .06em; transition: color .4s; cursor: default; }
 .spectrum-zone-label.active-zone { color: var(--gold); }
-
 .btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
 .btn-sec-row { display: flex; gap: 10px; }
 .btn-line { display: flex; align-items: center; justify-content: center; gap: 10px; background: #06C755; color: #fff; border: none; border-radius: 100px; padding: 16px; font-size: 15px; font-weight: 900; cursor: none; font-family: var(--font-ui); transition: opacity .2s; width: 100%; }
@@ -119,10 +111,8 @@
 </style>
 </head>
 <body>
-
 <div id="god-ray"></div>
 <div id="vignette"></div>
-
 <div id="preloader">
   <div id="pre-top"></div><div id="pre-bot"></div>
   <div id="pre-corner-tl"></div><div id="pre-corner-br"></div>
@@ -132,10 +122,8 @@
     <div class="pre-line" id="line-r"></div>
   </div>
 </div>
-
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
-
 <div id="site">
   <nav>
     <a href="/" class="logo" style="text-decoration:none">Mori</a>
@@ -144,9 +132,7 @@
       <a href="#" target="_blank">Line</a>
     </div>
   </nav>
-
   <main class="quiz-main">
-
     <div class="screen active" id="screen-start">
       <div class="gothic-arch" style="position:relative;width:100%;height:50px;margin-bottom:8px">
         <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -157,13 +143,12 @@
       <div class="ornament" style="margin-bottom:36px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="start-eyebrow">Mori Studio · 情緒探索</p>
+      <p class="start-eyebrow">Mori Studio · 習慣設計診斷</p>
       <h1 class="start-title" id="quiz-title"></h1>
       <p class="start-desc" id="quiz-desc"></p>
       <p class="start-meta" id="quiz-meta"></p>
       <button class="btn-start" onclick="startQuiz()">開始探索<span class="btn-start-arrow"></span></button>
     </div>
-
     <div class="screen" id="screen-quiz">
       <div class="progress-wrap">
         <div class="progress-label">
@@ -174,14 +159,13 @@
           <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
         </div>
       </div>
-      <p class="question-tag" id="q-tag">焦慮模式探索</p>
+      <p class="question-tag" id="q-tag">習慣設計診斷</p>
       <p class="question-text" id="q-text"></p>
       <div class="options" id="options-wrap"></div>
       <div class="quiz-nav">
         <button class="btn-prev-q" id="btnPrev" onclick="prevQ()">← 返回首頁</button>
       </div>
     </div>
-
     <div class="screen" id="screen-survey">
       <div class="survey-type-teaser">
         <p class="survey-eyebrow">你的結果出來了</p>
@@ -190,77 +174,67 @@
       </div>
       <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的內容</div>
       <div class="survey-group">
-        <p class="survey-q">你的焦慮通常最容易在什麼情況下出現？</p>
+        <p class="survey-q">你覺得讓你最難維持習慣的是什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(1,'A',this)">面對不確定的未來（工作、關係、財務）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'B',this)">人際關係中（衝突、被評判、被拒絕）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'C',this)">當我需要做決定或承擔責任的時候</button>
-          <button class="survey-opt" onclick="surveyPick(1,'D',this)">安靜下來的時候，腦子開始轉個不停</button>
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">太容易在狀態好的時候設太多，然後全部失敗</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">沒有一個明確的「觸發點」讓我記得要去做</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">狀態好的時候很容易做，但狀態差的時候完全停下來</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">我對行為設計的理解還不夠深，還在摸索最適合我的系統</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你希望這個測驗最直接幫到你的是什麼？</p>
+        <p class="survey-q">你最想建立什麼類型的習慣？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(2,'A',this)">了解我的焦慮模式從哪裡來</button>
-          <button class="survey-opt" onclick="surveyPick(2,'B',this)">找到立即可用的「當下緩解」方法</button>
-          <button class="survey-opt" onclick="surveyPick(2,'C',this)">知道怎麼建立長期更穩定的情緒底盤</button>
-          <button class="survey-opt" onclick="surveyPick(2,'D',this)">了解怎麼讓焦慮成為有用的訊號而不是障礙</button>
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">健康和身體（睡眠、運動、飲食）</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">學習和思考（閱讀、寫作、刻意練習）</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">生產力和創業（工作節奏、副業執行、時間管理）</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">情緒和關係（正念、社交、自我覺察）</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你之前試過哪些方式處理焦慮？</p>
+        <p class="survey-q">你在改變習慣上最常有的感覺是什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(3,'A',this)">告訴自己「不要想太多」，試著分心</button>
-          <button class="survey-opt" onclick="surveyPick(3,'B',this)">把問題想得很徹底，直到找到確定的答案</button>
-          <button class="survey-opt" onclick="surveyPick(3,'C',this)">冥想、呼吸、或正念練習</button>
-          <button class="survey-opt" onclick="surveyPick(3,'D',this)">跟人說話、寫日記、或尋求幫助</button>
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">充滿決心，但幾週後就消失了</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">知道應該做，但不知道怎麼讓它自動發生</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">狀態好的時候都做得到，只是沒辦法一致</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">我覺得大部分習慣建議都太簡化了，現實情況更複雜</button>
         </div>
       </div>
       <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看完整分析 →</button>
     </div>
-
-    <!-- 結果畫面（T4 光譜）-->
     <div class="screen" id="screen-result">
       <div class="ornament" style="margin-bottom:32px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="result-eyebrow">你的焦慮模式</p>
+      <p class="result-eyebrow">你的習慣斷點</p>
       <h2 class="result-type" id="r-type"></h2>
       <p class="result-subtitle" id="r-subtitle"></p>
-
       <div class="spectrum-wrap">
         <div class="spectrum-labels-top">
-          <div class="spectrum-label-item">逃避迴避</div>
-          <div class="spectrum-label-item">強迫控制</div>
-          <div class="spectrum-label-item">反芻思考</div>
-          <div class="spectrum-label-item">接觸轉化</div>
+          <div class="spectrum-label-item">過多目標</div>
+          <div class="spectrum-label-item">缺少觸發</div>
+          <div class="spectrum-label-item">動機依賴</div>
+          <div class="spectrum-label-item">系統設計</div>
         </div>
         <div class="spectrum-track">
           <div class="spectrum-marker" id="spectrum-marker"></div>
         </div>
         <div class="spectrum-tick-row">
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div><div class="spectrum-tick"></div><div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div><div class="spectrum-tick"></div><div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div><div class="spectrum-tick"></div><div class="spectrum-tick"></div>
         </div>
         <div class="spectrum-zone-labels">
-          <div class="spectrum-zone-label" data-zone="X1">迴避逃逸</div>
-          <div class="spectrum-zone-label" data-zone="X2">過度控制</div>
-          <div class="spectrum-zone-label" data-zone="X3">反芻思考</div>
-          <div class="spectrum-zone-label" data-zone="X4">接觸轉化</div>
+          <div class="spectrum-zone-label" data-zone="H1">精力過剩型</div>
+          <div class="spectrum-zone-label" data-zone="H2">環境缺失型</div>
+          <div class="spectrum-zone-label" data-zone="H3">動機依賴型</div>
+          <div class="spectrum-zone-label" data-zone="H4">系統設計型</div>
         </div>
       </div>
-
       <div class="result-divider"></div>
       <p class="result-desc" id="r-desc"></p>
       <div class="result-analysis-block">
-        <p class="result-analysis-label">模式解析</p>
+        <p class="result-analysis-label">習慣失敗模式解析</p>
         <p class="result-analysis-text" id="r-analysis"></p>
       </div>
       <div class="result-morview-block">
@@ -297,20 +271,18 @@
       <div class="related">
         <p class="related-label">延伸探索</p>
         <div class="related-links">
-          <a href="/quiz/not-enough/" class="related-link">
-            <span class="related-link-title">你的「不夠好」從哪裡來？</span>
-            <span class="related-link-tag">自我價值 →</span>
+          <a href="/quiz/atomic-habits/" class="related-link">
+            <span class="related-link-title">你的習慣斷點在哪裡？</span>
+            <span class="related-link-tag">原子習慣 →</span>
           </a>
-          <a href="/quiz/beyond-origins/" class="related-link">
-            <span class="related-link-title">你的原生家庭模式還在控制你嗎？</span>
-            <span class="related-link-tag">原生家庭 →</span>
+          <a href="/quiz/magic-words/" class="related-link">
+            <span class="related-link-title">你的語言風格是哪一種？</span>
+            <span class="related-link-tag">語言影響力 →</span>
           </a>
         </div>
       </div>
     </div>
-
   </main>
-
   <footer>
     <div class="footer-logo">Mori</div>
     <div class="footer-links"><a href="https://instagram.com/mori1024_" target="_blank">Instagram</a><a href="#" target="_blank">Line</a></div>
@@ -320,119 +292,119 @@
 
 <script>
 const QUIZ_INFO = {
-  title:       '你的焦慮模式是哪種？',
-  desc:        '焦慮不是你的敵人——它是一個訊號，只是你可能還不知道它在告訴你什麼。這個測驗幫你找出你和焦慮的相處模式，以及怎麼開始讓它成為你的資源，而不是障礙。',
+  title:       '你的習慣為什麼總是失敗？',
+  desc:        '不是你不夠努力，是你的斷點在不同地方。Brian Fogg 在《設計你的小習慣》裡說，習慣的失敗不是意志力問題——而是行為設計問題。找出你的斷點，才能知道怎麼修。',
   meta:        '共 8 題 · 約 3 分鐘',
-  questionTag: '焦慮模式探索'
+  questionTag: '習慣設計診斷'
 };
 
 const QUESTIONS = [
   {
-    text: '你感到焦慮的時候，第一個本能反應是什麼？',
+    text: '你決定要養成一個新習慣，你最常怎麼開始？',
     options: [
-      { key:'A', text:'找事情讓自己分心：刷手機、看劇、吃東西', scores:{ X1:3 } },
-      { key:'B', text:'開始列清單、研究解決方案，或想辦法掌控狀況', scores:{ X2:3 } },
-      { key:'C', text:'開始反覆想同一個問題，試圖找到確定的答案', scores:{ X3:3 } },
-      { key:'D', text:'先讓自己感覺到那個焦慮，問自己它在提醒我什麼', scores:{ X4:3 } }
+      { key:'A', text:'列出一個新的生活計畫，裡面同時有好幾個要養成的習慣', scores:{ H1:3 } },
+      { key:'B', text:'決定要做這件事，但沒有想好在什麼時間點、什麼情況下做', scores:{ H2:3 } },
+      { key:'C', text:'狀態好的時候衝動設定，然後靠著這股熱情維持', scores:{ H3:3 } },
+      { key:'D', text:'仔細研究行為設計的原理，嘗試設計一個適合自己的系統', scores:{ H4:3 } }
     ]
   },
   {
-    text: '你對於「不確定性」最核心的感受是什麼？',
+    text: '你最後一次嘗試建立習慣，是在什麼時候停下來的？',
     options: [
-      { key:'A', text:'非常不舒服，我寧願知道不好的結果，也不想懸在那裡', scores:{ X2:3 } },
-      { key:'B', text:'讓我焦慮，我會試著把不確定性研究清楚', scores:{ X3:3 } },
-      { key:'C', text:'讓我想逃開，有什麼能讓我不去想這件事就好', scores:{ X1:3 } },
-      { key:'D', text:'不舒服，但我知道不確定性是正常的，有時候只是需要等待', scores:{ X4:3 } }
+      { key:'A', text:'太多習慣同時失敗，讓我覺得自己根本做不到，全部放棄', scores:{ H1:3 } },
+      { key:'B', text:'沒有什麼特別的時刻提醒我要去做，就這樣忘了', scores:{ H2:3 } },
+      { key:'C', text:'狀態差的時候沒做，然後就覺得「反正已經中斷了」', scores:{ H3:3 } },
+      { key:'D', text:'我的系統在某些環境改變的時候就失靈了，還在重新設計中', scores:{ H4:3 } }
     ]
   },
   {
-    text: '你最近一次感到強烈焦慮，你的腦子在做什麼？',
+    text: '有人問你「你怎麼維持 X 習慣」，你最可能的回答是？',
     options: [
-      { key:'A', text:'反覆重播同一個情境或對話，想搞清楚哪裡出錯了', scores:{ X3:3 } },
-      { key:'B', text:'不斷想「如果...怎麼辦」，最壞情況的清單越列越長', scores:{ X2:3 } },
-      { key:'C', text:'試圖不去想那件事，讓自己做別的事', scores:{ X1:3 } },
-      { key:'D', text:'試著理解這個焦慮在對什麼情況做出反應', scores:{ X4:3 } }
+      { key:'A', text:'「我其實有很多習慣要建立，現在是在努力維持所有的。」', scores:{ H1:3 } },
+      { key:'B', text:'「我知道應該做，只是一直忘記去做，或不知道在什麼時候做。」', scores:{ H2:3 } },
+      { key:'C', text:'「狀態好的時候都做得到，只是不夠一致。」', scores:{ H3:3 } },
+      { key:'D', text:'「我花了很多時間研究怎麼設計適合自己的系統，還在調整。」', scores:{ H4:3 } }
     ]
   },
   {
-    text: '你的朋友向你描述他們的焦慮，你最常給的建議是什麼？',
+    text: '你認為習慣失敗最根本的原因是什麼？',
     options: [
-      { key:'A', text:'「先不要想這件事，去做點讓自己開心的事」', scores:{ X1:3 } },
-      { key:'B', text:'「我們來想想有什麼解決方案」——開始分析', scores:{ X2:3 } },
-      { key:'C', text:'「你有沒有考慮過這個、那個、還有那個...」——很多角度', scores:{ X3:3 } },
-      { key:'D', text:'「這個焦慮告訴你什麼？」——先問，不急著解決', scores:{ X4:3 } }
+      { key:'A', text:'我太貪心了，每次都想同時改變太多事情', scores:{ H1:3 } },
+      { key:'B', text:'沒有一個讓我「自動想到要做」的觸發機制', scores:{ H2:3 } },
+      { key:'C', text:'我的執行力太依賴當下的感覺和動機', scores:{ H3:3 } },
+      { key:'D', text:'我的習慣設計邏輯還不夠精準，常常要重新調整', scores:{ H4:3 } }
     ]
   },
   {
-    text: '你做了一個決定之後感到後悔，你最常有的反應是什麼？',
+    text: '你在一個忙碌的週，最可能發生的是什麼？',
     options: [
-      { key:'A', text:'試著轉移注意力，不去回想那個決定', scores:{ X1:3 } },
-      { key:'B', text:'反覆分析「如果當初選另一個方向」的各種可能', scores:{ X3:3 } },
-      { key:'C', text:'研究怎麼彌補或減少損失，積極找對策', scores:{ X2:3 } },
-      { key:'D', text:'承認後悔的感受，問自己這個決定教了我什麼', scores:{ X4:3 } }
+      { key:'A', text:'很多習慣一起中斷，因為哪個都不想放棄，結果全部失守', scores:{ H1:3 } },
+      { key:'B', text:'就沒有做，因為日常的觸發點被打亂了', scores:{ H2:3 } },
+      { key:'C', text:'一天沒做，然後很難再重新啟動', scores:{ H3:3 } },
+      { key:'D', text:'嘗試調整系統來適應忙碌，但不一定成功', scores:{ H4:3 } }
     ]
   },
   {
-    text: '你休息的時候，腦子通常是什麼狀態？',
+    text: '你對「每天只做兩分鐘」這個建議的第一反應是？',
     options: [
-      { key:'A', text:'安靜下來反而更焦慮，我需要持續有事情做', scores:{ X1:3 } },
-      { key:'B', text:'開始思考計畫或需要解決的問題', scores:{ X2:3 } },
-      { key:'C', text:'反覆思考過去的對話或即將發生的事', scores:{ X3:3 } },
-      { key:'D', text:'可以比較放鬆，雖然有時候還是會有想法浮現', scores:{ X4:3 } }
+      { key:'A', text:'「這太少了，我需要做的事太多，不可能只做兩分鐘。」', scores:{ H1:3 } },
+      { key:'B', text:'「這聽起來合理，但問題是我也要記得去做那兩分鐘。」', scores:{ H2:3 } },
+      { key:'C', text:'「問題不是時間多少，而是我在低潮時根本連兩分鐘都不想做。」', scores:{ H3:3 } },
+      { key:'D', text:'「這是一個好的設計原則，但需要跟對的觸發器結合才有效。」', scores:{ H4:3 } }
     ]
   },
   {
-    text: '你認為焦慮這個情緒，本質上是什麼？',
+    text: '你最常說的關於習慣的話是什麼？',
     options: [
-      { key:'A', text:'一種不舒服的感覺，應該要消除掉', scores:{ X1:3 } },
-      { key:'B', text:'一種訊號，告訴我有問題需要解決', scores:{ X2:3 } },
-      { key:'C', text:'我的腦子在保護我，雖然有時候幫倒忙', scores:{ X3:3 } },
-      { key:'D', text:'一種資訊，在告訴我某件事對我很重要', scores:{ X4:3 } }
+      { key:'A', text:'「我有太多想改變的事，不知道從哪裡先開始。」', scores:{ H1:3 } },
+      { key:'B', text:'「我知道我應該做，但就是一直忘記。」', scores:{ H2:3 } },
+      { key:'C', text:'「我在狀態好的時候都能做到，只是沒辦法持續。」', scores:{ H3:3 } },
+      { key:'D', text:'「我在研究怎麼設計一個適合我的系統，但還沒找到最佳解。」', scores:{ H4:3 } }
     ]
   },
   {
-    text: '當你的焦慮無法通過「做什麼」來解決的時候，你通常怎麼做？',
+    text: '你最認同哪一句關於習慣的話？',
     options: [
-      { key:'A', text:'繼續分心，讓時間過去', scores:{ X1:3 } },
-      { key:'B', text:'更努力地尋找可以做的事', scores:{ X2:3 } },
-      { key:'C', text:'繼續思考，直到自己精疲力竭', scores:{ X3:3 } },
-      { key:'D', text:'試著接受「我現在沒辦法解決這件事」，然後放它在那裡', scores:{ X4:3 } }
+      { key:'A', text:'「少即是多——專注一件事，比分散在十件事上更有可能成功。」', scores:{ H1:3 } },
+      { key:'B', text:'「習慣需要一個觸發器——沒有觸發，行為不會自動發生。」', scores:{ H2:3 } },
+      { key:'C', text:'「動機會波動——好的習慣系統要在動機低點也能運作。」', scores:{ H3:3 } },
+      { key:'D', text:'「行為設計是一門學問——個人化的系統比通用方法更有效。」', scores:{ H4:3 } }
     ]
   }
 ];
 
 const RESULTS = {
-  X1: {
-    type:     '迴避逃逸型',
-    subtitle: 'The Escape Artist',
-    desc:     '你應對焦慮的主要方式是「不去感覺它」——轉移注意力、讓自己保持忙碌、或找到某種讓你暫時不用面對它的活動。這個策略有效，但只在短期內有效。',
-    analysis: '迴避逃逸型是最常見的焦慮應對方式之一，也是最讓人筋疲力竭的一種。\n\n它的邏輯是：如果我不去感覺它，它就不存在。問題是焦慮不是一個需要被消除的訊號——它是一個需要被聽見的訊號。當你持續迴避它，它只好用更大的聲音回來。\n\n另一個代價是：你為了不感覺焦慮，需要持續尋找分心的事物。這讓你的生活變成一場不斷逃跑的遊戲——從焦慮逃到刷手機，從刷手機逃到工作，從工作逃到另一個分心。\n\n「與焦慮和解」的第一步不是消除它，而是停下來，讓自己感覺到它一分鐘，問一句話：「你在告訴我什麼？」',
-    morview:  '我理解這個模式——它給你的是即時的緩解，而那種緩解是真實的。但你付出的代價是能量，那些用來逃跑的能量，本來可以用在別的地方。\n\n一個低門檻的開始：下次感到焦慮的時候，不要立刻找事情做。給自己 60 秒，只是坐著感覺那個焦慮在身體的哪裡——是胸口緊？肩膀僵？胃不舒服？只是感覺，不需要解決。這一分鐘可能改變你和焦慮的關係。',
-    cta:      '留下 Email，我寄給你針對「迴避逃逸型」的 60 秒焦慮接觸練習。'
+  H1: {
+    type:     '精力過剩型',
+    subtitle: 'The Overloader',
+    desc:     '你的問題不是動力不夠，而是動力太多。你在狀態好的時候設太多目標，然後因為任何一個失敗就讓整個系統崩潰。Brian Fogg 在《設計你的小習慣》裡說，這是最常見的習慣失敗模式——不是意志力不夠，而是一次設的太多。',
+    analysis: 'Fogg 的研究發現了一個很反直覺的結果：那些嘗試同時建立多個習慣的人，成功率遠低於只專注建立一個習慣的人——即使他們在起跑點有更高的動力。\n\n精力過剩型的失敗邏輯是這樣的：你在狀態高峰設定了 5 個新習慣，前幾天都做到了，然後生活出現一點波動，一個習慣失敗了。這個失敗觸發了「破窗效應」——你感覺今天已經失敗了，結果所有其他習慣也跟著失守。然後你覺得「反正已經失敗了，從下週再重來」。下週的「新起點」帶來新的高動力，你又設了 5 個習慣……\n\nFogg 最重要的建議：把這個模式的根本問題定位清楚——**你的問題不是習慣內容的選擇，而是習慣數量的選擇**。不是「我應該改變什麼」的問題，而是「我應該先只改變哪一件事」的問題。\n\n具體的修正方法：找出你所有想建立的習慣裡，哪一個是其他所有習慣的「基礎習慣（Keystone Habit）」——一旦它穩定下來，其他習慣會更容易跟著建立。先把那一個習慣做到不需要思考，再考慮下一個。',
+    morview:  '你的問題不是你做不到，是你太想做到太多事了。這是一種積極的問題——但它有真實的代價。\n\n你需要的不是更多動力，而是更嚴格的選擇。問自己：「如果我這個月只能建立一個習慣，那個習慣是什麼？」然後只做那一件事。其他的先等。',
+    cta:      '留下 Email，我寄給你「精力過剩型的習慣修復計畫——如何從多目標到單點突破」。'
   },
-  X2: {
-    type:     '過度控制型',
-    subtitle: 'The Control Seeker',
-    desc:     '你用「解決問題」來應對焦慮——有焦慮就找方案，有不確定就研究清楚，有失控感就建立計畫。這個策略讓你很有生產力，但它有一個你可能還沒意識到的代價。',
-    analysis: '過度控制型的核心信念是：「如果我把所有事情都想清楚了，焦慮就會消失。」這個信念有時候對，但在更多情況下，它讓你陷入一個無盡的分析迴圈。\n\n因為焦慮的根源常常不是「問題沒解決」，而是「不確定性本身」。而不確定性是生活的基本結構，不是一個可以被研究清楚、計畫掉的問題。\n\n過度控制型在外部表現得很強——有條理、有執行力、能應對。但內部的焦慮往往更深，因為每一個被解決的問題，後面還有下一個問題。你的安全感建立在「我能控制」這件事上，而這個基礎是脆弱的。',
-    morview:  '你的問題解決能力是真實的優勢。但焦慮不是一個問題——它是一個感受。感受不是通過解決來處理的，而是通過被感覺、被接受來消化的。\n\n嘗試一個區分：這個焦慮有沒有「可以採取行動」的部分？如果有，採取行動。如果沒有（比如等待一個結果），那就是你需要練習和不確定性共存的時候。',
-    cta:      '留下 Email，我寄給你針對「過度控制型」的「可控 vs 不可控」區分練習。'
+  H2: {
+    type:     '環境缺失型',
+    subtitle: 'The Context-blind',
+    desc:     '你有意願，也有動力，但你的習慣沒有一個自動觸發它的環境。Fogg 說，行為發生需要三個元素同時出現：動機、能力、觸發器。你有前兩個，缺少的是第三個——一個讓你「不需要想到就會做」的觸發點。',
+    analysis: 'Fogg 的行為設計模型（B = MAP）裡，觸發器（Prompt）是最常被忽略的元素。大多數人在建立習慣的時候，只想到「我要做什麼」，沒有想到「什麼事情發生之後，我做這件事」。\n\n環境缺失型的失敗邏輯：你記得應該做，但沒有一個具體的時機提醒你。於是這件事一直是「稍後要做的事」，然後稍後從來沒有到來。\n\nFogg 的核心方法叫做「行為錨（Behavior Anchoring）」：把你想建立的習慣，連接到一個你已經每天都在做的行為上。格式是：「當我做完 X 之後，我立刻做 Y。」\n\n例子：\n- 「當我把咖啡放進微波爐之後，我立刻做十個深蹲。」\n- 「當我坐下來打開電腦之後，我先打開我的日記應用，寫一句話。」\n- 「當我刷完牙之後，我立刻做兩分鐘的冥想。」\n\n觸發器不需要特別，它只需要一致。讓那個行為成為你新習慣的鬧鐘——一個自動、不需要意志力的觸發信號。',
+    morview:  '你的問題不是你不想做，是你沒有讓環境幫你記得做。意志力是有限的資源——用環境設計代替意志力，是最省力的習慣策略。\n\n今天就找一個你每天都會做的行為，把你想建立的習慣掛在它後面。',
+    cta:      '留下 Email，我寄給你「環境缺失型的習慣設計工具——用行為錨讓習慣自動發生」。'
   },
-  X3: {
-    type:     '反芻思考型',
-    subtitle: 'The Ruminator',
-    desc:     '你的焦慮主要住在你的腦子裡——你反覆思考同一件事，從不同角度分析，試圖找到一個讓你能放下來的確定答案。那個答案幾乎從來不會來，因為它不是思考能給你的東西。',
-    analysis: '反芻思考是焦慮最常見的認知模式之一。它的感覺像是「在認真思考問題」，但它和真正的問題解決有一個關鍵差異：真正的問題解決在思考之後，有新的認識或行動；反芻是在同一個地方原地踏步，越想越焦慮。\n\n反芻的隱性成本非常高——它消耗工作記憶和情緒資源，讓你很難做別的事。它也常常讓你的焦慮螺旋上升，因為越想越多角度，越多角度就越多需要擔心的地方。\n\n反芻型的焦慮特別難處理，因為「繼續思考」感覺就像是在「認真對待這件事」。停止思考感覺像是在逃避。但有時候，停下來才是對那件事最誠實的回應。',
-    morview:  '你的思維能力很強——但它現在在吃你自己。\n\n一個有效的打斷方式：當你發現自己在反芻，問自己「這個想法對我有用嗎？」——不是「這個想法對不對」，是「它有用嗎？」如果答案是沒有，你有許可讓它先放在那裡，而不是繼續追它。',
-    cta:      '留下 Email，我寄給你針對「反芻思考型」的打斷迴圈和接地練習。'
+  H3: {
+    type:     '動機依賴型',
+    subtitle: 'The Motivation-junkie',
+    desc:     '你的習慣在狀態好的時候完全沒問題。問題是狀態不好的時候——你不做了，然後打破連續紀錄讓你更難重新開始。Fogg 說，依賴動機的習慣策略，是最不穩定的系統，因為動機天生就是波動的。',
+    analysis: 'Fogg 對動機有一個非常清楚的定義：動機是一種感覺，不是一種能力。感覺會波動，而所有依賴感覺才能運作的系統，都會在感覺消失的時候停止。\n\n動機依賴型的失敗循環：高動機啟動 → 做到了幾天 → 動機自然波動到低點 → 某天沒做 → 「我已經中斷了」的感覺出現 → 很難重新開始 → 等下一個高動機時刻 → 重複。\n\nFogg 最核心的建議：**設計一個在動機最低點也能運作的習慣**。不是設計一個需要動機才能做的習慣，而是設計一個「動機為零的時候，你也能完成的版本」。\n\n具體的做法：\n1. 把習慣縮小到小到荒謬的程度。不是「做 30 分鐘運動」，而是「換上運動服，站到門口」。不是「寫日記」，而是「打開日記應用，寫一個字」。\n2. 定義「最小完成」。讓「今天有做」這件事的門檻，低到你在最糟糕的狀態下也能跨過。\n3. 動機回來的時候，你自然會做更多。動機低點的時候，你只需要完成最小版本。連續性比品質重要。',
+    morview:  '你不需要等狀態好才開始。事實上，你需要建立的正好是一個不需要等狀態好就能做的版本。\n\n問自己：這個習慣的「最小版本」是什麼——那個你在最糟糕的一天也能完成的版本？那才是你真正的習慣基礎。',
+    cta:      '留下 Email，我寄給你「動機依賴型的習慣重設計畫——讓習慣不需要動機也能持續」。'
   },
-  X4: {
-    type:     '接觸轉化型',
-    subtitle: 'The Transformer',
-    desc:     '你已經發展出一種相對成熟的焦慮關係——你不迴避它，也不試圖強行消除它，而是把它當作一個訊號來聆聽。這個位置不是沒有焦慮，而是焦慮對你來說是有意義的資訊。',
-    analysis: '接觸轉化型代表一種對焦慮比較整合的關係。你理解焦慮是有功能的——它在告訴你某件事對你很重要，或者某種需求沒有被照顧到。\n\n但這個類型也有它的挑戰：有時候「理解焦慮」可以成為另一種回避——你在「分析」焦慮，而不是真正地感受它。智識化是一種精緻的迴避。\n\n另一個值得注意的是：接觸轉化需要容量——有時候焦慮的強度超過你當下能接觸的程度，這時候需要先有外部支持（關係、身體安撫），再回來和它接觸，而不是強迫自己在任何狀態下都要「處理」它。',
-    morview:  '你的方向是對的。繼續往前的工作是：當焦慮很強的時候，你能不能先讓身體落地（呼吸、移動、接觸、感受當下環境），再回來和焦慮對話，而不是直接進入「這告訴我什麼」的分析？\n\n身體先，理解後。這是接觸轉化的完整路徑。',
-    cta:      '留下 Email，我寄給你針對「接觸轉化型」的進階整合練習。'
+  H4: {
+    type:     '系統設計型',
+    subtitle: 'The System Builder',
+    desc:     '你理解行為設計的邏輯，你在認真嘗試建立一個適合自己的系統。問題通常不是理解不夠，而是系統還沒有調整到適合你真實生活的那個版本——你還在迭代，還沒找到「剛好適合你」的設計。',
+    analysis: 'Fogg 說，大多數行為設計建議失敗的原因，是它們是「平均人」的設計，不是「你」的設計。系統設計型的人通常已經理解了這一點，他們在認真地嘗試個人化。\n\n你面對的通常是三個挑戰：\n\n**第一，過度工程化。** 你的系統設計得太複雜，有太多條件和層次，當任何一個環節失靈，整個系統就停止了。Fogg 建議：最好的系統是最簡單的系統。\n\n**第二，系統僵化。** 你設計了一個在特定環境下工作的系統，但生活的環境是不斷變化的。Fogg 建議：為每個習慣設計「彈性版本」——日常版（理想狀態下做的完整版）和緊急版（任何狀態下都能做的最小版）。\n\n**第三，缺少慶祝。** Fogg 非常強調情感的角色：每次完成習慣之後，立刻給自己一個即時的正面感受（不需要是獎勵，一個發自內心的「我做到了」就夠了）。這個即時的感受，是習慣真正形成的關鍵——比重複次數更重要。',
+    morview:  '你的問題不是缺少知識，而是系統還沒有到那個「剛好適合你」的版本。這是一個迭代的過程，不是一次設計好的結果。\n\n繼續調整，但記得一件事：Fogg 說習慣的核心不是完美的設計，而是即時的情感——每次完成都讓自己感覺好一點點。那個感覺，才是習慣真正被編入大腦的那一刻。',
+    cta:      '留下 Email，我寄給你「系統設計型的習慣進階工具——讓你的系統在任何狀態下都能運作」。'
   }
 };
 </script>
@@ -455,14 +427,13 @@ function openLine() { window.open(CFG.lineUrl, '_blank'); }
 function openIG()   { window.open(CFG.igUrl,   '_blank'); }
 
 const KIT_MAPPING = {
-  'X1': { tag_id: 20674024, seq_id: 2808454 },
-  'X2': { tag_id: 20674025, seq_id: 2808456 },
-  'X3': { tag_id: 20674026, seq_id: 2808457 },
-  'X4': { tag_id: 20674027, seq_id: 2808458 },
+  'H1': { tag_id: 20816399, seq_id: 2813515 },
+  'H2': { tag_id: 20816400, seq_id: 2813516 },
+  'H3': { tag_id: 20816401, seq_id: 2813517 },
+  'H4': { tag_id: 20816402, seq_id: 2813518 },
 };
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
-
-const pctMap = { X1: 12.5, X2: 37.5, X3: 62.5, X4: 87.5 };
+const pctMap = { H1: 12.5, H2: 37.5, H3: 62.5, H4: 87.5 };
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -475,10 +446,10 @@ function startQuiz() {
 }
 function renderQuestion() {
   const q = QUESTIONS[currentQ], total = QUESTIONS.length;
-  document.getElementById('q-num').textContent           = 'Q' + (currentQ + 1);
-  document.getElementById('q-total').textContent         = '/ ' + total + ' 題';
-  document.getElementById('progress-fill').style.width  = (currentQ / total * 100) + '%';
-  document.getElementById('q-text').textContent          = q.text;
+  document.getElementById('q-num').textContent          = 'Q' + (currentQ + 1);
+  document.getElementById('q-total').textContent        = '/ ' + total + ' 題';
+  document.getElementById('progress-fill').style.width = (currentQ / total * 100) + '%';
+  document.getElementById('q-text').textContent         = q.text;
   const wrap = document.getElementById('options-wrap'); wrap.innerHTML = '';
   q.options.forEach((opt, i) => {
     const btn = document.createElement('button'); btn.className = 'option';
@@ -496,6 +467,7 @@ function selectOption(el, opt, idx) {
   document.querySelectorAll('.option').forEach((o, i) => {
     if (i === idx) o.classList.add('selected'); else o.classList.add('fade-out');
   });
+  Object.entries(opt.scores).forEach(([k,v]) => { scores[k] = (scores[k]||0)+v; });
   setTimeout(() => { currentQ++; if (currentQ < QUESTIONS.length) renderQuestion(); else showResult(); }, 520);
 }
 function prevQ() { if (currentQ === 0) { showScreen('screen-start'); return; } currentQ--; renderQuestion(); }
@@ -541,7 +513,7 @@ function buildShareHTML(r) {
   return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 44px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 習慣設計診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 20px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
@@ -553,13 +525,13 @@ function buildFullPDFHTML(r) {
   let h = '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 48px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 習慣設計診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 24px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
       '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 20px">' + r.desc + '</p>';
   if (r.analysis) {
-    h += '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;text-transform:uppercase;margin:0 0 10px">深度分析</p>' +
+    h += '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;text-transform:uppercase;margin:0 0 10px">習慣失敗模式解析</p>' +
       '<p style="font-size:12px;color:rgba(154,140,120,.85);line-height:1.9;margin:0 0 20px;white-space:pre-line">' + r.analysis + '</p>';
   }
   if (r.morview) {
@@ -574,12 +546,9 @@ function buildFullPDFHTML(r) {
 }
 async function downloadPDF() {
   if (!currentResultKey) return;
-  const r = RESULTS[currentResultKey];
-  const target = document.getElementById('pdf-target');
-  const btn = document.getElementById('dlBtn');
-  const origHTML = btn ? btn.innerHTML : '';
-  target.style.display = 'block';
-  target.innerHTML = buildFullPDFHTML(r);
+  const r = RESULTS[currentResultKey]; const target = document.getElementById('pdf-target');
+  const btn = document.getElementById('dlBtn'); const origHTML = btn ? btn.innerHTML : '';
+  target.style.display = 'block'; target.innerHTML = buildFullPDFHTML(r);
   if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
   try {
     await document.fonts.ready;
@@ -591,18 +560,12 @@ async function downloadPDF() {
     pdf.addImage(imgData, 'PNG', 0, 0, w, h);
     pdf.save('mori-result-' + currentResultKey.toLowerCase() + '.pdf');
   } catch(e) { console.error(e); }
-  finally {
-    target.style.display = 'none';
-    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
-  }
+  finally { target.style.display = 'none'; if (btn) { btn.disabled = false; btn.innerHTML = origHTML; } }
 }
-
 async function shareResult() {
   if (!currentResultKey) return;
-  const r = RESULTS[currentResultKey];
-  const target = document.getElementById('pdf-target');
-  target.style.display = 'block';
-  target.innerHTML = buildShareHTML(r);
+  const r = RESULTS[currentResultKey]; const target = document.getElementById('pdf-target');
+  target.style.display = 'block'; target.innerHTML = buildShareHTML(r);
   try {
     await document.fonts.ready;
     const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
@@ -612,16 +575,12 @@ async function shareResult() {
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: 'Mori 測驗結果' });
       } else {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = fname;
-        a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; a.click();
       }
     }, 'image/png');
   } catch(e) { console.error(e); }
   finally { target.style.display = 'none'; }
 }
-
 async function submitEmail() {
   const emailEl = document.getElementById('email-input'), email = emailEl.value.trim();
   if (!email || !email.includes('@')) return;
@@ -643,7 +602,6 @@ async function submitEmail() {
     else { btn.disabled=false; btn.textContent='送出'; }
   } catch(e) { btn.disabled=false; btn.textContent='送出'; }
 }
-
 window.addEventListener('DOMContentLoaded', () => {
   const lL=document.getElementById('line-l'), lR=document.getElementById('line-r'), pt=document.getElementById('pre-text');
   setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);

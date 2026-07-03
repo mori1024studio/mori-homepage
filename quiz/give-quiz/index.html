@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MORI — 你的焦慮模式是哪種？</title>
+<title>MORI — 你在關係裡是哪種給予風格？</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
 <link rel="stylesheet" href="/shared/style.css">
 <style>
-/* v1.0 | 2026-06-27 | 與焦慮和解測驗 · T4 光譜 */
+/* v1.0 | 2026-07-02 | 給予風格測驗 · T4 光譜 */
 
 #site { min-height: 100vh; display: flex; flex-direction: column; }
 .quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
@@ -76,7 +76,6 @@
 .result-morview-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
 .result-morview-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); white-space: pre-line; }
 
-/* ── 光譜 ── */
 .spectrum-wrap { margin: 36px 0 44px; }
 .spectrum-labels-top { display: flex; justify-content: space-between; margin-bottom: 8px; }
 .spectrum-label-item { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .08em; color: rgba(154,140,120,.45); text-align: center; max-width: 80px; line-height: 1.4; }
@@ -157,7 +156,7 @@
       <div class="ornament" style="margin-bottom:36px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="start-eyebrow">Mori Studio · 情緒探索</p>
+      <p class="start-eyebrow">Mori Studio · 人際風格探索</p>
       <h1 class="start-title" id="quiz-title"></h1>
       <p class="start-desc" id="quiz-desc"></p>
       <p class="start-meta" id="quiz-meta"></p>
@@ -174,7 +173,7 @@
           <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
         </div>
       </div>
-      <p class="question-tag" id="q-tag">焦慮模式探索</p>
+      <p class="question-tag" id="q-tag">給予風格探索</p>
       <p class="question-text" id="q-text"></p>
       <div class="options" id="options-wrap"></div>
       <div class="quiz-nav">
@@ -190,30 +189,30 @@
       </div>
       <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的內容</div>
       <div class="survey-group">
-        <p class="survey-q">你的焦慮通常最容易在什麼情況下出現？</p>
+        <p class="survey-q">在人際關係裡，什麼情況最容易讓你感到消耗？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(1,'A',this)">面對不確定的未來（工作、關係、財務）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'B',this)">人際關係中（衝突、被評判、被拒絕）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'C',this)">當我需要做決定或承擔責任的時候</button>
-          <button class="survey-opt" onclick="surveyPick(1,'D',this)">安靜下來的時候，腦子開始轉個不停</button>
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">幫了很多，對方卻沒什麼感謝或回應</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">不知道該不該開口拒絕，怕傷了關係</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">感覺關係裡付出和得到的嚴重不對等</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">想要更真實的連結，但不知道怎麼建立</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你希望這個測驗最直接幫到你的是什麼？</p>
+        <p class="survey-q">你最想從這個測驗得到什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(2,'A',this)">了解我的焦慮模式從哪裡來</button>
-          <button class="survey-opt" onclick="surveyPick(2,'B',this)">找到立即可用的「當下緩解」方法</button>
-          <button class="survey-opt" onclick="surveyPick(2,'C',this)">知道怎麼建立長期更穩定的情緒底盤</button>
-          <button class="survey-opt" onclick="surveyPick(2,'D',this)">了解怎麼讓焦慮成為有用的訊號而不是障礙</button>
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">了解我的給予模式從哪裡來</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">找到在付出的同時保護自己的方式</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">搞清楚我是不是在某段關係裡被消耗</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">知道如何建立長期有意義的人際關係</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你之前試過哪些方式處理焦慮？</p>
+        <p class="survey-q">你在朋友圈或職場裡，通常是什麼形象？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(3,'A',this)">告訴自己「不要想太多」，試著分心</button>
-          <button class="survey-opt" onclick="surveyPick(3,'B',this)">把問題想得很徹底，直到找到確定的答案</button>
-          <button class="survey-opt" onclick="surveyPick(3,'C',this)">冥想、呼吸、或正念練習</button>
-          <button class="survey-opt" onclick="surveyPick(3,'D',this)">跟人說話、寫日記、或尋求幫助</button>
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">那個有求必應、大家都找的人</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">那個精算得失、不輕易出手的人</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">那個偶爾幫忙但有自己界線的人</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">那個讓人覺得可靠但不容易被摸清楚的人</button>
         </div>
       </div>
       <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看完整分析 →</button>
@@ -224,16 +223,16 @@
       <div class="ornament" style="margin-bottom:32px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="result-eyebrow">你的焦慮模式</p>
+      <p class="result-eyebrow">你的給予風格</p>
       <h2 class="result-type" id="r-type"></h2>
       <p class="result-subtitle" id="r-subtitle"></p>
 
       <div class="spectrum-wrap">
         <div class="spectrum-labels-top">
-          <div class="spectrum-label-item">逃避迴避</div>
-          <div class="spectrum-label-item">強迫控制</div>
-          <div class="spectrum-label-item">反芻思考</div>
-          <div class="spectrum-label-item">接觸轉化</div>
+          <div class="spectrum-label-item">純粹索取</div>
+          <div class="spectrum-label-item">計算互利</div>
+          <div class="spectrum-label-item">燃盡給予</div>
+          <div class="spectrum-label-item">策略給予</div>
         </div>
         <div class="spectrum-track">
           <div class="spectrum-marker" id="spectrum-marker"></div>
@@ -250,10 +249,10 @@
           <div class="spectrum-tick"></div>
         </div>
         <div class="spectrum-zone-labels">
-          <div class="spectrum-zone-label" data-zone="X1">迴避逃逸</div>
-          <div class="spectrum-zone-label" data-zone="X2">過度控制</div>
-          <div class="spectrum-zone-label" data-zone="X3">反芻思考</div>
-          <div class="spectrum-zone-label" data-zone="X4">接觸轉化</div>
+          <div class="spectrum-zone-label" data-zone="T1">隱性索取者</div>
+          <div class="spectrum-zone-label" data-zone="M1">計算互利者</div>
+          <div class="spectrum-zone-label" data-zone="G2">燃盡給予者</div>
+          <div class="spectrum-zone-label" data-zone="G1">策略給予者</div>
         </div>
       </div>
 
@@ -297,13 +296,13 @@
       <div class="related">
         <p class="related-label">延伸探索</p>
         <div class="related-links">
-          <a href="/quiz/not-enough/" class="related-link">
-            <span class="related-link-title">你的「不夠好」從哪裡來？</span>
-            <span class="related-link-tag">自我價值 →</span>
+          <a href="/quiz/comm-style/" class="related-link">
+            <span class="related-link-title">你在溝通裡最容易掉進哪個陷阱？</span>
+            <span class="related-link-tag">溝通模式 →</span>
           </a>
-          <a href="/quiz/beyond-origins/" class="related-link">
-            <span class="related-link-title">你的原生家庭模式還在控制你嗎？</span>
-            <span class="related-link-tag">原生家庭 →</span>
+          <a href="/quiz/inner-state/" class="related-link">
+            <span class="related-link-title">你在關係裡最常用哪種心理模式？</span>
+            <span class="related-link-tag">心理模式 →</span>
           </a>
         </div>
       </div>
@@ -320,119 +319,119 @@
 
 <script>
 const QUIZ_INFO = {
-  title:       '你的焦慮模式是哪種？',
-  desc:        '焦慮不是你的敵人——它是一個訊號，只是你可能還不知道它在告訴你什麼。這個測驗幫你找出你和焦慮的相處模式，以及怎麼開始讓它成為你的資源，而不是障礙。',
+  title:       '你在關係裡是哪種給予風格？',
+  desc:        '你是無條件的給予者、精算的互利者，還是隱性的索取者？這個測驗幫你找出你在人際裡的真實給予模式——以及它如何影響你的關係品質和精力消耗。',
   meta:        '共 8 題 · 約 3 分鐘',
-  questionTag: '焦慮模式探索'
+  questionTag: '給予風格探索'
 };
 
 const QUESTIONS = [
   {
-    text: '你感到焦慮的時候，第一個本能反應是什麼？',
+    text: '朋友請你幫一個不小的忙，但你其實很忙，你最可能怎麼做？',
     options: [
-      { key:'A', text:'找事情讓自己分心：刷手機、看劇、吃東西', scores:{ X1:3 } },
-      { key:'B', text:'開始列清單、研究解決方案，或想辦法掌控狀況', scores:{ X2:3 } },
-      { key:'C', text:'開始反覆想同一個問題，試圖找到確定的答案', scores:{ X3:3 } },
-      { key:'D', text:'先讓自己感覺到那個焦慮，問自己它在提醒我什麼', scores:{ X4:3 } }
+      { key:'A', text:'想辦法幫，即使很累也不好意思說不', scores:{ G2:3 } },
+      { key:'B', text:'評估自己有沒有餘力，有的話幫，沒有就直接說清楚', scores:{ G1:3 } },
+      { key:'C', text:'幫了，但心裡其實有點不甘心', scores:{ M1:3 } },
+      { key:'D', text:'找個理由婉拒，或讓這件事自然消失', scores:{ T1:3 } }
     ]
   },
   {
-    text: '你對於「不確定性」最核心的感受是什麼？',
+    text: '你在一個團隊合作的情況裡，最自然的角色是？',
     options: [
-      { key:'A', text:'非常不舒服，我寧願知道不好的結果，也不想懸在那裡', scores:{ X2:3 } },
-      { key:'B', text:'讓我焦慮，我會試著把不確定性研究清楚', scores:{ X3:3 } },
-      { key:'C', text:'讓我想逃開，有什麼能讓我不去想這件事就好', scores:{ X1:3 } },
-      { key:'D', text:'不舒服，但我知道不確定性是正常的，有時候只是需要等待', scores:{ X4:3 } }
+      { key:'A', text:'主動攬事，想把大家的事都做完', scores:{ G2:3 } },
+      { key:'B', text:'看哪裡最缺人，集中貢獻最有影響力的那塊', scores:{ G1:3 } },
+      { key:'C', text:'做我份內的事，不多也不少', scores:{ M1:3 } },
+      { key:'D', text:'希望別人多承擔，我看情況再出手', scores:{ T1:3 } }
     ]
   },
   {
-    text: '你最近一次感到強烈焦慮，你的腦子在做什麼？',
+    text: '你幫助別人之後，最常有的感受是什麼？',
     options: [
-      { key:'A', text:'反覆重播同一個情境或對話，想搞清楚哪裡出錯了', scores:{ X3:3 } },
-      { key:'B', text:'不斷想「如果...怎麼辦」，最壞情況的清單越列越長', scores:{ X2:3 } },
-      { key:'C', text:'試圖不去想那件事，讓自己做別的事', scores:{ X1:3 } },
-      { key:'D', text:'試著理解這個焦慮在對什麼情況做出反應', scores:{ X4:3 } }
+      { key:'A', text:'覺得很有意義，雖然有時候事後會很累', scores:{ G2:3 } },
+      { key:'B', text:'覺得有貢獻，但不影響我自己的能量', scores:{ G1:3 } },
+      { key:'C', text:'感覺還好，如果對方能記得就更好了', scores:{ M1:3 } },
+      { key:'D', text:'要看我付出了多少——代價太大的話會後悔', scores:{ T1:3 } }
     ]
   },
   {
-    text: '你的朋友向你描述他們的焦慮，你最常給的建議是什麼？',
+    text: '有人在職場對你有批評或意見，你最先有的反應是什麼？',
     options: [
-      { key:'A', text:'「先不要想這件事，去做點讓自己開心的事」', scores:{ X1:3 } },
-      { key:'B', text:'「我們來想想有什麼解決方案」——開始分析', scores:{ X2:3 } },
-      { key:'C', text:'「你有沒有考慮過這個、那個、還有那個...」——很多角度', scores:{ X3:3 } },
-      { key:'D', text:'「這個焦慮告訴你什麼？」——先問，不急著解決', scores:{ X4:3 } }
+      { key:'A', text:'馬上反思自己是不是哪裡做得不好', scores:{ G2:3 } },
+      { key:'B', text:'看看有沒有值得改進的地方，其他的不放心上', scores:{ G1:3 } },
+      { key:'C', text:'覺得有點不公平，默默記著，看能不能之後扯平', scores:{ M1:3 } },
+      { key:'D', text:'想搞清楚這個人是什麼立場——他有什麼資格說？', scores:{ T1:3 } }
     ]
   },
   {
-    text: '你做了一個決定之後感到後悔，你最常有的反應是什麼？',
+    text: '你怎麼看「建立人脈」這件事？',
     options: [
-      { key:'A', text:'試著轉移注意力，不去回想那個決定', scores:{ X1:3 } },
-      { key:'B', text:'反覆分析「如果當初選另一個方向」的各種可能', scores:{ X3:3 } },
-      { key:'C', text:'研究怎麼彌補或減少損失，積極找對策', scores:{ X2:3 } },
-      { key:'D', text:'承認後悔的感受，問自己這個決定教了我什麼', scores:{ X4:3 } }
+      { key:'A', text:'不太喜歡，感覺像是在「利用」別人', scores:{ G2:3 } },
+      { key:'B', text:'有意義，但更在意的是長期真實的關係', scores:{ G1:3 } },
+      { key:'C', text:'合理的事，認識對自己有用的人是正常策略', scores:{ M1:3 } },
+      { key:'D', text:'最重要的是找到對自己有價值的連結', scores:{ T1:3 } }
     ]
   },
   {
-    text: '你休息的時候，腦子通常是什麼狀態？',
+    text: '朋友來借錢或請你介紹工作機會，你最接近哪個反應？',
     options: [
-      { key:'A', text:'安靜下來反而更焦慮，我需要持續有事情做', scores:{ X1:3 } },
-      { key:'B', text:'開始思考計畫或需要解決的問題', scores:{ X2:3 } },
-      { key:'C', text:'反覆思考過去的對話或即將發生的事', scores:{ X3:3 } },
-      { key:'D', text:'可以比較放鬆，雖然有時候還是會有想法浮現', scores:{ X4:3 } }
+      { key:'A', text:'能幫就幫，很難開口說不', scores:{ G2:3 } },
+      { key:'B', text:'評估關係和自己的狀況，決定幫多少', scores:{ G1:3 } },
+      { key:'C', text:'幫了，但心裡記一筆，希望未來有所回報', scores:{ M1:3 } },
+      { key:'D', text:'第一反應是想找藉口，除非這個人對我很重要', scores:{ T1:3 } }
     ]
   },
   {
-    text: '你認為焦慮這個情緒，本質上是什麼？',
+    text: '你認為「給予」這件事，最核心的本質是什麼？',
     options: [
-      { key:'A', text:'一種不舒服的感覺，應該要消除掉', scores:{ X1:3 } },
-      { key:'B', text:'一種訊號，告訴我有問題需要解決', scores:{ X2:3 } },
-      { key:'C', text:'我的腦子在保護我，雖然有時候幫倒忙', scores:{ X3:3 } },
-      { key:'D', text:'一種資訊，在告訴我某件事對我很重要', scores:{ X4:3 } }
+      { key:'A', text:'讓自己感到有價值的方式——幫人的時候才覺得自己有用', scores:{ G2:3 } },
+      { key:'B', text:'建立長期信任的方式——長期來看對彼此都有好處', scores:{ G1:3 } },
+      { key:'C', text:'一種社會契約——我幫你，你適時回來幫我', scores:{ M1:3 } },
+      { key:'D', text:'可以做，但要看值不值得——資源有限，用在刀口上', scores:{ T1:3 } }
     ]
   },
   {
-    text: '當你的焦慮無法通過「做什麼」來解決的時候，你通常怎麼做？',
+    text: '當你的給予沒有得到感謝或任何回應，你最常有的反應？',
     options: [
-      { key:'A', text:'繼續分心，讓時間過去', scores:{ X1:3 } },
-      { key:'B', text:'更努力地尋找可以做的事', scores:{ X2:3 } },
-      { key:'C', text:'繼續思考，直到自己精疲力竭', scores:{ X3:3 } },
-      { key:'D', text:'試著接受「我現在沒辦法解決這件事」，然後放它在那裡', scores:{ X4:3 } }
+      { key:'A', text:'有點難受，但告訴自己做了就算了', scores:{ G2:3 } },
+      { key:'B', text:'沒有特別在意，因為我給予不依賴對方回應', scores:{ G1:3 } },
+      { key:'C', text:'有點不爽，下次對這個人的請求會更謹慎', scores:{ M1:3 } },
+      { key:'D', text:'確認了一件事：這個人不值得繼續付出', scores:{ T1:3 } }
     ]
   }
 ];
 
 const RESULTS = {
-  X1: {
-    type:     '迴避逃逸型',
-    subtitle: 'The Escape Artist',
-    desc:     '你應對焦慮的主要方式是「不去感覺它」——轉移注意力、讓自己保持忙碌、或找到某種讓你暫時不用面對它的活動。這個策略有效，但只在短期內有效。',
-    analysis: '迴避逃逸型是最常見的焦慮應對方式之一，也是最讓人筋疲力竭的一種。\n\n它的邏輯是：如果我不去感覺它，它就不存在。問題是焦慮不是一個需要被消除的訊號——它是一個需要被聽見的訊號。當你持續迴避它，它只好用更大的聲音回來。\n\n另一個代價是：你為了不感覺焦慮，需要持續尋找分心的事物。這讓你的生活變成一場不斷逃跑的遊戲——從焦慮逃到刷手機，從刷手機逃到工作，從工作逃到另一個分心。\n\n「與焦慮和解」的第一步不是消除它，而是停下來，讓自己感覺到它一分鐘，問一句話：「你在告訴我什麼？」',
-    morview:  '我理解這個模式——它給你的是即時的緩解，而那種緩解是真實的。但你付出的代價是能量，那些用來逃跑的能量，本來可以用在別的地方。\n\n一個低門檻的開始：下次感到焦慮的時候，不要立刻找事情做。給自己 60 秒，只是坐著感覺那個焦慮在身體的哪裡——是胸口緊？肩膀僵？胃不舒服？只是感覺，不需要解決。這一分鐘可能改變你和焦慮的關係。',
-    cta:      '留下 Email，我寄給你針對「迴避逃逸型」的 60 秒焦慮接觸練習。'
+  G1: {
+    type:     '策略給予者',
+    subtitle: 'The Strategic Giver',
+    desc:     '你懂得給予，也懂得保護自己。你不是因為不好意思才付出——你是因為真心覺得有意義，而且你有清楚的判斷：什麼值得給，什麼時候需要說不。這種結合，讓你的給予有槓桿，也有持續性。',
+    analysis: '策略給予者是《給予》這本書裡，亞當·格蘭特研究出的頂尖成就者的共同特質。\n\n你的核心能力不只是「願意付出」，而是你能識別哪種付出有真正的影響力。你不在每個人的每個請求上都說好，因為你知道分散付出的代價是：每個地方都有你，但沒有任何地方真正因你而不同。\n\n策略給予者和燃盡給予者的最大差異在於：你的給予來自選擇，不來自無法拒絕。你在給予的時候，你的需求也在被照顧——這讓你能夠長期持續付出，而不會走到精疲力竭那個點。\n\n你在人際關係裡積累的，是真實的聲譽資本，不是「好人」的標籤。這兩個很不一樣。',
+    morview:  '你已經站在一個正確的位置。\n\n繼續往前的問題不是「怎麼學會給予」，而是「怎麼讓你的給予有更大的影響力」。格蘭特說，最成功的給予者不只是一對一幫助，而是建立系統性的貢獻——讓他們的付出能同時觸達更多人。\n\n問自己：我現在的給予方式，有沒有辦法做成一個不需要我在場就能持續發生的機制？',
+    cta:      '留下 Email，我寄給你「策略給予者如何建立持續影響力」的完整框架。'
   },
-  X2: {
-    type:     '過度控制型',
-    subtitle: 'The Control Seeker',
-    desc:     '你用「解決問題」來應對焦慮——有焦慮就找方案，有不確定就研究清楚，有失控感就建立計畫。這個策略讓你很有生產力，但它有一個你可能還沒意識到的代價。',
-    analysis: '過度控制型的核心信念是：「如果我把所有事情都想清楚了，焦慮就會消失。」這個信念有時候對，但在更多情況下，它讓你陷入一個無盡的分析迴圈。\n\n因為焦慮的根源常常不是「問題沒解決」，而是「不確定性本身」。而不確定性是生活的基本結構，不是一個可以被研究清楚、計畫掉的問題。\n\n過度控制型在外部表現得很強——有條理、有執行力、能應對。但內部的焦慮往往更深，因為每一個被解決的問題，後面還有下一個問題。你的安全感建立在「我能控制」這件事上，而這個基礎是脆弱的。',
-    morview:  '你的問題解決能力是真實的優勢。但焦慮不是一個問題——它是一個感受。感受不是通過解決來處理的，而是通過被感覺、被接受來消化的。\n\n嘗試一個區分：這個焦慮有沒有「可以採取行動」的部分？如果有，採取行動。如果沒有（比如等待一個結果），那就是你需要練習和不確定性共存的時候。',
-    cta:      '留下 Email，我寄給你針對「過度控制型」的「可控 vs 不可控」區分練習。'
+  G2: {
+    type:     '燃盡給予者',
+    subtitle: 'The Burned-Out Giver',
+    desc:     '你真心願意付出——但你付出的方式讓你很累。你很難說不，不是因為你軟弱，而是因為拒絕對你來說代價太高：罪惡感、怕傷關係、或者你的價值感跟「被需要」深深綁在一起。這個模式需要重新設計。',
+    analysis: '燃盡給予者是給予者裡表現最差的那個群體——不是因為他們不夠好，而是因為他們的給予方式消耗了讓他們繼續給予的能量。\n\n你給予的動機裡，有一部分不是選擇，而是逃不掉：逃不掉拒絕的罪惡感，逃不掉被討厭的恐懼，或者你深深覺得「如果我不夠有用，我就不夠有價值」。\n\n這個模式的代價是：你的每一次付出都在消耗，但沒有在積累——因為你幫的人不是你真正在乎的關係，而是任何找上你的人。你把自己的資源用在最不需要你的地方，然後在真正重要的關係裡沒有能量剩下。\n\n格蘭特說，真正成功的給予者是「無私的給予者（Otherish Givers）」，不是「自我犧牲型的給予者」。差別只在一件事：你在給予的同時，你自己的需求有沒有也在被照顧。',
+    morview:  '你的問題不是「太善良」。你的問題是，你還沒有找到一個讓你能說不、又不需要付出罪惡感代價的方式。\n\n一個低門檻的起點：下次有人找你幫忙，先問自己一個問題：「如果我今天幫了這件事，明天我的能量會是什麼狀態？」如果答案是「很空」，那個就是你需要說不的訊號。說不不是自私，是讓你有能量繼續給予。',
+    cta:      '留下 Email，我寄給你「燃盡給予者如何設立邊界、同時保持好人心」的指南。'
   },
-  X3: {
-    type:     '反芻思考型',
-    subtitle: 'The Ruminator',
-    desc:     '你的焦慮主要住在你的腦子裡——你反覆思考同一件事，從不同角度分析，試圖找到一個讓你能放下來的確定答案。那個答案幾乎從來不會來，因為它不是思考能給你的東西。',
-    analysis: '反芻思考是焦慮最常見的認知模式之一。它的感覺像是「在認真思考問題」，但它和真正的問題解決有一個關鍵差異：真正的問題解決在思考之後，有新的認識或行動；反芻是在同一個地方原地踏步，越想越焦慮。\n\n反芻的隱性成本非常高——它消耗工作記憶和情緒資源，讓你很難做別的事。它也常常讓你的焦慮螺旋上升，因為越想越多角度，越多角度就越多需要擔心的地方。\n\n反芻型的焦慮特別難處理，因為「繼續思考」感覺就像是在「認真對待這件事」。停止思考感覺像是在逃避。但有時候，停下來才是對那件事最誠實的回應。',
-    morview:  '你的思維能力很強——但它現在在吃你自己。\n\n一個有效的打斷方式：當你發現自己在反芻，問自己「這個想法對我有用嗎？」——不是「這個想法對不對」，是「它有用嗎？」如果答案是沒有，你有許可讓它先放在那裡，而不是繼續追它。',
-    cta:      '留下 Email，我寄給你針對「反芻思考型」的打斷迴圈和接地練習。'
+  T1: {
+    type:     '隱性索取者',
+    subtitle: 'The Hidden Taker',
+    desc:     '你不是那種明顯「利用別人」的人——但在你的人際運算裡，代價和回報一直在後台默默跑著。你給予的前提是「值得」，你幫忙的條件是「有意義」。這很理性，但它讓你的關係很難有真正的深度。',
+    analysis: '隱性索取者和顯性索取者不同——你不是那種會明顯占人便宜的類型。你可能在某些場合非常大方，但那是在你判斷「這筆投資值得」之後的大方。\n\n問題不是你壞，而是你的關係模式建立在一個很脆的基礎上：當那個「值不值得」的計算結果改變，你的付出意願也跟著改變。這讓你很難積累真正的人際信任——因為信任的建立，恰恰需要在「不確定有沒有回報」的情況下給予。\n\n格蘭特的研究顯示，索取者在短期內往往看起來很成功，但長期來看，聲譽的透明度讓索取者越來越難以維持。尤其在數位時代，你對待他人的方式會在不知不覺間成為你的名聲。\n\n這個模式不是無法改變的，但它需要你誠實面對一件事：你在人際關係裡的核心問題是信任不足——不是信任別人，而是信任給予會帶來長期回報。',
+    morview:  '我不評判這個模式——它有它的合理性。但我想說一件你可能還沒意識到的事：\n\n你精算的不只是對方，你也在精算自己的給予值不值得。這讓你錯過了一些關係，那些關係的價值，不是在給的當下算得出來的。\n\n一個低門檻的嘗試：找一個不確定「有沒有回報」的人，做一個五分鐘的小幫忙——不要算，就做。看看那之後你的感受是什麼。',
+    cta:      '留下 Email，我寄給你「從索取模式到信任型給予」的思維轉換路徑。'
   },
-  X4: {
-    type:     '接觸轉化型',
-    subtitle: 'The Transformer',
-    desc:     '你已經發展出一種相對成熟的焦慮關係——你不迴避它，也不試圖強行消除它，而是把它當作一個訊號來聆聽。這個位置不是沒有焦慮，而是焦慮對你來說是有意義的資訊。',
-    analysis: '接觸轉化型代表一種對焦慮比較整合的關係。你理解焦慮是有功能的——它在告訴你某件事對你很重要，或者某種需求沒有被照顧到。\n\n但這個類型也有它的挑戰：有時候「理解焦慮」可以成為另一種回避——你在「分析」焦慮，而不是真正地感受它。智識化是一種精緻的迴避。\n\n另一個值得注意的是：接觸轉化需要容量——有時候焦慮的強度超過你當下能接觸的程度，這時候需要先有外部支持（關係、身體安撫），再回來和它接觸，而不是強迫自己在任何狀態下都要「處理」它。',
-    morview:  '你的方向是對的。繼續往前的工作是：當焦慮很強的時候，你能不能先讓身體落地（呼吸、移動、接觸、感受當下環境），再回來和焦慮對話，而不是直接進入「這告訴我什麼」的分析？\n\n身體先，理解後。這是接觸轉化的完整路徑。',
-    cta:      '留下 Email，我寄給你針對「接觸轉化型」的進階整合練習。'
+  M1: {
+    type:     '計算互利者',
+    subtitle: 'The Careful Matcher',
+    desc:     '你在人際關係裡追求公平交換——你幫人，但你也在意對方有沒有同等回來。你不是索取者，也不是無條件的給予者，你是一個精準的互利者。這個位置很穩，但它有一個隱藏的代價你可能沒注意到。',
+    analysis: '互利者（Matchers）是人際關係裡最常見的類型，也是最「理性」的類型。你追求公平：對你好的人，你回報；對你不好的人，你也不虧欠。\n\n這個策略在很多情況下是有效的。它保護你不被利用，讓你的人際帳戶不會出現嚴重虧損。\n\n但格蘭特發現，互利者在人際成就上長期不如策略給予者，原因在於：互利者的網絡廣度不夠，因為他們的給予都在「已確認有回報的關係」裡發生。他們很少在沒有確定回報的情況下給予，這讓他們錯過了那些最有可能帶來意外資本的關係——陌生人的轉介紹、跨領域的意外連結、非直接利益的信任積累。\n\n另外，互利者在幫人的時候，那個「算帳」的感覺對方其實常常感覺得到。它讓關係停在「合作」的層次，很難到「信任」的層次。',
+    morview:  '你的位置是安全的，但安全有它的天花板。\n\n你現在的人際關係，有多少是因為「對方對你有用」才維持的？有多少是你真心想在他們變得對你沒用之後，還是想繼續交往的？\n\n試著對一個「目前沒有明顯利益關係」的人，做一個無條件的小幫忙。不是大事，只是讓對方感覺到你記得他、在乎他。看看那之後，關係有沒有變得不一樣。',
+    cta:      '留下 Email，我寄給你「超越計算式互利，建立真正有深度關係」的方法。'
   }
 };
 </script>
@@ -455,14 +454,14 @@ function openLine() { window.open(CFG.lineUrl, '_blank'); }
 function openIG()   { window.open(CFG.igUrl,   '_blank'); }
 
 const KIT_MAPPING = {
-  'X1': { tag_id: 20674024, seq_id: 2808454 },
-  'X2': { tag_id: 20674025, seq_id: 2808456 },
-  'X3': { tag_id: 20674026, seq_id: 2808457 },
-  'X4': { tag_id: 20674027, seq_id: 2808458 },
+  'G1': { tag_id: 20816239, seq_id: 2813489 },
+  'G2': { tag_id: 20816240, seq_id: 2813490 },
+  'T1': { tag_id: 20816241, seq_id: 2813491 },
+  'M1': { tag_id: 20816242, seq_id: 2813492 },
 };
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
-const pctMap = { X1: 12.5, X2: 37.5, X3: 62.5, X4: 87.5 };
+const pctMap = { T1: 12.5, M1: 37.5, G2: 62.5, G1: 87.5 };
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -496,6 +495,7 @@ function selectOption(el, opt, idx) {
   document.querySelectorAll('.option').forEach((o, i) => {
     if (i === idx) o.classList.add('selected'); else o.classList.add('fade-out');
   });
+  Object.entries(opt.scores).forEach(([k,v]) => { scores[k] = (scores[k]||0)+v; });
   setTimeout(() => { currentQ++; if (currentQ < QUESTIONS.length) renderQuestion(); else showResult(); }, 520);
 }
 function prevQ() { if (currentQ === 0) { showScreen('screen-start'); return; } currentQ--; renderQuestion(); }
@@ -541,7 +541,7 @@ function buildShareHTML(r) {
   return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 44px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 給予風格探索報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 20px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
@@ -553,7 +553,7 @@ function buildFullPDFHTML(r) {
   let h = '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 48px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 給予風格探索報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 24px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
@@ -596,7 +596,6 @@ async function downloadPDF() {
     if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
   }
 }
-
 async function shareResult() {
   if (!currentResultKey) return;
   const r = RESULTS[currentResultKey];
@@ -621,7 +620,6 @@ async function shareResult() {
   } catch(e) { console.error(e); }
   finally { target.style.display = 'none'; }
 }
-
 async function submitEmail() {
   const emailEl = document.getElementById('email-input'), email = emailEl.value.trim();
   if (!email || !email.includes('@')) return;

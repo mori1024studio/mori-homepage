@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MORI — 你的焦慮模式是哪種？</title>
+<!-- v1.0 | 2026-06-29 | AI-First自我升級革命 · T4 光譜 · AI卡關4型 -->
+<title>MORI — 你用 AI 最大的卡關是哪一個？</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
 <link rel="stylesheet" href="/shared/style.css">
 <style>
-/* v1.0 | 2026-06-27 | 與焦慮和解測驗 · T4 光譜 */
+/* v1.0 | 2026-06-29 | AI-First自我升級革命 · T4 光譜 */
 
 #site { min-height: 100vh; display: flex; flex-direction: column; }
 .quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
@@ -157,11 +158,11 @@
       <div class="ornament" style="margin-bottom:36px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="start-eyebrow">Mori Studio · 情緒探索</p>
+      <p class="start-eyebrow">Mori Studio · AI升級診斷</p>
       <h1 class="start-title" id="quiz-title"></h1>
       <p class="start-desc" id="quiz-desc"></p>
       <p class="start-meta" id="quiz-meta"></p>
-      <button class="btn-start" onclick="startQuiz()">開始探索<span class="btn-start-arrow"></span></button>
+      <button class="btn-start" onclick="startQuiz()">開始診斷<span class="btn-start-arrow"></span></button>
     </div>
 
     <div class="screen" id="screen-quiz">
@@ -174,7 +175,7 @@
           <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
         </div>
       </div>
-      <p class="question-tag" id="q-tag">焦慮模式探索</p>
+      <p class="question-tag" id="q-tag">AI升級診斷</p>
       <p class="question-text" id="q-text"></p>
       <div class="options" id="options-wrap"></div>
       <div class="quiz-nav">
@@ -184,36 +185,36 @@
 
     <div class="screen" id="screen-survey">
       <div class="survey-type-teaser">
-        <p class="survey-eyebrow">你的結果出來了</p>
+        <p class="survey-eyebrow">你的卡關類型出來了</p>
         <h2 class="survey-type-name" id="s-type-name"></h2>
         <p class="survey-type-brief" id="s-type-brief"></p>
       </div>
-      <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的內容</div>
+      <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的突破方向</div>
       <div class="survey-group">
-        <p class="survey-q">你的焦慮通常最容易在什麼情況下出現？</p>
+        <p class="survey-q">你目前用 AI 最主要的場景是什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(1,'A',this)">面對不確定的未來（工作、關係、財務）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'B',this)">人際關係中（衝突、被評判、被拒絕）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'C',this)">當我需要做決定或承擔責任的時候</button>
-          <button class="survey-opt" onclick="surveyPick(1,'D',this)">安靜下來的時候，腦子開始轉個不停</button>
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">工作內容產出（報告、提案、文案、會議記錄）</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">副業或個人創作（社群、課程、產品開發）</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">學習和研究（整理資料、理解新知識）</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">還在摸索，沒有固定的使用場景</button>
+        </div>
+      </div>
+      <div class="survey-group">
+        <p class="survey-q">你用 AI 最大的挫折感來自哪裡？</p>
+        <div class="survey-opts">
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">輸出的東西感覺不是我想要的，但說不清楚差在哪</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">每次用完都要重新開始，沒有積累感</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">不確定 AI 給的東西對不對，不敢直接用</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">感覺還有很多潛力沒解鎖，但不知道下一步是什麼</button>
         </div>
       </div>
       <div class="survey-group">
         <p class="survey-q">你希望這個測驗最直接幫到你的是什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(2,'A',this)">了解我的焦慮模式從哪裡來</button>
-          <button class="survey-opt" onclick="surveyPick(2,'B',this)">找到立即可用的「當下緩解」方法</button>
-          <button class="survey-opt" onclick="surveyPick(2,'C',this)">知道怎麼建立長期更穩定的情緒底盤</button>
-          <button class="survey-opt" onclick="surveyPick(2,'D',this)">了解怎麼讓焦慮成為有用的訊號而不是障礙</button>
-        </div>
-      </div>
-      <div class="survey-group">
-        <p class="survey-q">你之前試過哪些方式處理焦慮？</p>
-        <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(3,'A',this)">告訴自己「不要想太多」，試著分心</button>
-          <button class="survey-opt" onclick="surveyPick(3,'B',this)">把問題想得很徹底，直到找到確定的答案</button>
-          <button class="survey-opt" onclick="surveyPick(3,'C',this)">冥想、呼吸、或正念練習</button>
-          <button class="survey-opt" onclick="surveyPick(3,'D',this)">跟人說話、寫日記、或尋求幫助</button>
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">搞清楚為什麼我的 AI 輸出總是差一點</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">找到一個可以複製的 AI 工作流起點</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">知道怎麼判斷 AI 給的東西好不好</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">了解 AI-First 思維和我現在的思維差在哪</button>
         </div>
       </div>
       <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看完整分析 →</button>
@@ -224,16 +225,16 @@
       <div class="ornament" style="margin-bottom:32px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="result-eyebrow">你的焦慮模式</p>
+      <p class="result-eyebrow">你的 AI 卡關類型</p>
       <h2 class="result-type" id="r-type"></h2>
       <p class="result-subtitle" id="r-subtitle"></p>
 
       <div class="spectrum-wrap">
         <div class="spectrum-labels-top">
-          <div class="spectrum-label-item">逃避迴避</div>
-          <div class="spectrum-label-item">強迫控制</div>
-          <div class="spectrum-label-item">反芻思考</div>
-          <div class="spectrum-label-item">接觸轉化</div>
+          <div class="spectrum-label-item">問題模糊</div>
+          <div class="spectrum-label-item">輸出依賴</div>
+          <div class="spectrum-label-item">流程缺失</div>
+          <div class="spectrum-label-item">策略整合</div>
         </div>
         <div class="spectrum-track">
           <div class="spectrum-marker" id="spectrum-marker"></div>
@@ -250,17 +251,17 @@
           <div class="spectrum-tick"></div>
         </div>
         <div class="spectrum-zone-labels">
-          <div class="spectrum-zone-label" data-zone="X1">迴避逃逸</div>
-          <div class="spectrum-zone-label" data-zone="X2">過度控制</div>
-          <div class="spectrum-zone-label" data-zone="X3">反芻思考</div>
-          <div class="spectrum-zone-label" data-zone="X4">接觸轉化</div>
+          <div class="spectrum-zone-label" data-zone="A1">工具使用者</div>
+          <div class="spectrum-zone-label" data-zone="A2">輸出消費者</div>
+          <div class="spectrum-zone-label" data-zone="A3">臨時應用者</div>
+          <div class="spectrum-zone-label" data-zone="A4">AI-First思維</div>
         </div>
       </div>
 
       <div class="result-divider"></div>
       <p class="result-desc" id="r-desc"></p>
       <div class="result-analysis-block">
-        <p class="result-analysis-label">模式解析</p>
+        <p class="result-analysis-label">卡關解析</p>
         <p class="result-analysis-text" id="r-analysis"></p>
       </div>
       <div class="result-morview-block">
@@ -297,13 +298,13 @@
       <div class="related">
         <p class="related-label">延伸探索</p>
         <div class="related-links">
-          <a href="/quiz/not-enough/" class="related-link">
-            <span class="related-link-title">你的「不夠好」從哪裡來？</span>
-            <span class="related-link-tag">自我價值 →</span>
+          <a href="/quiz/sidebiz/" class="related-link">
+            <span class="related-link-title">你的副業卡在哪裡？</span>
+            <span class="related-link-tag">副業診斷 →</span>
           </a>
-          <a href="/quiz/beyond-origins/" class="related-link">
-            <span class="related-link-title">你的原生家庭模式還在控制你嗎？</span>
-            <span class="related-link-tag">原生家庭 →</span>
+          <a href="/quiz/anxiety-resolve/" class="related-link">
+            <span class="related-link-title">你的焦慮模式是哪種？</span>
+            <span class="related-link-tag">情緒探索 →</span>
           </a>
         </div>
       </div>
@@ -320,119 +321,119 @@
 
 <script>
 const QUIZ_INFO = {
-  title:       '你的焦慮模式是哪種？',
-  desc:        '焦慮不是你的敵人——它是一個訊號，只是你可能還不知道它在告訴你什麼。這個測驗幫你找出你和焦慮的相處模式，以及怎麼開始讓它成為你的資源，而不是障礙。',
-  meta:        '共 8 題 · 約 3 分鐘',
-  questionTag: '焦慮模式探索'
+  title:       '你用 AI 最大的卡關是哪一個？',
+  desc:        '大多數人說「AI 不好用」，其實不是工具的問題——是卡關的位置不同。這個測驗找出你目前最主要的 AI 使用障礙，並給你一個具體的突破方向。',
+  meta:        '8題 · 約3分鐘 · 基於 AI-First 工作革命框架',
+  questionTag: 'AI升級診斷',
 };
 
 const QUESTIONS = [
   {
-    text: '你感到焦慮的時候，第一個本能反應是什麼？',
+    text: '你開始一個新的 AI 對話時，你通常怎麼做？',
     options: [
-      { key:'A', text:'找事情讓自己分心：刷手機、看劇、吃東西', scores:{ X1:3 } },
-      { key:'B', text:'開始列清單、研究解決方案，或想辦法掌控狀況', scores:{ X2:3 } },
-      { key:'C', text:'開始反覆想同一個問題，試圖找到確定的答案', scores:{ X3:3 } },
-      { key:'D', text:'先讓自己感覺到那個焦慮，問自己它在提醒我什麼', scores:{ X4:3 } }
+      { key:'A', text:'想好要問什麼，但在打字的時候感覺說不清楚', scores:{ A1:3 } },
+      { key:'B', text:'直接問，看輸出結果如何再說', scores:{ A2:3 } },
+      { key:'C', text:'想到什麼問什麼，每次都要重新解釋背景', scores:{ A3:3 } },
+      { key:'D', text:'有一套固定的開場框架，快速告訴 AI 背景和目標', scores:{ A4:3 } },
     ]
   },
   {
-    text: '你對於「不確定性」最核心的感受是什麼？',
+    text: 'AI 給了你一個你不確定對不對的答案，你通常怎麼處理？',
     options: [
-      { key:'A', text:'非常不舒服，我寧願知道不好的結果，也不想懸在那裡', scores:{ X2:3 } },
-      { key:'B', text:'讓我焦慮，我會試著把不確定性研究清楚', scores:{ X3:3 } },
-      { key:'C', text:'讓我想逃開，有什麼能讓我不去想這件事就好', scores:{ X1:3 } },
-      { key:'D', text:'不舒服，但我知道不確定性是正常的，有時候只是需要等待', scores:{ X4:3 } }
+      { key:'A', text:'覺得應該追問，但不知道要怎麼追問', scores:{ A1:3 } },
+      { key:'B', text:'直接用，覺得 AI 給的應該可以', scores:{ A2:3 } },
+      { key:'C', text:'想重問一次，但要重新解釋一遍很麻煩', scores:{ A3:3 } },
+      { key:'D', text:'質疑它的邏輯，要求它解釋理由或提供替代方案', scores:{ A4:3 } },
     ]
   },
   {
-    text: '你最近一次感到強烈焦慮，你的腦子在做什麼？',
+    text: '你做過一個很好的 AI prompt，下次想用類似的方式，你怎麼做？',
     options: [
-      { key:'A', text:'反覆重播同一個情境或對話，想搞清楚哪裡出錯了', scores:{ X3:3 } },
-      { key:'B', text:'不斷想「如果...怎麼辦」，最壞情況的清單越列越長', scores:{ X2:3 } },
-      { key:'C', text:'試圖不去想那件事，讓自己做別的事', scores:{ X1:3 } },
-      { key:'D', text:'試著理解這個焦慮在對什麼情況做出反應', scores:{ X4:3 } }
+      { key:'A', text:'記得大概，但要重新想才能寫出來', scores:{ A1:3 } },
+      { key:'B', text:'從頭開始，反正 AI 都能給答案', scores:{ A2:3 } },
+      { key:'C', text:'想不起來在哪裡了，沒有存下來', scores:{ A3:3 } },
+      { key:'D', text:'有一個 prompt 庫，直接調用或微調', scores:{ A4:3 } },
     ]
   },
   {
-    text: '你的朋友向你描述他們的焦慮，你最常給的建議是什麼？',
+    text: '你想用 AI 幫你做一件複雜的事（例如：寫一份提案），你會怎麼開始？',
     options: [
-      { key:'A', text:'「先不要想這件事，去做點讓自己開心的事」', scores:{ X1:3 } },
-      { key:'B', text:'「我們來想想有什麼解決方案」——開始分析', scores:{ X2:3 } },
-      { key:'C', text:'「你有沒有考慮過這個、那個、還有那個...」——很多角度', scores:{ X3:3 } },
-      { key:'D', text:'「這個焦慮告訴你什麼？」——先問，不急著解決', scores:{ X4:3 } }
+      { key:'A', text:'腦子有想法但不知道怎麼讓 AI 理解', scores:{ A1:3 } },
+      { key:'B', text:'直接問「幫我寫一份提案」，等它生成', scores:{ A2:3 } },
+      { key:'C', text:'先試一次，如果不對再想辦法', scores:{ A3:3 } },
+      { key:'D', text:'先拆解任務，用多個 prompt 分段完成', scores:{ A4:3 } },
     ]
   },
   {
-    text: '你做了一個決定之後感到後悔，你最常有的反應是什麼？',
+    text: '你怎麼看待 AI 給的輸出結果？',
     options: [
-      { key:'A', text:'試著轉移注意力，不去回想那個決定', scores:{ X1:3 } },
-      { key:'B', text:'反覆分析「如果當初選另一個方向」的各種可能', scores:{ X3:3 } },
-      { key:'C', text:'研究怎麼彌補或減少損失，積極找對策', scores:{ X2:3 } },
-      { key:'D', text:'承認後悔的感受，問自己這個決定教了我什麼', scores:{ X4:3 } }
+      { key:'A', text:'覺得好像哪裡不對但說不清楚問題在哪', scores:{ A1:3 } },
+      { key:'B', text:'基本上覺得夠用了', scores:{ A2:3 } },
+      { key:'C', text:'有時候好有時候不好，不知道規律是什麼', scores:{ A3:3 } },
+      { key:'D', text:'知道它的邏輯和局限，知道什麼時候需要人工介入', scores:{ A4:3 } },
     ]
   },
   {
-    text: '你休息的時候，腦子通常是什麼狀態？',
+    text: '你在工作或副業流程裡用 AI 的比例大概是？',
     options: [
-      { key:'A', text:'安靜下來反而更焦慮，我需要持續有事情做', scores:{ X1:3 } },
-      { key:'B', text:'開始思考計畫或需要解決的問題', scores:{ X2:3 } },
-      { key:'C', text:'反覆思考過去的對話或即將發生的事', scores:{ X3:3 } },
-      { key:'D', text:'可以比較放鬆，雖然有時候還是會有想法浮現', scores:{ X4:3 } }
+      { key:'A', text:'想用但還在摸索，用得不穩定', scores:{ A1:3 } },
+      { key:'B', text:'固定幾個場景在用，但沒有系統化', scores:{ A2:3 } },
+      { key:'C', text:'很多地方都想用，但每次都要重新建立情境', scores:{ A3:3 } },
+      { key:'D', text:'已經把 AI 嵌入多個工作流，有標準流程', scores:{ A4:3 } },
     ]
   },
   {
-    text: '你認為焦慮這個情緒，本質上是什麼？',
+    text: '關於 AI 的輸出，你覺得最難的是什麼？',
     options: [
-      { key:'A', text:'一種不舒服的感覺，應該要消除掉', scores:{ X1:3 } },
-      { key:'B', text:'一種訊號，告訴我有問題需要解決', scores:{ X2:3 } },
-      { key:'C', text:'我的腦子在保護我，雖然有時候幫倒忙', scores:{ X3:3 } },
-      { key:'D', text:'一種資訊，在告訴我某件事對我很重要', scores:{ X4:3 } }
+      { key:'A', text:'說不清楚我要什麼，導致 AI 的方向不對', scores:{ A1:3 } },
+      { key:'B', text:'輸出太 generic，感覺跟我的情況有點距離', scores:{ A2:3 } },
+      { key:'C', text:'每次要解釋背景太麻煩，沒有效率', scores:{ A3:3 } },
+      { key:'D', text:'單個任務做得很好，但複雜任務的整合還不夠順', scores:{ A4:3 } },
     ]
   },
   {
-    text: '當你的焦慮無法通過「做什麼」來解決的時候，你通常怎麼做？',
+    text: '你覺得 AI 對你目前的工作或副業，最大的潛力是什麼還沒被你解鎖？',
     options: [
-      { key:'A', text:'繼續分心，讓時間過去', scores:{ X1:3 } },
-      { key:'B', text:'更努力地尋找可以做的事', scores:{ X2:3 } },
-      { key:'C', text:'繼續思考，直到自己精疲力竭', scores:{ X3:3 } },
-      { key:'D', text:'試著接受「我現在沒辦法解決這件事」，然後放它在那裡', scores:{ X4:3 } }
+      { key:'A', text:'能幫我把腦子裡的想法整理成具體可執行的東西', scores:{ A1:3 } },
+      { key:'B', text:'能真的幫我做判斷，不只是產出內容', scores:{ A2:3 } },
+      { key:'C', text:'能記住我的背景，不用每次重新說', scores:{ A3:3 } },
+      { key:'D', text:'能多個 AI 協作，自動完成整個工作流', scores:{ A4:3 } },
     ]
   }
 ];
 
 const RESULTS = {
-  X1: {
-    type:     '迴避逃逸型',
-    subtitle: 'The Escape Artist',
-    desc:     '你應對焦慮的主要方式是「不去感覺它」——轉移注意力、讓自己保持忙碌、或找到某種讓你暫時不用面對它的活動。這個策略有效，但只在短期內有效。',
-    analysis: '迴避逃逸型是最常見的焦慮應對方式之一，也是最讓人筋疲力竭的一種。\n\n它的邏輯是：如果我不去感覺它，它就不存在。問題是焦慮不是一個需要被消除的訊號——它是一個需要被聽見的訊號。當你持續迴避它，它只好用更大的聲音回來。\n\n另一個代價是：你為了不感覺焦慮，需要持續尋找分心的事物。這讓你的生活變成一場不斷逃跑的遊戲——從焦慮逃到刷手機，從刷手機逃到工作，從工作逃到另一個分心。\n\n「與焦慮和解」的第一步不是消除它，而是停下來，讓自己感覺到它一分鐘，問一句話：「你在告訴我什麼？」',
-    morview:  '我理解這個模式——它給你的是即時的緩解，而那種緩解是真實的。但你付出的代價是能量，那些用來逃跑的能量，本來可以用在別的地方。\n\n一個低門檻的開始：下次感到焦慮的時候，不要立刻找事情做。給自己 60 秒，只是坐著感覺那個焦慮在身體的哪裡——是胸口緊？肩膀僵？胃不舒服？只是感覺，不需要解決。這一分鐘可能改變你和焦慮的關係。',
-    cta:      '留下 Email，我寄給你針對「迴避逃逸型」的 60 秒焦慮接觸練習。'
+  A1: {
+    type:     '問題模糊型',
+    subtitle: 'The Vague Prompter',
+    desc:     '你的 AI 瓶頸在輸入端——你知道自己想要什麼，但在把它轉換成 AI 能理解的指令時卡住了。AI 的輸出品質，90% 取決於你的問題品質。',
+    analysis: '問題模糊型是 AI 使用者裡最常見的卡關。症狀是：給了 AI 一個問題，輸出感覺「差了一點」但說不清楚差在哪裡。\n\n根本原因是「問題定義力」還沒有發展起來。問題定義力不是說清楚「我要什麼」，而是說清楚「我現在在哪裡、我想去哪裡、中間的障礙是什麼、以及我希望輸出的格式是什麼」。\n\n《AI-First 自我升級革命》說，問題定義力是 AI 時代最被低估的核心能力。因為當所有人都能用 AI 快速產出，真正拉開差距的，是誰能更快把模糊的感覺轉換成清晰的指令。\n\n你不需要先學 prompt engineering。你需要練習的是：在開始打字之前，先花 30 秒問自己「我想要 AI 幫我達成的具體結果是什麼？輸出應該長什麼樣子？」',
+    morview:  'INTJ 的視角：你的卡關其實是思考的卡關，不是 AI 的問題。AI 只是把你的思考放大了——你的思考清晰，它就清晰；模糊，它就模糊。\n\n最快的改善方法：用「背景→目標→障礙→輸出要求」四段式框架寫 prompt。每次 AI 輸出不好，不要只說「重寫」——說「這個地方我不滿意是因為 [具體原因]，請重新調整 [具體部分]」。',
+    cta:      '留下 Email，我寄給你 AI-First 書裡的「問題定義力練習模板」。'
   },
-  X2: {
-    type:     '過度控制型',
-    subtitle: 'The Control Seeker',
-    desc:     '你用「解決問題」來應對焦慮——有焦慮就找方案，有不確定就研究清楚，有失控感就建立計畫。這個策略讓你很有生產力，但它有一個你可能還沒意識到的代價。',
-    analysis: '過度控制型的核心信念是：「如果我把所有事情都想清楚了，焦慮就會消失。」這個信念有時候對，但在更多情況下，它讓你陷入一個無盡的分析迴圈。\n\n因為焦慮的根源常常不是「問題沒解決」，而是「不確定性本身」。而不確定性是生活的基本結構，不是一個可以被研究清楚、計畫掉的問題。\n\n過度控制型在外部表現得很強——有條理、有執行力、能應對。但內部的焦慮往往更深，因為每一個被解決的問題，後面還有下一個問題。你的安全感建立在「我能控制」這件事上，而這個基礎是脆弱的。',
-    morview:  '你的問題解決能力是真實的優勢。但焦慮不是一個問題——它是一個感受。感受不是通過解決來處理的，而是通過被感覺、被接受來消化的。\n\n嘗試一個區分：這個焦慮有沒有「可以採取行動」的部分？如果有，採取行動。如果沒有（比如等待一個結果），那就是你需要練習和不確定性共存的時候。',
-    cta:      '留下 Email，我寄給你針對「過度控制型」的「可控 vs 不可控」區分練習。'
+  A2: {
+    type:     '輸出依賴型',
+    subtitle: 'The Output Consumer',
+    desc:     '你已經在用 AI，但你主要在「消費」輸出，而不是在「管理」輸出。AI 給什麼你就用什麼——這讓你的 AI 使用效率停在第一層。',
+    analysis: '輸出依賴型的特徵是：AI 給的東西大部分都覺得「可以用」，但隱隱覺得它給的東西有點 generic、跟自己情況的契合度不夠高，但也不知道怎麼改善。\n\n問題的核心是：你在用「工具使用模式」而不是「管理模式」。\n\n《AI-First》說，最有效的 AI 使用方式是把 AI 當成你管理的屬下，而不是你使用的工具。屬下需要被質疑邏輯、被要求多個方案、被要求預演風險。工具你只需要按下去。\n\n升級的關鍵是：每次 AI 給出輸出後，主動問「你的邏輯是什麼？」「有沒有你沒考慮到的角度？」「如果你是我，你會怎麼做？」這三個問題。',
+    morview:  '你的卡關是批判性思考的習慣。AI 不會主動告訴你它的輸出哪裡有問題——這是你的工作。建立一個習慣：在用任何 AI 輸出之前，問自己「我有沒有驗證這個是對的？」',
+    cta:      '留下 Email，我寄給你 AI-First 書裡的「AI輸出品質審核清單」。'
   },
-  X3: {
-    type:     '反芻思考型',
-    subtitle: 'The Ruminator',
-    desc:     '你的焦慮主要住在你的腦子裡——你反覆思考同一件事，從不同角度分析，試圖找到一個讓你能放下來的確定答案。那個答案幾乎從來不會來，因為它不是思考能給你的東西。',
-    analysis: '反芻思考是焦慮最常見的認知模式之一。它的感覺像是「在認真思考問題」，但它和真正的問題解決有一個關鍵差異：真正的問題解決在思考之後，有新的認識或行動；反芻是在同一個地方原地踏步，越想越焦慮。\n\n反芻的隱性成本非常高——它消耗工作記憶和情緒資源，讓你很難做別的事。它也常常讓你的焦慮螺旋上升，因為越想越多角度，越多角度就越多需要擔心的地方。\n\n反芻型的焦慮特別難處理，因為「繼續思考」感覺就像是在「認真對待這件事」。停止思考感覺像是在逃避。但有時候，停下來才是對那件事最誠實的回應。',
-    morview:  '你的思維能力很強——但它現在在吃你自己。\n\n一個有效的打斷方式：當你發現自己在反芻，問自己「這個想法對我有用嗎？」——不是「這個想法對不對」，是「它有用嗎？」如果答案是沒有，你有許可讓它先放在那裡，而不是繼續追它。',
-    cta:      '留下 Email，我寄給你針對「反芻思考型」的打斷迴圈和接地練習。'
+  A3: {
+    type:     '流程缺失型',
+    subtitle: 'The Reinventor',
+    desc:     '你在很多場景都在用 AI，但每次都要從頭開始——重新解釋背景、重新建立情境、重新找上次用過的 prompt。這讓你的 AI 使用效率停在「臨時應用」層。',
+    analysis: '流程缺失型的症狀是：知道 AI 可以幫很多忙，但每次要用的時候都有點摩擦力——不是不會用，是每次都在重新開始。\n\n這是最可惜的卡關，因為你已經跨過了認知門檻（知道 AI 有用），但還沒建立可複製的系統。\n\n《AI-First》強調的核心，不只是用好一個 prompt，而是建立一個 AI 工作流：把你常做的事打包成模板、把你的背景資料整理成「AI 能直接讀懂的 brief」、把輸出標準寫成評估清單。\n\n你需要做的，是把你已經驗證有效的 AI 使用方式「系統化」——存起來、標準化、可以複製。',
+    morview:  '你差的不是能力，是基礎設施。花兩個小時建立你的第一個「AI 工作流文件」——你的背景 brief、你常用的 prompt 模板、你的輸出評估清單。這兩小時會讓你接下來每次使用 AI 省掉 5-10 分鐘。',
+    cta:      '留下 Email，我寄給你 AI-First 書裡的「AI工作流建立模板」。'
   },
-  X4: {
-    type:     '接觸轉化型',
-    subtitle: 'The Transformer',
-    desc:     '你已經發展出一種相對成熟的焦慮關係——你不迴避它，也不試圖強行消除它，而是把它當作一個訊號來聆聽。這個位置不是沒有焦慮，而是焦慮對你來說是有意義的資訊。',
-    analysis: '接觸轉化型代表一種對焦慮比較整合的關係。你理解焦慮是有功能的——它在告訴你某件事對你很重要，或者某種需求沒有被照顧到。\n\n但這個類型也有它的挑戰：有時候「理解焦慮」可以成為另一種回避——你在「分析」焦慮，而不是真正地感受它。智識化是一種精緻的迴避。\n\n另一個值得注意的是：接觸轉化需要容量——有時候焦慮的強度超過你當下能接觸的程度，這時候需要先有外部支持（關係、身體安撫），再回來和它接觸，而不是強迫自己在任何狀態下都要「處理」它。',
-    morview:  '你的方向是對的。繼續往前的工作是：當焦慮很強的時候，你能不能先讓身體落地（呼吸、移動、接觸、感受當下環境），再回來和焦慮對話，而不是直接進入「這告訴我什麼」的分析？\n\n身體先，理解後。這是接觸轉化的完整路徑。',
-    cta:      '留下 Email，我寄給你針對「接觸轉化型」的進階整合練習。'
+  A4: {
+    type:     '策略整合型',
+    subtitle: 'The AI Strategist',
+    desc:     '你已經在系統性地使用 AI，有工作流、有模板、有評估方式。你的下一步是升級到 AI-First 思維——不只是「用 AI 完成任務」，而是「用 AI 重新設計工作架構」。',
+    analysis: '策略整合型代表一個相對進階的 AI 使用者。你已經過了「嘗試工具」和「隨機應用」的階段，進入「系統化執行」層。\n\n但這個階段有一個新的卡關：你在優化現有工作流，而不是質疑現有工作流本身。\n\nAI-First 思維的核心，不是「如何用 AI 更快完成現在的事」——而是「如果有 AI，這件事本來的做法對不對？」\n\n舉例：用 AI 更快寫週報是流程整合。AI-First 是問「我們真的需要週報嗎？如果有 AI，溝通方式應該是什麼？」\n\n《AI-First》說，真正的 AI-First 思維者，是在用 AI 重新思考整個工作架構，而不只是加速每個步驟。',
+    morview:  '你的下一步是：找到你工作或副業裡，一個「如果有 AI，根本不需要這樣做」的環節，然後重新設計它。不是優化，是重設計。',
+    cta:      '留下 Email，我寄給你 AI-First 書裡的「工作架構重設計框架」。'
   }
 };
 </script>
@@ -455,14 +456,14 @@ function openLine() { window.open(CFG.lineUrl, '_blank'); }
 function openIG()   { window.open(CFG.igUrl,   '_blank'); }
 
 const KIT_MAPPING = {
-  'X1': { tag_id: 20674024, seq_id: 2808454 },
-  'X2': { tag_id: 20674025, seq_id: 2808456 },
-  'X3': { tag_id: 20674026, seq_id: 2808457 },
-  'X4': { tag_id: 20674027, seq_id: 2808458 },
+  'A1': { tag_id: 20715648, seq_id: 2809707 },
+  'A2': { tag_id: 20715649, seq_id: 2809708 },
+  'A3': { tag_id: 20715650, seq_id: 2809709 },
+  'A4': { tag_id: 20715651, seq_id: 2809710 },
 };
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
-const pctMap = { X1: 12.5, X2: 37.5, X3: 62.5, X4: 87.5 };
+const pctMap = { A1: 12.5, A2: 37.5, A3: 62.5, A4: 87.5 };
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -541,7 +542,7 @@ function buildShareHTML(r) {
   return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 44px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · AI升級診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 20px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
@@ -553,7 +554,7 @@ function buildFullPDFHTML(r) {
   let h = '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 48px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · AI升級診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 24px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
@@ -610,7 +611,7 @@ async function shareResult() {
       const fname = 'mori-result-' + currentResultKey.toLowerCase() + '.png';
       const file = new File([blob], fname, { type: 'image/png' });
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Mori 測驗結果' });
+        await navigator.share({ files: [file], title: 'Mori AI升級診斷結果' });
       } else {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);

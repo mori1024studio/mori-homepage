@@ -688,7 +688,6 @@ async function downloadPDF() {
 
 /* ── MailerLite 串接設定 ── */
 /* 本機預覽無效，需在 HTTPS 真實環境才能運作 */
-const KIT_API_KEY = 'kit_93b22fb0f80af4cea111f76cc8f011b7';
 const KIT_MAPPING = {
   'S1': { tag_id: 20663609, seq_id: 2807596 },
   'S2': { tag_id: 20663610, seq_id: 2807597 },
@@ -848,23 +847,23 @@ async function submitEmail() {
   btn.textContent = '送出中…';
   try {
     const { tag_id: _tid, seq_id: _sid } = KIT_MAPPING[currentResultKey] || {};
-    const kitSubRes = await fetch('https://api.kit.com/v4/subscribers', {
+    const kitSubRes = await fetch('/api/kit/v4/subscribers', {
       method: 'POST',
-      headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email_address: email }),
     });
     const kitSubId = kitSubRes.ok ? (await kitSubRes.json()).subscriber?.id : null;
     if (kitSubId && _tid) {
-      await fetch(`https://api.kit.com/v4/tags/${_tid}/subscribers`, {
+      await fetch(`/api/kit/v4/tags/${_tid}/subscribers`, {
         method: 'POST',
-        headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: kitSubId }),
       });
     }
     if (kitSubId && _sid) {
-      await fetch(`https://api.kit.com/v4/sequences/${_sid}/subscribers`, {
+      await fetch(`/api/kit/v4/sequences/${_sid}/subscribers`, {
         method: 'POST',
-        headers: { 'X-Kit-Api-Key': KIT_API_KEY, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: kitSubId }),
       });
     }

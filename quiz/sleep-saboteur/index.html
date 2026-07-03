@@ -1,15 +1,16 @@
 <!DOCTYPE html>
+<!-- v1.0 | 2026-06-29 | 為什麼要睡覺 · T4 光譜 · 睡眠破壞者4型 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MORI — 你的焦慮模式是哪種？</title>
+<title>MORI — 你的睡眠是被什麼破壞的？</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
 <link rel="stylesheet" href="/shared/style.css">
 <style>
-/* v1.0 | 2026-06-27 | 與焦慮和解測驗 · T4 光譜 */
+/* v1.0 | 2026-06-29 | 為什麼要睡覺 · T4 光譜 */
 
 #site { min-height: 100vh; display: flex; flex-direction: column; }
 .quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
@@ -157,11 +158,11 @@
       <div class="ornament" style="margin-bottom:36px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="start-eyebrow">Mori Studio · 情緒探索</p>
+      <p class="start-eyebrow">Mori Studio · 睡眠科學</p>
       <h1 class="start-title" id="quiz-title"></h1>
       <p class="start-desc" id="quiz-desc"></p>
       <p class="start-meta" id="quiz-meta"></p>
-      <button class="btn-start" onclick="startQuiz()">開始探索<span class="btn-start-arrow"></span></button>
+      <button class="btn-start" onclick="startQuiz()">開始診斷<span class="btn-start-arrow"></span></button>
     </div>
 
     <div class="screen" id="screen-quiz">
@@ -174,7 +175,7 @@
           <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
         </div>
       </div>
-      <p class="question-tag" id="q-tag">焦慮模式探索</p>
+      <p class="question-tag" id="q-tag">睡眠破壞者診斷</p>
       <p class="question-text" id="q-text"></p>
       <div class="options" id="options-wrap"></div>
       <div class="quiz-nav">
@@ -190,30 +191,30 @@
       </div>
       <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的內容</div>
       <div class="survey-group">
-        <p class="survey-q">你的焦慮通常最容易在什麼情況下出現？</p>
+        <p class="survey-q">你的睡眠問題最常影響你哪個面向？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(1,'A',this)">面對不確定的未來（工作、關係、財務）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'B',this)">人際關係中（衝突、被評判、被拒絕）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'C',this)">當我需要做決定或承擔責任的時候</button>
-          <button class="survey-opt" onclick="surveyPick(1,'D',this)">安靜下來的時候，腦子開始轉個不停</button>
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">白天精神和工作效率</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">情緒穩定性和人際關係</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">長期健康和身體恢復</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">學習效率和記憶力</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你希望這個測驗最直接幫到你的是什麼？</p>
+        <p class="survey-q">你希望這個結果最直接幫到你的是什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(2,'A',this)">了解我的焦慮模式從哪裡來</button>
-          <button class="survey-opt" onclick="surveyPick(2,'B',this)">找到立即可用的「當下緩解」方法</button>
-          <button class="survey-opt" onclick="surveyPick(2,'C',this)">知道怎麼建立長期更穩定的情緒底盤</button>
-          <button class="survey-opt" onclick="surveyPick(2,'D',this)">了解怎麼讓焦慮成為有用的訊號而不是障礙</button>
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">找到立即可以改變的一個行為</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">理解我的睡眠問題背後的科學原因</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">建立一個長期可持續的睡眠系統</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">拿到可以直接用的 AI Prompt 和工具</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你之前試過哪些方式處理焦慮？</p>
+        <p class="survey-q">你之前試過哪些改善睡眠的方法？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(3,'A',this)">告訴自己「不要想太多」，試著分心</button>
-          <button class="survey-opt" onclick="surveyPick(3,'B',this)">把問題想得很徹底，直到找到確定的答案</button>
-          <button class="survey-opt" onclick="surveyPick(3,'C',this)">冥想、呼吸、或正念練習</button>
-          <button class="survey-opt" onclick="surveyPick(3,'D',this)">跟人說話、寫日記、或尋求幫助</button>
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">下載睡眠 app 或買追蹤設備，但沒有堅持</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">試過早睡，但就是睡不著或睡不好</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">靠咖啡撐白天，靠疲勞來「強迫」自己睡著</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">幾乎沒試過，一直覺得這是無法改變的體質問題</button>
         </div>
       </div>
       <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看完整分析 →</button>
@@ -224,16 +225,16 @@
       <div class="ornament" style="margin-bottom:32px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="result-eyebrow">你的焦慮模式</p>
+      <p class="result-eyebrow">你的睡眠破壞者</p>
       <h2 class="result-type" id="r-type"></h2>
       <p class="result-subtitle" id="r-subtitle"></p>
 
       <div class="spectrum-wrap">
         <div class="spectrum-labels-top">
-          <div class="spectrum-label-item">逃避迴避</div>
-          <div class="spectrum-label-item">強迫控制</div>
-          <div class="spectrum-label-item">反芻思考</div>
-          <div class="spectrum-label-item">接觸轉化</div>
+          <div class="spectrum-label-item">行為習慣</div>
+          <div class="spectrum-label-item"></div>
+          <div class="spectrum-label-item"></div>
+          <div class="spectrum-label-item">生理依賴</div>
         </div>
         <div class="spectrum-track">
           <div class="spectrum-marker" id="spectrum-marker"></div>
@@ -250,10 +251,10 @@
           <div class="spectrum-tick"></div>
         </div>
         <div class="spectrum-zone-labels">
-          <div class="spectrum-zone-label" data-zone="X1">迴避逃逸</div>
-          <div class="spectrum-zone-label" data-zone="X2">過度控制</div>
-          <div class="spectrum-zone-label" data-zone="X3">反芻思考</div>
-          <div class="spectrum-zone-label" data-zone="X4">接觸轉化</div>
+          <div class="spectrum-zone-label" data-zone="L1">螢幕刺激</div>
+          <div class="spectrum-zone-label" data-zone="L2">思緒失速</div>
+          <div class="spectrum-zone-label" data-zone="L3">節律紊亂</div>
+          <div class="spectrum-zone-label" data-zone="L4">物質誤用</div>
         </div>
       </div>
 
@@ -297,13 +298,13 @@
       <div class="related">
         <p class="related-label">延伸探索</p>
         <div class="related-links">
-          <a href="/quiz/not-enough/" class="related-link">
-            <span class="related-link-title">你的「不夠好」從哪裡來？</span>
-            <span class="related-link-tag">自我價值 →</span>
+          <a href="/quiz/anxiety-resolve/" class="related-link">
+            <span class="related-link-title">你的焦慮模式是哪種？</span>
+            <span class="related-link-tag">情緒科學 →</span>
           </a>
-          <a href="/quiz/beyond-origins/" class="related-link">
-            <span class="related-link-title">你的原生家庭模式還在控制你嗎？</span>
-            <span class="related-link-tag">原生家庭 →</span>
+          <a href="/quiz/inner-state/" class="related-link">
+            <span class="related-link-title">你的內在狀態是哪一型？</span>
+            <span class="related-link-tag">自我認識 →</span>
           </a>
         </div>
       </div>
@@ -320,119 +321,119 @@
 
 <script>
 const QUIZ_INFO = {
-  title:       '你的焦慮模式是哪種？',
-  desc:        '焦慮不是你的敵人——它是一個訊號，只是你可能還不知道它在告訴你什麼。這個測驗幫你找出你和焦慮的相處模式，以及怎麼開始讓它成為你的資源，而不是障礙。',
-  meta:        '共 8 題 · 約 3 分鐘',
-  questionTag: '焦慮模式探索'
+  title:       '你的睡眠是被什麼破壞的？',
+  desc:        '大多數人以為自己睡得少是因為「睡眠體質不好」或「壓力太大」。但《為什麼要睡覺？》說：幾乎每一個睡眠問題，背後都有一個具體的行為原因。這個測驗找出你的睡眠最主要的破壞者。',
+  meta:        '8題 · 約3分鐘 · 基於睡眠科學家 Matthew Walker 的研究',
+  questionTag: '睡眠破壞者診斷',
 };
 
 const QUESTIONS = [
   {
-    text: '你感到焦慮的時候，第一個本能反應是什麼？',
+    text: '你通常睡前 1 小時在做什麼？',
     options: [
-      { key:'A', text:'找事情讓自己分心：刷手機、看劇、吃東西', scores:{ X1:3 } },
-      { key:'B', text:'開始列清單、研究解決方案，或想辦法掌控狀況', scores:{ X2:3 } },
-      { key:'C', text:'開始反覆想同一個問題，試圖找到確定的答案', scores:{ X3:3 } },
-      { key:'D', text:'先讓自己感覺到那個焦慮，問自己它在提醒我什麼', scores:{ X4:3 } }
+      { key:'A', text:'刷手機、看影片、或滑社群媒體', scores:{ L1:3 } },
+      { key:'B', text:'躺在床上，但腦子還在想今天的事或明天的計畫', scores:{ L2:3 } },
+      { key:'C', text:'可能還在工作或處理事情，或者不固定', scores:{ L3:3 } },
+      { key:'D', text:'喝一杯（酒或含咖啡因飲料），讓自己放鬆或清醒', scores:{ L4:3 } },
     ]
   },
   {
-    text: '你對於「不確定性」最核心的感受是什麼？',
+    text: '你躺下後，通常要多久才能入睡？',
     options: [
-      { key:'A', text:'非常不舒服，我寧願知道不好的結果，也不想懸在那裡', scores:{ X2:3 } },
-      { key:'B', text:'讓我焦慮，我會試著把不確定性研究清楚', scores:{ X3:3 } },
-      { key:'C', text:'讓我想逃開，有什麼能讓我不去想這件事就好', scores:{ X1:3 } },
-      { key:'D', text:'不舒服，但我知道不確定性是正常的，有時候只是需要等待', scores:{ X4:3 } }
+      { key:'A', text:'還行，但有時候感覺睡前太清醒了', scores:{ L1:3 } },
+      { key:'B', text:'常常要超過30分鐘，腦子停不下來', scores:{ L2:3 } },
+      { key:'C', text:'不一定，有時很快有時很久，跟當天狀態有關', scores:{ L3:3 } },
+      { key:'D', text:'要喝點什麼才比較容易睡著', scores:{ L4:3 } },
     ]
   },
   {
-    text: '你最近一次感到強烈焦慮，你的腦子在做什麼？',
+    text: '你平常的睡眠時間（上床、起床）大概是？',
     options: [
-      { key:'A', text:'反覆重播同一個情境或對話，想搞清楚哪裡出錯了', scores:{ X3:3 } },
-      { key:'B', text:'不斷想「如果...怎麼辦」，最壞情況的清單越列越長', scores:{ X2:3 } },
-      { key:'C', text:'試圖不去想那件事，讓自己做別的事', scores:{ X1:3 } },
-      { key:'D', text:'試著理解這個焦慮在對什麼情況做出反應', scores:{ X4:3 } }
+      { key:'A', text:'時間差不多，但睡前總是要再滑一下手機才放', scores:{ L1:3 } },
+      { key:'B', text:'時間差不多，但躺下後腦子很難停', scores:{ L2:3 } },
+      { key:'C', text:'不太固定，週末常常晚睡晚起，週間又要硬爬起來', scores:{ L3:3 } },
+      { key:'D', text:'睡前習慣喝一杯，或者下午喝很多咖啡', scores:{ L4:3 } },
     ]
   },
   {
-    text: '你的朋友向你描述他們的焦慮，你最常給的建議是什麼？',
+    text: '你早上醒來的感覺通常是？',
     options: [
-      { key:'A', text:'「先不要想這件事，去做點讓自己開心的事」', scores:{ X1:3 } },
-      { key:'B', text:'「我們來想想有什麼解決方案」——開始分析', scores:{ X2:3 } },
-      { key:'C', text:'「你有沒有考慮過這個、那個、還有那個...」——很多角度', scores:{ X3:3 } },
-      { key:'D', text:'「這個焦慮告訴你什麼？」——先問，不急著解決', scores:{ X4:3 } }
+      { key:'A', text:'有點累，但比起昨晚好一點點（可能是螢幕讓我太晚才真正入眠）', scores:{ L1:3 } },
+      { key:'B', text:'有時候起來感覺比睡前更累，睡眠好像沒有修復', scores:{ L2:3 } },
+      { key:'C', text:'看前一天幾點睡，規律很難建立', scores:{ L3:3 } },
+      { key:'D', text:'前幾個小時睡得很沉，但後半段睡眠很淺或容易醒', scores:{ L4:3 } },
     ]
   },
   {
-    text: '你做了一個決定之後感到後悔，你最常有的反應是什麼？',
+    text: '你最常用什麼方式「放鬆」，準備睡覺？',
     options: [
-      { key:'A', text:'試著轉移注意力，不去回想那個決定', scores:{ X1:3 } },
-      { key:'B', text:'反覆分析「如果當初選另一個方向」的各種可能', scores:{ X3:3 } },
-      { key:'C', text:'研究怎麼彌補或減少損失，積極找對策', scores:{ X2:3 } },
-      { key:'D', text:'承認後悔的感受，問自己這個決定教了我什麼', scores:{ X4:3 } }
+      { key:'A', text:'看影片或滑手機，讓腦子暫時不想別的事', scores:{ L1:3 } },
+      { key:'B', text:'沒有特別的方式，就是躺著試著睡', scores:{ L2:3 } },
+      { key:'C', text:'看情況，有時候工作到很晚才躺，有時候提早睡', scores:{ L3:3 } },
+      { key:'D', text:'喝酒或喝點什麼幫助放鬆', scores:{ L4:3 } },
     ]
   },
   {
-    text: '你休息的時候，腦子通常是什麼狀態？',
+    text: '你通常幾點喝最後一杯含咖啡因的飲料（咖啡/茶/能量飲）？',
     options: [
-      { key:'A', text:'安靜下來反而更焦慮，我需要持續有事情做', scores:{ X1:3 } },
-      { key:'B', text:'開始思考計畫或需要解決的問題', scores:{ X2:3 } },
-      { key:'C', text:'反覆思考過去的對話或即將發生的事', scores:{ X3:3 } },
-      { key:'D', text:'可以比較放鬆，雖然有時候還是會有想法浮現', scores:{ X4:3 } }
+      { key:'A', text:'下午3點前，之後就不喝了', scores:{ L1:3 } },
+      { key:'B', text:'下午也會喝，但不確定影響有多大', scores:{ L2:3 } },
+      { key:'C', text:'不一定，有時候傍晚還在喝', scores:{ L3:3 } },
+      { key:'D', text:'常常在傍晚或晚上喝，或者用酒精來「抵消」咖啡因', scores:{ L4:3 } },
     ]
   },
   {
-    text: '你認為焦慮這個情緒，本質上是什麼？',
+    text: '當你某晚睡很少（不到6小時），隔天你通常怎麼做？',
     options: [
-      { key:'A', text:'一種不舒服的感覺，應該要消除掉', scores:{ X1:3 } },
-      { key:'B', text:'一種訊號，告訴我有問題需要解決', scores:{ X2:3 } },
-      { key:'C', text:'我的腦子在保護我，雖然有時候幫倒忙', scores:{ X3:3 } },
-      { key:'D', text:'一種資訊，在告訴我某件事對我很重要', scores:{ X4:3 } }
+      { key:'A', text:'白天感覺還行，繼續刷手機打發時間', scores:{ L1:3 } },
+      { key:'B', text:'腦子很難集中，情緒也比較差', scores:{ L2:3 } },
+      { key:'C', text:'靠咖啡撐過去，晚上再早點睡（通常沒成功）', scores:{ L3:3 } },
+      { key:'D', text:'喝更多咖啡，或者晚上用酒精讓自己快點睡', scores:{ L4:3 } },
     ]
   },
   {
-    text: '當你的焦慮無法通過「做什麼」來解決的時候，你通常怎麼做？',
+    text: '你覺得自己睡眠最大的問題是什麼？',
     options: [
-      { key:'A', text:'繼續分心，讓時間過去', scores:{ X1:3 } },
-      { key:'B', text:'更努力地尋找可以做的事', scores:{ X2:3 } },
-      { key:'C', text:'繼續思考，直到自己精疲力竭', scores:{ X3:3 } },
-      { key:'D', text:'試著接受「我現在沒辦法解決這件事」，然後放它在那裡', scores:{ X4:3 } }
+      { key:'A', text:'睡前太清醒，關燈後眼睛還是很清明', scores:{ L1:3 } },
+      { key:'B', text:'躺下就開始想事情，腦子自動開始工作', scores:{ L2:3 } },
+      { key:'C', text:'生活節奏太亂，沒有辦法建立固定睡眠時間', scores:{ L3:3 } },
+      { key:'D', text:'靠咖啡因或酒精調節，戒不掉這個習慣', scores:{ L4:3 } },
     ]
   }
 ];
 
 const RESULTS = {
-  X1: {
-    type:     '迴避逃逸型',
-    subtitle: 'The Escape Artist',
-    desc:     '你應對焦慮的主要方式是「不去感覺它」——轉移注意力、讓自己保持忙碌、或找到某種讓你暫時不用面對它的活動。這個策略有效，但只在短期內有效。',
-    analysis: '迴避逃逸型是最常見的焦慮應對方式之一，也是最讓人筋疲力竭的一種。\n\n它的邏輯是：如果我不去感覺它，它就不存在。問題是焦慮不是一個需要被消除的訊號——它是一個需要被聽見的訊號。當你持續迴避它，它只好用更大的聲音回來。\n\n另一個代價是：你為了不感覺焦慮，需要持續尋找分心的事物。這讓你的生活變成一場不斷逃跑的遊戲——從焦慮逃到刷手機，從刷手機逃到工作，從工作逃到另一個分心。\n\n「與焦慮和解」的第一步不是消除它，而是停下來，讓自己感覺到它一分鐘，問一句話：「你在告訴我什麼？」',
-    morview:  '我理解這個模式——它給你的是即時的緩解，而那種緩解是真實的。但你付出的代價是能量，那些用來逃跑的能量，本來可以用在別的地方。\n\n一個低門檻的開始：下次感到焦慮的時候，不要立刻找事情做。給自己 60 秒，只是坐著感覺那個焦慮在身體的哪裡——是胸口緊？肩膀僵？胃不舒服？只是感覺，不需要解決。這一分鐘可能改變你和焦慮的關係。',
-    cta:      '留下 Email，我寄給你針對「迴避逃逸型」的 60 秒焦慮接觸練習。'
+  L1: {
+    type:     '螢幕刺激型',
+    subtitle: 'The Screen Addict',
+    desc:     '你的睡眠最主要的破壞者是螢幕——睡前的藍光刺激讓你的大腦以為現在是白天，褪黑激素（melatonin）分泌被抑制，讓你的生理時鐘推遲了 2-3 小時。',
+    analysis: '螢幕發出的藍光和滑社群媒體的刺激，是目前全球最普遍的睡眠破壞因素。\n\n《為什麼要睡覺？》說，短短 30 分鐘的藍光暴露，就足以讓你的褪黑激素分泌延遲，讓你的身體以為現在是白天。問題不只是「睡晚了」，而是你的深層睡眠比例下降——即使你最終睡著了，睡眠品質也受損。\n\n更難的是：手機不只是藍光，它是設計來讓你上癮的系統。每一個通知、每一個讚、每一個新內容，都在刺激你的多巴胺系統，讓大腦處於「警覺」狀態而不是「準備休眠」。\n\n最有效的改善：睡前 60 分鐘不看螢幕。如果你現在做不到 60 分鐘，從 20 分鐘開始。用書、播客或只是關燈靜躺來替代。',
+    morview:  '你需要的不是「意志力」，是一個物理上讓手機消失的系統。\n\n最簡單的開始：買一個傳統鬧鐘，讓你的手機睡前充電在臥室以外。這一個改變，比任何 app 或設定都有效——因為你把問題的根本（手機在臥室裡）解決掉了。',
+    cta:      '留下 Email，我寄給你「螢幕刺激型」的 7 天睡眠修復計畫。'
   },
-  X2: {
-    type:     '過度控制型',
-    subtitle: 'The Control Seeker',
-    desc:     '你用「解決問題」來應對焦慮——有焦慮就找方案，有不確定就研究清楚，有失控感就建立計畫。這個策略讓你很有生產力，但它有一個你可能還沒意識到的代價。',
-    analysis: '過度控制型的核心信念是：「如果我把所有事情都想清楚了，焦慮就會消失。」這個信念有時候對，但在更多情況下，它讓你陷入一個無盡的分析迴圈。\n\n因為焦慮的根源常常不是「問題沒解決」，而是「不確定性本身」。而不確定性是生活的基本結構，不是一個可以被研究清楚、計畫掉的問題。\n\n過度控制型在外部表現得很強——有條理、有執行力、能應對。但內部的焦慮往往更深，因為每一個被解決的問題，後面還有下一個問題。你的安全感建立在「我能控制」這件事上，而這個基礎是脆弱的。',
-    morview:  '你的問題解決能力是真實的優勢。但焦慮不是一個問題——它是一個感受。感受不是通過解決來處理的，而是通過被感覺、被接受來消化的。\n\n嘗試一個區分：這個焦慮有沒有「可以採取行動」的部分？如果有，採取行動。如果沒有（比如等待一個結果），那就是你需要練習和不確定性共存的時候。',
-    cta:      '留下 Email，我寄給你針對「過度控制型」的「可控 vs 不可控」區分練習。'
+  L2: {
+    type:     '思緒失速型',
+    subtitle: 'The Racing Mind',
+    desc:     '你的睡眠最主要的破壞者是你的大腦自己——躺下來之後，思緒反而加速，反芻白天的事、規劃明天、或者擔憂某件還沒解決的事。',
+    analysis: '思緒失速型特別常見於高度思考、高度自我要求的人。\n\n《為什麼要睡覺？》說，睡眠和清醒是兩個截然不同的神經系統狀態。問題是，很多人的大腦在準備入睡時，還留在「解決問題」的激活狀態——腺苷積累了（讓你想睡），但皮質醇（讓你警覺）也還在高位。\n\n躺著反芻是適得其反的：它不能讓你解決問題，只能讓你的壓力系統維持激活，進一步破壞入睡。\n\n有效的介入：建立一個「思緒卸載」儀式——睡前 10 分鐘，把腦子裡的所有待辦、擔憂、未完成的事寫在紙上。不是為了解決它們，是為了告訴你的大腦「這些都記下來了，現在可以放下了」。',
+    morview:  '你的大腦非常努力地在幫你——只是在錯誤的時間。\n\n給自己一個明確的「思考截止時間」——決定在幾點之後不做任何新的思考和計畫。用儀式告訴大腦「工作結束了」：寫下明天最重要的3件事，然後合上筆記本。',
+    cta:      '留下 Email，我寄給你「思緒失速型」的睡前思緒卸載模板。'
   },
-  X3: {
-    type:     '反芻思考型',
-    subtitle: 'The Ruminator',
-    desc:     '你的焦慮主要住在你的腦子裡——你反覆思考同一件事，從不同角度分析，試圖找到一個讓你能放下來的確定答案。那個答案幾乎從來不會來，因為它不是思考能給你的東西。',
-    analysis: '反芻思考是焦慮最常見的認知模式之一。它的感覺像是「在認真思考問題」，但它和真正的問題解決有一個關鍵差異：真正的問題解決在思考之後，有新的認識或行動；反芻是在同一個地方原地踏步，越想越焦慮。\n\n反芻的隱性成本非常高——它消耗工作記憶和情緒資源，讓你很難做別的事。它也常常讓你的焦慮螺旋上升，因為越想越多角度，越多角度就越多需要擔心的地方。\n\n反芻型的焦慮特別難處理，因為「繼續思考」感覺就像是在「認真對待這件事」。停止思考感覺像是在逃避。但有時候，停下來才是對那件事最誠實的回應。',
-    morview:  '你的思維能力很強——但它現在在吃你自己。\n\n一個有效的打斷方式：當你發現自己在反芻，問自己「這個想法對我有用嗎？」——不是「這個想法對不對」，是「它有用嗎？」如果答案是沒有，你有許可讓它先放在那裡，而不是繼續追它。',
-    cta:      '留下 Email，我寄給你針對「反芻思考型」的打斷迴圈和接地練習。'
+  L3: {
+    type:     '節律紊亂型',
+    subtitle: 'The Irregular',
+    desc:     '你的睡眠最主要的破壞者是不規律的作息——週末晚睡晚起、補眠、或者每天的睡眠時間都不固定，你的晝夜節律從來沒有機會穩定下來。',
+    analysis: '節律紊亂型的核心問題，是把「睡眠」當成一個可以靈活調整的彈性變數，而不是一個需要保護的固定生理需求。\n\n《為什麼要睡覺？》說，人體的晝夜節律（circadian rhythm）需要「固定的起床時間」來每天重置。不固定的作息讓身體不知道什麼時候該分泌褪黑激素、什麼時候該升高體溫、什麼時候該降低皮質醇——讓你的整個睡眠架構都變得不穩定。\n\n「補眠」也是一個迷思。你無法真正補回失去的深層睡眠——你只是讓睡眠壓力消退了，但睡眠架構的損失無法逆轉。\n\n最重要的一個改變：固定你的起床時間，包括週末。這比固定睡覺時間更重要，因為它重置了你的晝夜節律。',
+    morview:  '你需要的不是「更早睡」，是「更固定醒」。\n\n這週，試試不管幾點睡，都設一個固定的起床時間，然後維持7天。你會在第4-5天開始感受到不同——身體開始知道什麼時候要準備睡了。',
+    cta:      '留下 Email，我寄給你「節律紊亂型」的 14 天晝夜節律重置計畫。'
   },
-  X4: {
-    type:     '接觸轉化型',
-    subtitle: 'The Transformer',
-    desc:     '你已經發展出一種相對成熟的焦慮關係——你不迴避它，也不試圖強行消除它，而是把它當作一個訊號來聆聽。這個位置不是沒有焦慮，而是焦慮對你來說是有意義的資訊。',
-    analysis: '接觸轉化型代表一種對焦慮比較整合的關係。你理解焦慮是有功能的——它在告訴你某件事對你很重要，或者某種需求沒有被照顧到。\n\n但這個類型也有它的挑戰：有時候「理解焦慮」可以成為另一種回避——你在「分析」焦慮，而不是真正地感受它。智識化是一種精緻的迴避。\n\n另一個值得注意的是：接觸轉化需要容量——有時候焦慮的強度超過你當下能接觸的程度，這時候需要先有外部支持（關係、身體安撫），再回來和它接觸，而不是強迫自己在任何狀態下都要「處理」它。',
-    morview:  '你的方向是對的。繼續往前的工作是：當焦慮很強的時候，你能不能先讓身體落地（呼吸、移動、接觸、感受當下環境），再回來和焦慮對話，而不是直接進入「這告訴我什麼」的分析？\n\n身體先，理解後。這是接觸轉化的完整路徑。',
-    cta:      '留下 Email，我寄給你針對「接觸轉化型」的進階整合練習。'
+  L4: {
+    type:     '物質誤用型',
+    subtitle: 'The Substance Reliant',
+    desc:     '你的睡眠最主要的破壞者是你用來「幫助睡眠」或「保持清醒」的物質——咖啡因的半衰期比你想的長很多，而酒精雖然讓你更快入睡，卻讓你的睡眠品質大幅下降。',
+    analysis: '物質誤用型是很多人的盲點，因為咖啡因和酒精的效果是「感覺有效」。\n\n《為什麼要睡覺？》說，咖啡因的半衰期是 5-7 小時——下午2點喝的那杯咖啡，到了晚上11點，你血液裡還有一半的咖啡因在作用。它不會讓你「睡不著」，但它會讓你的深層睡眠（NREM slow-wave sleep）減少 20%，讓修復品質大幅下降。\n\n酒精更難搞：它確實讓你更快進入睡眠，但它打斷了 REM 睡眠（負責情緒修復和記憶整合）。你以為你睡了 8 小時，但 REM 比例不足，早上起來還是感覺沒有修復。\n\n升級的關鍵：把每天最後一杯咖啡因移到下午1點前；如果喝酒，在睡前 3 小時之前完成。',
+    morview:  '這是習慣問題，不是意志力問題。你需要做的是把咖啡因截止時間變成一個不需要每天決定的規則：「下午1點之後，只喝水或不含咖啡因的東西」——規則比決定省力。',
+    cta:      '留下 Email，我寄給你「物質誤用型」的咖啡因重新規劃指南。'
   }
 };
 </script>
@@ -455,14 +456,14 @@ function openLine() { window.open(CFG.lineUrl, '_blank'); }
 function openIG()   { window.open(CFG.igUrl,   '_blank'); }
 
 const KIT_MAPPING = {
-  'X1': { tag_id: 20674024, seq_id: 2808454 },
-  'X2': { tag_id: 20674025, seq_id: 2808456 },
-  'X3': { tag_id: 20674026, seq_id: 2808457 },
-  'X4': { tag_id: 20674027, seq_id: 2808458 },
+  'L1': { tag_id: 20715798, seq_id: 2809739 },
+  'L2': { tag_id: 20715799, seq_id: 2809740 },
+  'L3': { tag_id: 20715803, seq_id: 2809741 },
+  'L4': { tag_id: 20715805, seq_id: 2809742 },
 };
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
-const pctMap = { X1: 12.5, X2: 37.5, X3: 62.5, X4: 87.5 };
+const pctMap = { L1: 12.5, L2: 37.5, L3: 62.5, L4: 87.5 };
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -541,7 +542,7 @@ function buildShareHTML(r) {
   return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 44px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 睡眠破壞者診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 20px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
@@ -553,7 +554,7 @@ function buildFullPDFHTML(r) {
   let h = '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 48px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 睡眠破壞者診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 24px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +

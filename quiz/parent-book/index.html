@@ -3,19 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MORI — 你的焦慮模式是哪種？</title>
+<title>MORI — 你和情緒的關係，是從哪裡學來的？</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
 <link rel="stylesheet" href="/shared/style.css">
 <style>
-/* v1.0 | 2026-06-27 | 與焦慮和解測驗 · T4 光譜 */
-
+/* v1.0 | 2026-07-02 | 父母書測驗 · T4 光譜 */
 #site { min-height: 100vh; display: flex; flex-direction: column; }
 .quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
 .screen { width: 100%; max-width: 640px; opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s ease; pointer-events: none; position: absolute; }
 .screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
-
 .start-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px; text-transform: uppercase; }
 .start-title { font-family: var(--font-display); font-weight: 900; font-size: 52px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.15; margin-bottom: 28px; }
 .start-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.55); margin-bottom: 48px; }
@@ -24,7 +22,6 @@
 .btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
 .btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
 .btn-start:hover .btn-start-arrow { width: 44px; }
-
 .progress-wrap { margin-bottom: 40px; }
 .progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
@@ -49,7 +46,6 @@
 .quiz-nav { display: flex; align-items: center; margin-top: 24px; }
 .btn-prev-q { background: transparent; border: 1px solid var(--border); border-radius: 100px; padding: 10px 22px; font-size: 13px; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .3s, color .3s; }
 .btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
-
 .survey-type-teaser { text-align: center; margin-bottom: 28px; }
 .survey-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 .survey-type-name { font-size: clamp(24px,5vw,34px); font-weight: 900; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
@@ -63,7 +59,6 @@
 .survey-opt.picked { border-color: var(--gold); color: var(--text); background: rgba(196,169,106,.08); }
 .btn-unlock { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; font-family: var(--font-ui); font-size: 15px; font-weight: 900; border: none; border-radius: 100px; cursor: none; margin-top: 8px; opacity: .35; pointer-events: none; transition: opacity .25s; }
 .btn-unlock:not([disabled]) { opacity: 1; pointer-events: auto; }
-
 .result-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 16px; }
 .result-type { font-family: var(--font-display); font-weight: 900; font-size: 64px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 8px; }
 .result-subtitle { font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em; color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 32px; }
@@ -75,8 +70,6 @@
 .result-morview-block { margin-bottom: 32px; padding: 20px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); }
 .result-morview-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
 .result-morview-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); white-space: pre-line; }
-
-/* ── 光譜 ── */
 .spectrum-wrap { margin: 36px 0 44px; }
 .spectrum-labels-top { display: flex; justify-content: space-between; margin-bottom: 8px; }
 .spectrum-label-item { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .08em; color: rgba(154,140,120,.45); text-align: center; max-width: 80px; line-height: 1.4; }
@@ -87,7 +80,6 @@
 .spectrum-zone-labels { display: flex; justify-content: space-between; margin-top: 10px; }
 .spectrum-zone-label { flex: 1; text-align: center; font-family: 'Noto Sans TC', sans-serif; font-size: 10px; font-weight: 700; color: rgba(154,140,120,.35); letter-spacing: .06em; transition: color .4s; cursor: default; }
 .spectrum-zone-label.active-zone { color: var(--gold); }
-
 .btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
 .btn-sec-row { display: flex; gap: 10px; }
 .btn-line { display: flex; align-items: center; justify-content: center; gap: 10px; background: #06C755; color: #fff; border: none; border-radius: 100px; padding: 16px; font-size: 15px; font-weight: 900; cursor: none; font-family: var(--font-ui); transition: opacity .2s; width: 100%; }
@@ -119,10 +111,8 @@
 </style>
 </head>
 <body>
-
 <div id="god-ray"></div>
 <div id="vignette"></div>
-
 <div id="preloader">
   <div id="pre-top"></div><div id="pre-bot"></div>
   <div id="pre-corner-tl"></div><div id="pre-corner-br"></div>
@@ -132,10 +122,8 @@
     <div class="pre-line" id="line-r"></div>
   </div>
 </div>
-
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
-
 <div id="site">
   <nav>
     <a href="/" class="logo" style="text-decoration:none">Mori</a>
@@ -144,9 +132,7 @@
       <a href="#" target="_blank">Line</a>
     </div>
   </nav>
-
   <main class="quiz-main">
-
     <div class="screen active" id="screen-start">
       <div class="gothic-arch" style="position:relative;width:100%;height:50px;margin-bottom:8px">
         <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -157,13 +143,12 @@
       <div class="ornament" style="margin-bottom:36px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="start-eyebrow">Mori Studio · 情緒探索</p>
+      <p class="start-eyebrow">Mori Studio · 情緒模式診斷</p>
       <h1 class="start-title" id="quiz-title"></h1>
       <p class="start-desc" id="quiz-desc"></p>
       <p class="start-meta" id="quiz-meta"></p>
       <button class="btn-start" onclick="startQuiz()">開始探索<span class="btn-start-arrow"></span></button>
     </div>
-
     <div class="screen" id="screen-quiz">
       <div class="progress-wrap">
         <div class="progress-label">
@@ -174,14 +159,13 @@
           <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
         </div>
       </div>
-      <p class="question-tag" id="q-tag">焦慮模式探索</p>
+      <p class="question-tag" id="q-tag">情緒模式診斷</p>
       <p class="question-text" id="q-text"></p>
       <div class="options" id="options-wrap"></div>
       <div class="quiz-nav">
         <button class="btn-prev-q" id="btnPrev" onclick="prevQ()">← 返回首頁</button>
       </div>
     </div>
-
     <div class="screen" id="screen-survey">
       <div class="survey-type-teaser">
         <p class="survey-eyebrow">你的結果出來了</p>
@@ -190,77 +174,67 @@
       </div>
       <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的內容</div>
       <div class="survey-group">
-        <p class="survey-q">你的焦慮通常最容易在什麼情況下出現？</p>
+        <p class="survey-q">你對自己和情緒的關係，最想改善的是什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(1,'A',this)">面對不確定的未來（工作、關係、財務）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'B',this)">人際關係中（衝突、被評判、被拒絕）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'C',this)">當我需要做決定或承擔責任的時候</button>
-          <button class="survey-opt" onclick="surveyPick(1,'D',this)">安靜下來的時候，腦子開始轉個不停</button>
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">學會在情緒出現的時候，不迴避也不壓抑</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">學會在情緒爆發之前，有更多的覺察和緩衝空間</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">讓我對情緒的觀察更準確，不只是停留在表面</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">把我對情緒的理解，轉化成更好的親密關係和人際互動</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你希望這個測驗最直接幫到你的是什麼？</p>
+        <p class="survey-q">你的情緒模式，你覺得最大的根源是什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(2,'A',this)">了解我的焦慮模式從哪裡來</button>
-          <button class="survey-opt" onclick="surveyPick(2,'B',this)">找到立即可用的「當下緩解」方法</button>
-          <button class="survey-opt" onclick="surveyPick(2,'C',this)">知道怎麼建立長期更穩定的情緒底盤</button>
-          <button class="survey-opt" onclick="surveyPick(2,'D',this)">了解怎麼讓焦慮成為有用的訊號而不是障礙</button>
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">原生家庭——我的父母對情緒的處理方式影響了我</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">過去的創傷或強烈的情緒經歷——它們還在影響我</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">我對情緒的理解和工具不夠——我沒有學過怎麼處理情緒</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">還不確定——我是在探索這個問題</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你之前試過哪些方式處理焦慮？</p>
+        <p class="survey-q">Philippa Perry 的哪個觀點最讓你有感觸？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(3,'A',this)">告訴自己「不要想太多」，試著分心</button>
-          <button class="survey-opt" onclick="surveyPick(3,'B',this)">把問題想得很徹底，直到找到確定的答案</button>
-          <button class="survey-opt" onclick="surveyPick(3,'C',this)">冥想、呼吸、或正念練習</button>
-          <button class="survey-opt" onclick="surveyPick(3,'D',this)">跟人說話、寫日記、或尋求幫助</button>
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">「你不能選擇你的感受，但你可以選擇你如何回應你的感受。」</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">「你和別人的關係，反映了你和自己的關係。」</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">「情緒沒有好壞——它們是資訊，不是判斷。」</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">「你童年的經驗，決定了你今天如何解讀世界。」</button>
         </div>
       </div>
       <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看完整分析 →</button>
     </div>
-
-    <!-- 結果畫面（T4 光譜）-->
     <div class="screen" id="screen-result">
       <div class="ornament" style="margin-bottom:32px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="result-eyebrow">你的焦慮模式</p>
+      <p class="result-eyebrow">你的情緒模式</p>
       <h2 class="result-type" id="r-type"></h2>
       <p class="result-subtitle" id="r-subtitle"></p>
-
       <div class="spectrum-wrap">
         <div class="spectrum-labels-top">
-          <div class="spectrum-label-item">逃避迴避</div>
-          <div class="spectrum-label-item">強迫控制</div>
-          <div class="spectrum-label-item">反芻思考</div>
-          <div class="spectrum-label-item">接觸轉化</div>
+          <div class="spectrum-label-item">情緒迴避</div>
+          <div class="spectrum-label-item">情緒爆發</div>
+          <div class="spectrum-label-item">情緒觀察</div>
+          <div class="spectrum-label-item">情緒清醒</div>
         </div>
         <div class="spectrum-track">
           <div class="spectrum-marker" id="spectrum-marker"></div>
         </div>
         <div class="spectrum-tick-row">
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div><div class="spectrum-tick"></div><div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div><div class="spectrum-tick"></div><div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div><div class="spectrum-tick"></div><div class="spectrum-tick"></div>
         </div>
         <div class="spectrum-zone-labels">
-          <div class="spectrum-zone-label" data-zone="X1">迴避逃逸</div>
-          <div class="spectrum-zone-label" data-zone="X2">過度控制</div>
-          <div class="spectrum-zone-label" data-zone="X3">反芻思考</div>
-          <div class="spectrum-zone-label" data-zone="X4">接觸轉化</div>
+          <div class="spectrum-zone-label" data-zone="P1">情緒迴避型</div>
+          <div class="spectrum-zone-label" data-zone="P2">情緒爆發型</div>
+          <div class="spectrum-zone-label" data-zone="P3">情緒觀察型</div>
+          <div class="spectrum-zone-label" data-zone="P4">情緒清醒型</div>
         </div>
       </div>
-
       <div class="result-divider"></div>
       <p class="result-desc" id="r-desc"></p>
       <div class="result-analysis-block">
-        <p class="result-analysis-label">模式解析</p>
+        <p class="result-analysis-label">情緒模式深度分析</p>
         <p class="result-analysis-text" id="r-analysis"></p>
       </div>
       <div class="result-morview-block">
@@ -297,20 +271,18 @@
       <div class="related">
         <p class="related-label">延伸探索</p>
         <div class="related-links">
-          <a href="/quiz/not-enough/" class="related-link">
-            <span class="related-link-title">你的「不夠好」從哪裡來？</span>
-            <span class="related-link-tag">自我價值 →</span>
+          <a href="/quiz/friend-foe/" class="related-link">
+            <span class="related-link-title">你身邊的人，是朋友還是敵人？</span>
+            <span class="related-link-tag">朋友與敵人 →</span>
           </a>
-          <a href="/quiz/beyond-origins/" class="related-link">
-            <span class="related-link-title">你的原生家庭模式還在控制你嗎？</span>
-            <span class="related-link-tag">原生家庭 →</span>
+          <a href="/quiz/inner-state/" class="related-link">
+            <span class="related-link-title">你在關係裡最常用的是哪種心理模式？</span>
+            <span class="related-link-tag">蛤蟆先生 →</span>
           </a>
         </div>
       </div>
     </div>
-
   </main>
-
   <footer>
     <div class="footer-logo">Mori</div>
     <div class="footer-links"><a href="https://instagram.com/mori1024_" target="_blank">Instagram</a><a href="#" target="_blank">Line</a></div>
@@ -320,119 +292,119 @@
 
 <script>
 const QUIZ_INFO = {
-  title:       '你的焦慮模式是哪種？',
-  desc:        '焦慮不是你的敵人——它是一個訊號，只是你可能還不知道它在告訴你什麼。這個測驗幫你找出你和焦慮的相處模式，以及怎麼開始讓它成為你的資源，而不是障礙。',
+  title:       '你和情緒的關係，是從哪裡學來的？',
+  desc:        '你對情緒的回應方式，不是天生的——它是學來的。Philippa Perry 在《一本你希望父母讀過的書》裡說，你今天和情緒的關係，很大程度上反映了你從小被如何對待、如何被看見或不被看見。找出你的情緒模式，才能知道從哪裡開始改變。',
   meta:        '共 8 題 · 約 3 分鐘',
-  questionTag: '焦慮模式探索'
+  questionTag: '情緒模式診斷'
 };
 
 const QUESTIONS = [
   {
-    text: '你感到焦慮的時候，第一個本能反應是什麼？',
+    text: '當你感到難過或受傷，你通常最先做的事是什麼？',
     options: [
-      { key:'A', text:'找事情讓自己分心：刷手機、看劇、吃東西', scores:{ X1:3 } },
-      { key:'B', text:'開始列清單、研究解決方案，或想辦法掌控狀況', scores:{ X2:3 } },
-      { key:'C', text:'開始反覆想同一個問題，試圖找到確定的答案', scores:{ X3:3 } },
-      { key:'D', text:'先讓自己感覺到那個焦慮，問自己它在提醒我什麼', scores:{ X4:3 } }
+      { key:'A', text:'找點事做讓自己分心，或者告訴自己「沒什麼大不了的」', scores:{ P1:3 } },
+      { key:'B', text:'情緒很快就出來了，有時候連自己都沒有意識到就已經反應了', scores:{ P2:3 } },
+      { key:'C', text:'我會試著注意我在感受什麼，但有時候不確定那個感受叫什麼名字', scores:{ P3:3 } },
+      { key:'D', text:'我通常能感覺到我在難過，讓自己有一些空間，然後再決定怎麼回應', scores:{ P4:3 } }
     ]
   },
   {
-    text: '你對於「不確定性」最核心的感受是什麼？',
+    text: '在你的童年，家裡對「情緒」的態度大概是什麼？',
     options: [
-      { key:'A', text:'非常不舒服，我寧願知道不好的結果，也不想懸在那裡', scores:{ X2:3 } },
-      { key:'B', text:'讓我焦慮，我會試著把不確定性研究清楚', scores:{ X3:3 } },
-      { key:'C', text:'讓我想逃開，有什麼能讓我不去想這件事就好', scores:{ X1:3 } },
-      { key:'D', text:'不舒服，但我知道不確定性是正常的，有時候只是需要等待', scores:{ X4:3 } }
+      { key:'A', text:'不太被談到——大家就是繼續過日子，情緒不是被討論的東西', scores:{ P1:3 } },
+      { key:'B', text:'情緒很強烈，但通常是爆發式的，沒有被很好地處理或解釋', scores:{ P2:3 } },
+      { key:'C', text:'有人在意情緒，但處理的方式不太一致，我不確定該怎麼解讀', scores:{ P3:3 } },
+      { key:'D', text:'我長大後才開始理解情緒，現在我在主動學習如何和情緒相處', scores:{ P4:3 } }
     ]
   },
   {
-    text: '你最近一次感到強烈焦慮，你的腦子在做什麼？',
+    text: '當你和重要的人發生衝突，你通常的模式是？',
     options: [
-      { key:'A', text:'反覆重播同一個情境或對話，想搞清楚哪裡出錯了', scores:{ X3:3 } },
-      { key:'B', text:'不斷想「如果...怎麼辦」，最壞情況的清單越列越長', scores:{ X2:3 } },
-      { key:'C', text:'試圖不去想那件事，讓自己做別的事', scores:{ X1:3 } },
-      { key:'D', text:'試著理解這個焦慮在對什麼情況做出反應', scores:{ X4:3 } }
+      { key:'A', text:'我傾向閉嘴或退開，等事情過去，不太說出我的感受', scores:{ P1:3 } },
+      { key:'B', text:'我的情緒很容易被觸發，有時候說了一些事後後悔的話', scores:{ P2:3 } },
+      { key:'C', text:'我想說清楚，但有時候很難找到對的話，或者說了但沒有被理解', scores:{ P3:3 } },
+      { key:'D', text:'我能說出我的感受，同時也能聽對方說，雖然不是每次都做得好', scores:{ P4:3 } }
     ]
   },
   {
-    text: '你的朋友向你描述他們的焦慮，你最常給的建議是什麼？',
+    text: 'Philippa Perry 說：「你不能選擇你的感受，但你可以選擇你如何回應你的感受。」你對這句話的感覺是？',
     options: [
-      { key:'A', text:'「先不要想這件事，去做點讓自己開心的事」', scores:{ X1:3 } },
-      { key:'B', text:'「我們來想想有什麼解決方案」——開始分析', scores:{ X2:3 } },
-      { key:'C', text:'「你有沒有考慮過這個、那個、還有那個...」——很多角度', scores:{ X3:3 } },
-      { key:'D', text:'「這個焦慮告訴你什麼？」——先問，不急著解決', scores:{ X4:3 } }
+      { key:'A', text:'我知道這句話，但實際上我大多數時候是在迴避感受而不是回應', scores:{ P1:3 } },
+      { key:'B', text:'我很難做到——情緒來的時候我通常是反應，而不是選擇', scores:{ P2:3 } },
+      { key:'C', text:'我在練習這個——有時候能做到，有時候不行', scores:{ P3:3 } },
+      { key:'D', text:'這是我在努力的方向，而且我有看到自己在進步', scores:{ P4:3 } }
     ]
   },
   {
-    text: '你做了一個決定之後感到後悔，你最常有的反應是什麼？',
+    text: '當別人向你表達情緒（比如哭泣、憤怒），你的第一個反應是？',
     options: [
-      { key:'A', text:'試著轉移注意力，不去回想那個決定', scores:{ X1:3 } },
-      { key:'B', text:'反覆分析「如果當初選另一個方向」的各種可能', scores:{ X3:3 } },
-      { key:'C', text:'研究怎麼彌補或減少損失，積極找對策', scores:{ X2:3 } },
-      { key:'D', text:'承認後悔的感受，問自己這個決定教了我什麼', scores:{ X4:3 } }
+      { key:'A', text:'有點不舒適——我不太知道怎麼回應，通常會試著讓對方冷靜下來', scores:{ P1:3 } },
+      { key:'B', text:'我可能也會被對方的情緒捲進去，開始有自己的強烈感受', scores:{ P2:3 } },
+      { key:'C', text:'我想理解他在感受什麼，但有時候我說的話沒有讓對方覺得被理解', scores:{ P3:3 } },
+      { key:'D', text:'我通常能讓對方感覺到我在聽他說，而不是急著解決或評判', scores:{ P4:3 } }
     ]
   },
   {
-    text: '你休息的時候，腦子通常是什麼狀態？',
+    text: '你對自己的情緒，有多少了解？',
     options: [
-      { key:'A', text:'安靜下來反而更焦慮，我需要持續有事情做', scores:{ X1:3 } },
-      { key:'B', text:'開始思考計畫或需要解決的問題', scores:{ X2:3 } },
-      { key:'C', text:'反覆思考過去的對話或即將發生的事', scores:{ X3:3 } },
-      { key:'D', text:'可以比較放鬆，雖然有時候還是會有想法浮現', scores:{ X4:3 } }
+      { key:'A', text:'不太多——我有時候不確定我在感受什麼，或者乾脆不去注意', scores:{ P1:3 } },
+      { key:'B', text:'我能感覺到情緒很強烈，但我不一定知道它背後的原因是什麼', scores:{ P2:3 } },
+      { key:'C', text:'我在學習——我開始能辨識一些情緒，但還有很多不清楚的地方', scores:{ P3:3 } },
+      { key:'D', text:'我對自己的情緒有相對清楚的認識，我知道什麼情況會觸發我，以及為什麼', scores:{ P4:3 } }
     ]
   },
   {
-    text: '你認為焦慮這個情緒，本質上是什麼？',
+    text: '你怎麼看待「原生家庭」對你的影響？',
     options: [
-      { key:'A', text:'一種不舒服的感覺，應該要消除掉', scores:{ X1:3 } },
-      { key:'B', text:'一種訊號，告訴我有問題需要解決', scores:{ X2:3 } },
-      { key:'C', text:'我的腦子在保護我，雖然有時候幫倒忙', scores:{ X3:3 } },
-      { key:'D', text:'一種資訊，在告訴我某件事對我很重要', scores:{ X4:3 } }
+      { key:'A', text:'我知道有影響，但我不太喜歡深入想這件事，感覺太沉重', scores:{ P1:3 } },
+      { key:'B', text:'我能感覺到影響很深，有時候還是會被一些觸發點捲進去', scores:{ P2:3 } },
+      { key:'C', text:'我在試著理解，但很難完全說清楚影響是什麼', scores:{ P3:3 } },
+      { key:'D', text:'我已經理解了一些模式，並且在有意識地選擇不同的方式回應', scores:{ P4:3 } }
     ]
   },
   {
-    text: '當你的焦慮無法通過「做什麼」來解決的時候，你通常怎麼做？',
+    text: '你希望在你的重要關係裡，對方最能感受到的是什麼？',
     options: [
-      { key:'A', text:'繼續分心，讓時間過去', scores:{ X1:3 } },
-      { key:'B', text:'更努力地尋找可以做的事', scores:{ X2:3 } },
-      { key:'C', text:'繼續思考，直到自己精疲力竭', scores:{ X3:3 } },
-      { key:'D', text:'試著接受「我現在沒辦法解決這件事」，然後放它在那裡', scores:{ X4:3 } }
+      { key:'A', text:'我能提供穩定和支持——即使我自己的情緒不總是清楚的', scores:{ P1:3 } },
+      { key:'B', text:'我很在乎這段關係，即使有時候我的情緒方式讓關係變得複雜', scores:{ P2:3 } },
+      { key:'C', text:'我在努力理解他，並且讓他感覺到被看見', scores:{ P3:3 } },
+      { key:'D', text:'他能在我這裡感覺到安全——可以說出真實的感受而不會被評判', scores:{ P4:3 } }
     ]
   }
 ];
 
 const RESULTS = {
-  X1: {
-    type:     '迴避逃逸型',
-    subtitle: 'The Escape Artist',
-    desc:     '你應對焦慮的主要方式是「不去感覺它」——轉移注意力、讓自己保持忙碌、或找到某種讓你暫時不用面對它的活動。這個策略有效，但只在短期內有效。',
-    analysis: '迴避逃逸型是最常見的焦慮應對方式之一，也是最讓人筋疲力竭的一種。\n\n它的邏輯是：如果我不去感覺它，它就不存在。問題是焦慮不是一個需要被消除的訊號——它是一個需要被聽見的訊號。當你持續迴避它，它只好用更大的聲音回來。\n\n另一個代價是：你為了不感覺焦慮，需要持續尋找分心的事物。這讓你的生活變成一場不斷逃跑的遊戲——從焦慮逃到刷手機，從刷手機逃到工作，從工作逃到另一個分心。\n\n「與焦慮和解」的第一步不是消除它，而是停下來，讓自己感覺到它一分鐘，問一句話：「你在告訴我什麼？」',
-    morview:  '我理解這個模式——它給你的是即時的緩解，而那種緩解是真實的。但你付出的代價是能量，那些用來逃跑的能量，本來可以用在別的地方。\n\n一個低門檻的開始：下次感到焦慮的時候，不要立刻找事情做。給自己 60 秒，只是坐著感覺那個焦慮在身體的哪裡——是胸口緊？肩膀僵？胃不舒服？只是感覺，不需要解決。這一分鐘可能改變你和焦慮的關係。',
-    cta:      '留下 Email，我寄給你針對「迴避逃逸型」的 60 秒焦慮接觸練習。'
+  P1: {
+    type:     '情緒迴避型',
+    subtitle: 'The Emotion Avoider',
+    desc:     '你的預設模式是迴避情緒——不是因為你不在乎，而是因為在某個時候，不去感受似乎是最安全的選擇。Philippa Perry 說，這種模式通常來自一個環境，那個環境裡情緒是不被討論或不被歡迎的。',
+    analysis: 'Perry 在《一本你希望父母讀過的書》裡說，情緒迴避的形成，通常是因為在早期的關係裡，情緒的表達沒有被安全地接收。\n\n當一個孩子在難過或憤怒的時候，如果得到的回應是「你不應該這樣感覺」、「有什麼好哭的」、或者只是沉默——他學到的是：**情緒是危險的，或者是不被歡迎的。** 於是他發展出了一個策略：把情緒推到一旁，繼續運作。\n\n這個策略在短期有效——它讓你能夠「正常地」繼續生活。但它也有代價：\n- 你很難感受到或表達快樂、親密、連結等正向情緒\n- 你在親密關係裡很難讓人感覺到你「在那裡」\n- 情緒沒有消失，只是被壓到了表面以下——它會以其他方式出現（身體症狀、突然的情緒爆發、或者長期的距離感）\n\nPerry 說，改變的起點不是「讓你變得更情緒化」，而是學習**允許情緒存在**——不需要對它做什麼，只是讓它在那裡，然後慢慢地你會知道它在告訴你什麼。',
+    morview:  '你不是沒有情緒——你是學會了不去感覺它。\n\nPerry 說，情緒是資訊，不是敵人。它在告訴你你需要什麼，你的界線在哪裡，什麼對你重要。\n\n開始的方式很簡單：下次感到不舒適的時候，不要立刻做點什麼來分散注意。試著就停留在那個感受裡一分鐘，然後問：「這個感受想告訴我什麼？」',
+    cta:      '留下 Email，我寄給你「情緒迴避型的改變框架——從允許情緒存在，到學會和它建立關係」。'
   },
-  X2: {
-    type:     '過度控制型',
-    subtitle: 'The Control Seeker',
-    desc:     '你用「解決問題」來應對焦慮——有焦慮就找方案，有不確定就研究清楚，有失控感就建立計畫。這個策略讓你很有生產力，但它有一個你可能還沒意識到的代價。',
-    analysis: '過度控制型的核心信念是：「如果我把所有事情都想清楚了，焦慮就會消失。」這個信念有時候對，但在更多情況下，它讓你陷入一個無盡的分析迴圈。\n\n因為焦慮的根源常常不是「問題沒解決」，而是「不確定性本身」。而不確定性是生活的基本結構，不是一個可以被研究清楚、計畫掉的問題。\n\n過度控制型在外部表現得很強——有條理、有執行力、能應對。但內部的焦慮往往更深，因為每一個被解決的問題，後面還有下一個問題。你的安全感建立在「我能控制」這件事上，而這個基礎是脆弱的。',
-    morview:  '你的問題解決能力是真實的優勢。但焦慮不是一個問題——它是一個感受。感受不是通過解決來處理的，而是通過被感覺、被接受來消化的。\n\n嘗試一個區分：這個焦慮有沒有「可以採取行動」的部分？如果有，採取行動。如果沒有（比如等待一個結果），那就是你需要練習和不確定性共存的時候。',
-    cta:      '留下 Email，我寄給你針對「過度控制型」的「可控 vs 不可控」區分練習。'
+  P2: {
+    type:     '情緒爆發型',
+    subtitle: 'The Emotion Flooder',
+    desc:     '你能強烈地感受情緒，有時候情緒來得很快，快到你沒有辦法選擇怎麼回應。Philippa Perry 說，這種模式通常來自一個環境，那個環境裡情緒很強烈，但沒有足夠的安全容器讓它被消化和理解。',
+    analysis: 'Perry 說，情緒爆發型的形成，通常與「共同調節（co-regulation）」的缺失有關。\n\n共同調節是什麼？當你還小的時候，你還沒有辦法自己調節情緒——你的神經系統是靠依附你的大人的神經系統來穩定自己的。一個平靜的大人，能夠讓一個激動的孩子慢慢穩定下來。\n\n如果大人自己的情緒系統不穩定，或者他們在情緒出現的時候不在場，孩子的情緒調節系統就很難正常地發展。結果是：情緒出現的時候，它是洪水，沒有足夠的堤防。\n\n情緒爆發型的人通常有很強的共情能力——他們感受能力很強。但他們在「感受」和「回應」之間缺少一個緩衝空間。\n\nPerry 說，建立這個緩衝空間的方法：\n1. 學習識別情緒的「早期信號」——在情緒完全淹沒你之前，你的身體會有信號\n2. 建立一個「暫停」的習慣——在你感到情緒升高的時候，先停下來，深呼吸，給自己 30 秒\n3. 理解你的觸發點——哪些情境、哪些話、哪些人最容易讓你的情緒系統過載',
+    morview:  '你強烈的感受能力，在很多地方是真實的優勢——你能感受到別人感受不到的東西，你有很強的共情能力。\n\n問題不是你感受太多，而是情緒和回應之間沒有足夠的空間。Perry 說，這個空間是可以練習的——不是壓抑情緒，而是在情緒和行動之間建立一個短暫的停頓。\n\n從身體開始：下次你感到情緒開始升高的時候，注意你身體的哪個部位有感覺。然後就在那個感覺上停留一下，再決定要做什麼。',
+    cta:      '留下 Email，我寄給你「情緒爆發型的緩衝建立框架——從識別早期信號，到在感受和回應之間創造空間」。'
   },
-  X3: {
-    type:     '反芻思考型',
-    subtitle: 'The Ruminator',
-    desc:     '你的焦慮主要住在你的腦子裡——你反覆思考同一件事，從不同角度分析，試圖找到一個讓你能放下來的確定答案。那個答案幾乎從來不會來，因為它不是思考能給你的東西。',
-    analysis: '反芻思考是焦慮最常見的認知模式之一。它的感覺像是「在認真思考問題」，但它和真正的問題解決有一個關鍵差異：真正的問題解決在思考之後，有新的認識或行動；反芻是在同一個地方原地踏步，越想越焦慮。\n\n反芻的隱性成本非常高——它消耗工作記憶和情緒資源，讓你很難做別的事。它也常常讓你的焦慮螺旋上升，因為越想越多角度，越多角度就越多需要擔心的地方。\n\n反芻型的焦慮特別難處理，因為「繼續思考」感覺就像是在「認真對待這件事」。停止思考感覺像是在逃避。但有時候，停下來才是對那件事最誠實的回應。',
-    morview:  '你的思維能力很強——但它現在在吃你自己。\n\n一個有效的打斷方式：當你發現自己在反芻，問自己「這個想法對我有用嗎？」——不是「這個想法對不對」，是「它有用嗎？」如果答案是沒有，你有許可讓它先放在那裡，而不是繼續追它。',
-    cta:      '留下 Email，我寄給你針對「反芻思考型」的打斷迴圈和接地練習。'
+  P3: {
+    type:     '情緒觀察型',
+    subtitle: 'The Emotion Observer',
+    desc:     '你對情緒有一定的覺察，你在試著理解你自己和別人的感受。但有時候你的觀察還停留在表面，或者你知道情緒的存在，但還不太確定如何深入理解它。Philippa Perry 說，這個階段是非常重要的——很多人從來沒有走到這裡。',
+    analysis: 'Perry 說，情緒觀察型的人已經做到了很多人不會做的事：他們在注意自己的情緒，而不是自動化地迴避或被淹沒。這是很重要的第一步。\n\n觀察型的下一個挑戰，通常是把「知道有情緒」提升到「理解情緒在說什麼」。\n\n**Perry 的情緒理解框架：**\n\n**第一層：辨識情緒的名字。** 不只是「難過」或「生氣」，而是更精細的描述——是失望、委屈、嫉妒、還是羞恥？每一個情緒都有它具體的資訊。\n\n**第二層：理解觸發點。** 什麼情境、什麼話、什麼人讓這個情緒出現？觸發點往往連結到過去的某個模式或需求。\n\n**第三層：找到需求。** 情緒背後通常有一個沒有被滿足的需求——被看見、被理解、感到安全、感到被愛。找到需求，才能知道如何回應。\n\n觀察型的人通常能做到第一層，在學習第二層，但對第三層還不熟悉。',
+    morview:  '你已經走到了大多數人沒有走到的地方——你在注意你的情緒，而不是忽略它。\n\nPerry 說，情緒覺察是可以被培養和深化的。你不需要一下子全部弄清楚，只需要在每一次情緒出現的時候，多停留一分鐘，問一個更深的問題：「這個感受，在說什麼？」\n\n慢慢地，你對自己情緒的地圖會越來越清晰。',
+    cta:      '留下 Email，我寄給你「情緒觀察型的深化框架——從識別情緒，到理解觸發點，到找到背後的需求」。'
   },
-  X4: {
-    type:     '接觸轉化型',
-    subtitle: 'The Transformer',
-    desc:     '你已經發展出一種相對成熟的焦慮關係——你不迴避它，也不試圖強行消除它，而是把它當作一個訊號來聆聽。這個位置不是沒有焦慮，而是焦慮對你來說是有意義的資訊。',
-    analysis: '接觸轉化型代表一種對焦慮比較整合的關係。你理解焦慮是有功能的——它在告訴你某件事對你很重要，或者某種需求沒有被照顧到。\n\n但這個類型也有它的挑戰：有時候「理解焦慮」可以成為另一種回避——你在「分析」焦慮，而不是真正地感受它。智識化是一種精緻的迴避。\n\n另一個值得注意的是：接觸轉化需要容量——有時候焦慮的強度超過你當下能接觸的程度，這時候需要先有外部支持（關係、身體安撫），再回來和它接觸，而不是強迫自己在任何狀態下都要「處理」它。',
-    morview:  '你的方向是對的。繼續往前的工作是：當焦慮很強的時候，你能不能先讓身體落地（呼吸、移動、接觸、感受當下環境），再回來和焦慮對話，而不是直接進入「這告訴我什麼」的分析？\n\n身體先，理解後。這是接觸轉化的完整路徑。',
-    cta:      '留下 Email，我寄給你針對「接觸轉化型」的進階整合練習。'
+  P4: {
+    type:     '情緒清醒型',
+    subtitle: 'The Emotionally Aware',
+    desc:     '你對情緒有較好的覺察和理解，你能在情緒出現的時候給自己一些空間，而不是立刻迴避或被淹沒。Philippa Perry 說，你已經在做很多人從來沒有學過的事——和你的情緒建立一個有意識的關係。',
+    analysis: 'Perry 說，情緒清醒型的人通常已經做了一些重要的內在工作——他們理解情緒是資訊而不是敵人，他們能夠在感受和回應之間創造一些空間。\n\n但她也說，情緒清醒的進階挑戰，是在壓力最大、最觸發你的情境下，仍然能夠保持這個覺察。\n\n**Perry 的進階框架：**\n\n**修復（repair）的能力**：在關係裡發生情緒衝突之後，能夠主動修復——不是假裝沒有發生，而是回頭說「剛才那件事，讓我們再談一下」。Perry 說，修復的能力比從不發生衝突更重要。\n\n**代際模式的覺察**：你的情緒模式，有多少是從你的原生家庭學來的？當你意識到某些模式是繼承的，你才能有意識地選擇哪些要延續、哪些要改變。\n\n**教會下一代**：Perry 的書核心訊息是：你如何和你的情緒相處，會影響你的孩子如何和他們的情緒相處。即使你現在沒有孩子，你的情緒清醒也在影響你所有的重要關係。',
+    morview:  '你已經掌握了很多人花了一輩子都沒有學會的東西——和自己的情緒建立一個有意識的關係。\n\nPerry 說，情緒清醒不是一個達到的狀態，而是一個持續的練習。每一次你在壓力下還是選擇了暫停和覺察，你的神經系統都在重新學習。\n\n繼續問那個最重要的問題：「這個情緒，想告訴我什麼？」',
+    cta:      '留下 Email，我寄給你「情緒清醒型的進階框架——修復能力、代際模式覺察、和在最難的時候仍然保持覺察」。'
   }
 };
 </script>
@@ -455,14 +427,13 @@ function openLine() { window.open(CFG.lineUrl, '_blank'); }
 function openIG()   { window.open(CFG.igUrl,   '_blank'); }
 
 const KIT_MAPPING = {
-  'X1': { tag_id: 20674024, seq_id: 2808454 },
-  'X2': { tag_id: 20674025, seq_id: 2808456 },
-  'X3': { tag_id: 20674026, seq_id: 2808457 },
-  'X4': { tag_id: 20674027, seq_id: 2808458 },
+  'P1': { tag_id: 20822460, seq_id: 2813673 },
+  'P2': { tag_id: 20822461, seq_id: 2813674 },
+  'P3': { tag_id: 20822462, seq_id: 2813675 },
+  'P4': { tag_id: 20822463, seq_id: 2813676 },
 };
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
-
-const pctMap = { X1: 12.5, X2: 37.5, X3: 62.5, X4: 87.5 };
+const pctMap = { P1: 12.5, P2: 37.5, P3: 62.5, P4: 87.5 };
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -475,10 +446,10 @@ function startQuiz() {
 }
 function renderQuestion() {
   const q = QUESTIONS[currentQ], total = QUESTIONS.length;
-  document.getElementById('q-num').textContent           = 'Q' + (currentQ + 1);
-  document.getElementById('q-total').textContent         = '/ ' + total + ' 題';
-  document.getElementById('progress-fill').style.width  = (currentQ / total * 100) + '%';
-  document.getElementById('q-text').textContent          = q.text;
+  document.getElementById('q-num').textContent          = 'Q' + (currentQ + 1);
+  document.getElementById('q-total').textContent        = '/ ' + total + ' 題';
+  document.getElementById('progress-fill').style.width = (currentQ / total * 100) + '%';
+  document.getElementById('q-text').textContent         = q.text;
   const wrap = document.getElementById('options-wrap'); wrap.innerHTML = '';
   q.options.forEach((opt, i) => {
     const btn = document.createElement('button'); btn.className = 'option';
@@ -496,6 +467,7 @@ function selectOption(el, opt, idx) {
   document.querySelectorAll('.option').forEach((o, i) => {
     if (i === idx) o.classList.add('selected'); else o.classList.add('fade-out');
   });
+  Object.entries(opt.scores).forEach(([k,v]) => { scores[k] = (scores[k]||0)+v; });
   setTimeout(() => { currentQ++; if (currentQ < QUESTIONS.length) renderQuestion(); else showResult(); }, 520);
 }
 function prevQ() { if (currentQ === 0) { showScreen('screen-start'); return; } currentQ--; renderQuestion(); }
@@ -541,7 +513,7 @@ function buildShareHTML(r) {
   return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 44px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 情緒模式診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 20px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
@@ -553,13 +525,13 @@ function buildFullPDFHTML(r) {
   let h = '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 48px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 情緒模式診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 24px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
       '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 20px">' + r.desc + '</p>';
   if (r.analysis) {
-    h += '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;text-transform:uppercase;margin:0 0 10px">深度分析</p>' +
+    h += '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;text-transform:uppercase;margin:0 0 10px">情緒模式深度分析</p>' +
       '<p style="font-size:12px;color:rgba(154,140,120,.85);line-height:1.9;margin:0 0 20px;white-space:pre-line">' + r.analysis + '</p>';
   }
   if (r.morview) {
@@ -574,12 +546,9 @@ function buildFullPDFHTML(r) {
 }
 async function downloadPDF() {
   if (!currentResultKey) return;
-  const r = RESULTS[currentResultKey];
-  const target = document.getElementById('pdf-target');
-  const btn = document.getElementById('dlBtn');
-  const origHTML = btn ? btn.innerHTML : '';
-  target.style.display = 'block';
-  target.innerHTML = buildFullPDFHTML(r);
+  const r = RESULTS[currentResultKey]; const target = document.getElementById('pdf-target');
+  const btn = document.getElementById('dlBtn'); const origHTML = btn ? btn.innerHTML : '';
+  target.style.display = 'block'; target.innerHTML = buildFullPDFHTML(r);
   if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
   try {
     await document.fonts.ready;
@@ -591,18 +560,12 @@ async function downloadPDF() {
     pdf.addImage(imgData, 'PNG', 0, 0, w, h);
     pdf.save('mori-result-' + currentResultKey.toLowerCase() + '.pdf');
   } catch(e) { console.error(e); }
-  finally {
-    target.style.display = 'none';
-    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
-  }
+  finally { target.style.display = 'none'; if (btn) { btn.disabled = false; btn.innerHTML = origHTML; } }
 }
-
 async function shareResult() {
   if (!currentResultKey) return;
-  const r = RESULTS[currentResultKey];
-  const target = document.getElementById('pdf-target');
-  target.style.display = 'block';
-  target.innerHTML = buildShareHTML(r);
+  const r = RESULTS[currentResultKey]; const target = document.getElementById('pdf-target');
+  target.style.display = 'block'; target.innerHTML = buildShareHTML(r);
   try {
     await document.fonts.ready;
     const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
@@ -612,16 +575,12 @@ async function shareResult() {
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: 'Mori 測驗結果' });
       } else {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = fname;
-        a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; a.click();
       }
     }, 'image/png');
   } catch(e) { console.error(e); }
   finally { target.style.display = 'none'; }
 }
-
 async function submitEmail() {
   const emailEl = document.getElementById('email-input'), email = emailEl.value.trim();
   if (!email || !email.includes('@')) return;
@@ -639,36 +598,15 @@ async function submitEmail() {
     if (kitSubId && _sid) await fetch(`/api/kit/v4/sequences/${_sid}/subscribers`, {
       method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:kitSubId }),
     });
-    if (kitSubRes.ok) { document.querySelector('.email-form').style.display='none'; document.getElementById('email-done').style.display='block'; }
-    else { btn.disabled=false; btn.textContent='送出'; }
+    document.getElementById('email-done').style.display='block';
+    emailEl.value=''; emailEl.disabled=true; btn.style.display='none';
   } catch(e) { btn.disabled=false; btn.textContent='送出'; }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  const lL=document.getElementById('line-l'), lR=document.getElementById('line-r'), pt=document.getElementById('pre-text');
-  setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
-  setTimeout(() => { pt.classList.add('ready'); pt.textContent='Enter'; }, 1600);
-  pt.addEventListener('click', () => {
-    if (!pt.classList.contains('ready')) return;
-    document.getElementById('preloader').style.opacity='0';
-    setTimeout(() => { document.getElementById('preloader').style.display='none'; document.getElementById('site').style.opacity='1'; }, 600);
-  });
-  const cur=document.getElementById('cursor'), ring=document.getElementById('cursor-ring');
-  let mx=0,my=0,rx=0,ry=0;
-  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
-  (function tick(){ rx+=(mx-rx)*.18; ry+=(my-ry)*.18;
-    cur.style.left=mx+'px'; cur.style.top=my+'px';
-    ring.style.left=rx+'px'; ring.style.top=ry+'px';
-    requestAnimationFrame(tick); })();
-  document.querySelectorAll('button,a').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-  });
-  MoriParticles.init('quiz');
-});
+MoriParticles.init('quiz');
 </script>
-<div id="pdf-target"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<div id="pdf-target"></div>
 </body>
 </html>

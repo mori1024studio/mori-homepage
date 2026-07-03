@@ -5,6 +5,40 @@
 
 ---
 
+## 2026-06-29｜Session：新測驗 + 內容資產補全
+
+### 完成
+- **蛤蟆先生去看心理師** 完整流程：補全 prompt實戰版/Prompt庫/Threads/Lead Magnet；建立 `/quiz/inner-state/` 測驗 HTML（T4光譜，4型）；Kit tags H1-H4 (20715559/61/62/63)；Kit seqs 2809689-2809692
+- **sidebiz 副業基因診斷**：新建 6 Reels + 11 輪播（reels-scripts/副業基因診斷/、ig-carousels/副業基因診斷-*）
+- **部署**：`wrangler pages deploy` 上傳 3 個新檔（含 quiz/inner-state/index.html）→ https://a9211a48.mori-homepage.pages.dev
+- **Validate**：蛤蟆先生 5/5 ✅、副業基因診斷 5/5 ✅
+
+### 完成（續）
+- **AI-First自我升級革命**：建立 `/quiz/ai-bottleneck/` 測驗（T4光譜，4型 A1-A4）；Kit tags 20715648-51；Kit seqs 2809707-2809710；補全 Prompt庫/Threads/Lead Magnet；Validate 5/5 ✅
+- **Supercommunicators**：建立 `/quiz/comm-style/` 測驗（T4光譜，4型 S1-S4）；Kit tags 20715701/02/04/05；Kit seqs 2809719-2809722；補全 Prompt庫/Threads/Lead Magnet；Validate 5/5 ✅
+- **為什麼要睡覺**：建立 `/quiz/sleep-saboteur/` 測驗（T4光譜，4型 L1-L4）；Kit tags 20715798/99/803/805；Kit seqs 2809739-2809742；補全 prompt實戰版/Prompt庫/Threads/Lead Magnet；Validate 5/5 ✅
+- **部署**：`wrangler pages deploy` 上傳最新版 → https://5e81fd8a.mori-homepage.pages.dev
+
+---
+
+## 2026-06-28｜Session：冒煙測試 + CF Pages 重新部署
+
+### 完成
+- **發現 CF Pages 版本落後**：mori-homepage.pages.dev 未接 GitHub，需手動 wrangler deploy；上次 deploy 為 1 天前，anti-fragile/start-with-why 仍是 MailerLite 舊版，beyond-origins/die-with-zero/anxiety-resolve 完全未 deploy
+- **重新部署**：`npx wrangler pages deploy . --project-name=mori-homepage` 上傳 17 個新檔，全站更新到最新版
+- **冒煙測試（自動化）**：Playwright Node.js 腳本跑完 5 個新測驗完整流程（preloader → 答題 → survey → email 送出 → Kit API 驗證）
+  - anti-fragile F1 脆弱型 → tag 20673076 ✅
+  - start-with-why W1 外部符號驅動型 → tag 20673081 ✅
+  - beyond-origins O1 鏡像重演型 → tag 20673926 ✅
+  - die-with-zero D1 安全囤積型 → tag 20673931 ✅
+  - anxiety-resolve X1 迴避逃逸型 → tag 20674024 ✅
+- **結果**：5/5 全部通過，Kit 訂閱者已建立並打上正確 Tag
+
+### 影響範圍
+全站 CF Pages（mori-homepage.pages.dev）
+
+---
+
 ## 2026-06-27｜Session：PDF 完整內容修復 + 社群分享字型修正
 
 ### 完成

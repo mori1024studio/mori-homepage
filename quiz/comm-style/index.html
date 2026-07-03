@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MORI — 你的焦慮模式是哪種？</title>
+<!-- v1.0 | 2026-06-29 | Supercommunicators · T4 光譜 · 溝通陷阱4型 -->
+<title>MORI — 你在溝通裡最容易掉進哪個陷阱？</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
 <link rel="stylesheet" href="/shared/style.css">
 <style>
-/* v1.0 | 2026-06-27 | 與焦慮和解測驗 · T4 光譜 */
+/* v1.0 | 2026-06-29 | 溝通陷阱測驗 · T4 光譜 */
 
 #site { min-height: 100vh; display: flex; flex-direction: column; }
 .quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
@@ -103,7 +104,7 @@
 .result-cta-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.4); text-transform: uppercase; margin-bottom: 12px; }
 .result-cta-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.8; color: rgba(237,232,223,.55); margin-bottom: 16px; }
 .email-form { display: flex; gap: 8px; }
-.email-input { flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8); border: 1px solid rgba(196,169,106,.2); color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .25s; }
+.email-input { flex: 1; padding: 10px 14px; background: rgba(9,7,5,.8); border: 1px solid rgba(196,169,106,.2); color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .25px; }
 .email-input:focus { border-color: rgba(196,169,106,.45); }
 .email-input::placeholder { color: rgba(154,140,120,.35); }
 .btn-email { padding: 10px 20px; background: rgba(196,169,106,.12); border: 1px solid rgba(196,169,106,.3); color: var(--gold); font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s; }
@@ -157,7 +158,7 @@
       <div class="ornament" style="margin-bottom:36px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="start-eyebrow">Mori Studio · 情緒探索</p>
+      <p class="start-eyebrow">Mori Studio · 溝通探索</p>
       <h1 class="start-title" id="quiz-title"></h1>
       <p class="start-desc" id="quiz-desc"></p>
       <p class="start-meta" id="quiz-meta"></p>
@@ -174,7 +175,7 @@
           <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
         </div>
       </div>
-      <p class="question-tag" id="q-tag">焦慮模式探索</p>
+      <p class="question-tag" id="q-tag">溝通模式診斷</p>
       <p class="question-text" id="q-text"></p>
       <div class="options" id="options-wrap"></div>
       <div class="quiz-nav">
@@ -190,30 +191,30 @@
       </div>
       <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的內容</div>
       <div class="survey-group">
-        <p class="survey-q">你的焦慮通常最容易在什麼情況下出現？</p>
+        <p class="survey-q">你在溝通裡感覺最棘手的場景是什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(1,'A',this)">面對不確定的未來（工作、關係、財務）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'B',this)">人際關係中（衝突、被評判、被拒絕）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'C',this)">當我需要做決定或承擔責任的時候</button>
-          <button class="survey-opt" onclick="surveyPick(1,'D',this)">安靜下來的時候，腦子開始轉個不停</button>
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">職場（主管、同事、跨部門、談判）</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">家人（父母、伴侶、家庭衝突）</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">友情（誤解、冷戰、衝突後不知如何修復）</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">陌生場合（建立新關係、讓人快速信任我）</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你希望這個測驗最直接幫到你的是什麼？</p>
+        <p class="survey-q">你最希望這個測驗幫你什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(2,'A',this)">了解我的焦慮模式從哪裡來</button>
-          <button class="survey-opt" onclick="surveyPick(2,'B',this)">找到立即可用的「當下緩解」方法</button>
-          <button class="survey-opt" onclick="surveyPick(2,'C',this)">知道怎麼建立長期更穩定的情緒底盤</button>
-          <button class="survey-opt" onclick="surveyPick(2,'D',this)">了解怎麼讓焦慮成為有用的訊號而不是障礙</button>
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">了解我在溝通裡最容易掉進的陷阱在哪裡</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">找到可以立即改變對話氛圍的方法</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">學會怎麼讓對方真的感到被理解</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">知道如何識別對話頻道並主動切換</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你之前試過哪些方式處理焦慮？</p>
+        <p class="survey-q">你之前試過哪些方式改善溝通？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(3,'A',this)">告訴自己「不要想太多」，試著分心</button>
-          <button class="survey-opt" onclick="surveyPick(3,'B',this)">把問題想得很徹底，直到找到確定的答案</button>
-          <button class="survey-opt" onclick="surveyPick(3,'C',this)">冥想、呼吸、或正念練習</button>
-          <button class="survey-opt" onclick="surveyPick(3,'D',this)">跟人說話、寫日記、或尋求幫助</button>
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">努力「好好說話」，但還是常被誤解</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">學過溝通技巧，但不知道在對話中怎麼用</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">多聽少說，但感覺對方還是覺得沒被聽見</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">沒有特別學過，靠直覺，但直覺不太穩定</button>
         </div>
       </div>
       <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看完整分析 →</button>
@@ -224,16 +225,16 @@
       <div class="ornament" style="margin-bottom:32px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="result-eyebrow">你的焦慮模式</p>
+      <p class="result-eyebrow">你的溝通模式</p>
       <h2 class="result-type" id="r-type"></h2>
       <p class="result-subtitle" id="r-subtitle"></p>
 
       <div class="spectrum-wrap">
         <div class="spectrum-labels-top">
-          <div class="spectrum-label-item">逃避迴避</div>
-          <div class="spectrum-label-item">強迫控制</div>
-          <div class="spectrum-label-item">反芻思考</div>
-          <div class="spectrum-label-item">接觸轉化</div>
+          <div class="spectrum-label-item">解題優先</div>
+          <div class="spectrum-label-item">情緒淹沒</div>
+          <div class="spectrum-label-item">平行對話</div>
+          <div class="spectrum-label-item">深度連結</div>
         </div>
         <div class="spectrum-track">
           <div class="spectrum-marker" id="spectrum-marker"></div>
@@ -250,10 +251,10 @@
           <div class="spectrum-tick"></div>
         </div>
         <div class="spectrum-zone-labels">
-          <div class="spectrum-zone-label" data-zone="X1">迴避逃逸</div>
-          <div class="spectrum-zone-label" data-zone="X2">過度控制</div>
-          <div class="spectrum-zone-label" data-zone="X3">反芻思考</div>
-          <div class="spectrum-zone-label" data-zone="X4">接觸轉化</div>
+          <div class="spectrum-zone-label" data-zone="S1">解題優先</div>
+          <div class="spectrum-zone-label" data-zone="S2">情緒淹沒</div>
+          <div class="spectrum-zone-label" data-zone="S3">平行對話</div>
+          <div class="spectrum-zone-label" data-zone="S4">深度連結</div>
         </div>
       </div>
 
@@ -297,13 +298,13 @@
       <div class="related">
         <p class="related-label">延伸探索</p>
         <div class="related-links">
+          <a href="/quiz/anxiety-resolve/" class="related-link">
+            <span class="related-link-title">你的焦慮模式是哪種？</span>
+            <span class="related-link-tag">情緒探索 →</span>
+          </a>
           <a href="/quiz/not-enough/" class="related-link">
             <span class="related-link-title">你的「不夠好」從哪裡來？</span>
             <span class="related-link-tag">自我價值 →</span>
-          </a>
-          <a href="/quiz/beyond-origins/" class="related-link">
-            <span class="related-link-title">你的原生家庭模式還在控制你嗎？</span>
-            <span class="related-link-tag">原生家庭 →</span>
           </a>
         </div>
       </div>
@@ -320,119 +321,119 @@
 
 <script>
 const QUIZ_INFO = {
-  title:       '你的焦慮模式是哪種？',
-  desc:        '焦慮不是你的敵人——它是一個訊號，只是你可能還不知道它在告訴你什麼。這個測驗幫你找出你和焦慮的相處模式，以及怎麼開始讓它成為你的資源，而不是障礙。',
-  meta:        '共 8 題 · 約 3 分鐘',
-  questionTag: '焦慮模式探索'
+  title:       '你在溝通裡最容易掉進哪個陷阱？',
+  desc:        '每次對話，其實有三個頻道同時在跑：「這件事怎麼解決」、「我現在的感受」、「我們的關係是什麼」。當兩個人頻道不同步，溝通就會出問題——不是因為誰不努力，是因為你們沒在同一個對話裡。',
+  meta:        '8題 · 約3分鐘 · 基於《Supercommunicators》溝通架構',
+  questionTag: '溝通模式診斷',
 };
 
 const QUESTIONS = [
   {
-    text: '你感到焦慮的時候，第一個本能反應是什麼？',
+    text: '朋友跟你說他最近工作壓力很大，你的第一反應通常是？',
     options: [
-      { key:'A', text:'找事情讓自己分心：刷手機、看劇、吃東西', scores:{ X1:3 } },
-      { key:'B', text:'開始列清單、研究解決方案，或想辦法掌控狀況', scores:{ X2:3 } },
-      { key:'C', text:'開始反覆想同一個問題，試圖找到確定的答案', scores:{ X3:3 } },
-      { key:'D', text:'先讓自己感覺到那個焦慮，問自己它在提醒我什麼', scores:{ X4:3 } }
+      { key:'A', text:'開始分析問題出在哪，給他一些具體的建議', scores:{ S1:3 } },
+      { key:'B', text:'也感染到他的情緒，開始為他擔心', scores:{ S2:3 } },
+      { key:'C', text:'聽著，但心裡已經在想自己類似的經歷', scores:{ S3:3 } },
+      { key:'D', text:'先問「你現在是想被聽聽，還是想找解法？」', scores:{ S4:3 } },
     ]
   },
   {
-    text: '你對於「不確定性」最核心的感受是什麼？',
+    text: '你覺得一次對話「溝通失敗」最常是因為？',
     options: [
-      { key:'A', text:'非常不舒服，我寧願知道不好的結果，也不想懸在那裡', scores:{ X2:3 } },
-      { key:'B', text:'讓我焦慮，我會試著把不確定性研究清楚', scores:{ X3:3 } },
-      { key:'C', text:'讓我想逃開，有什麼能讓我不去想這件事就好', scores:{ X1:3 } },
-      { key:'D', text:'不舒服，但我知道不確定性是正常的，有時候只是需要等待', scores:{ X4:3 } }
+      { key:'A', text:'對方沒有理解我提的解決方案', scores:{ S1:3 } },
+      { key:'B', text:'情緒太激動，沒辦法好好說清楚', scores:{ S2:3 } },
+      { key:'C', text:'說了很多，但感覺我們說的不是同一件事', scores:{ S3:3 } },
+      { key:'D', text:'我能大概判斷，但還是常看走眼對方真正的需求', scores:{ S4:3 } },
     ]
   },
   {
-    text: '你最近一次感到強烈焦慮，你的腦子在做什麼？',
+    text: '在一個緊張的對話裡（例如跟主管或家人），你通常處於什麼狀態？',
     options: [
-      { key:'A', text:'反覆重播同一個情境或對話，想搞清楚哪裡出錯了', scores:{ X3:3 } },
-      { key:'B', text:'不斷想「如果...怎麼辦」，最壞情況的清單越列越長', scores:{ X2:3 } },
-      { key:'C', text:'試圖不去想那件事，讓自己做別的事', scores:{ X1:3 } },
-      { key:'D', text:'試著理解這個焦慮在對什麼情況做出反應', scores:{ X4:3 } }
+      { key:'A', text:'專注在如何解決問題或澄清事實', scores:{ S1:3 } },
+      { key:'B', text:'情緒已經上來了，難以理性回應', scores:{ S2:3 } },
+      { key:'C', text:'說著說著感覺對方根本沒在聽我說的', scores:{ S3:3 } },
+      { key:'D', text:'在聆聽，同時觀察對方真正想從這個對話得到什麼', scores:{ S4:3 } },
     ]
   },
   {
-    text: '你的朋友向你描述他們的焦慮，你最常給的建議是什麼？',
+    text: '你如何判斷一次對話「成功」了？',
     options: [
-      { key:'A', text:'「先不要想這件事，去做點讓自己開心的事」', scores:{ X1:3 } },
-      { key:'B', text:'「我們來想想有什麼解決方案」——開始分析', scores:{ X2:3 } },
-      { key:'C', text:'「你有沒有考慮過這個、那個、還有那個...」——很多角度', scores:{ X3:3 } },
-      { key:'D', text:'「這個焦慮告訴你什麼？」——先問，不急著解決', scores:{ X4:3 } }
+      { key:'A', text:'達成了共識或找到了解決方案', scores:{ S1:3 } },
+      { key:'B', text:'感覺彼此情緒都舒緩了', scores:{ S2:3 } },
+      { key:'C', text:'說完了想說的話', scores:{ S3:3 } },
+      { key:'D', text:'對方感覺被理解了，而且我們在同一個頻道上', scores:{ S4:3 } },
     ]
   },
   {
-    text: '你做了一個決定之後感到後悔，你最常有的反應是什麼？',
+    text: '當你提出一個想法，對方沒什麼反應，你通常會？',
     options: [
-      { key:'A', text:'試著轉移注意力，不去回想那個決定', scores:{ X1:3 } },
-      { key:'B', text:'反覆分析「如果當初選另一個方向」的各種可能', scores:{ X3:3 } },
-      { key:'C', text:'研究怎麼彌補或減少損失，積極找對策', scores:{ X2:3 } },
-      { key:'D', text:'承認後悔的感受，問自己這個決定教了我什麼', scores:{ X4:3 } }
+      { key:'A', text:'解釋更多細節，讓他理解這個方案的邏輯', scores:{ S1:3 } },
+      { key:'B', text:'開始擔心對方是不是不喜歡我這個人', scores:{ S2:3 } },
+      { key:'C', text:'繼續說，或者換一個話題', scores:{ S3:3 } },
+      { key:'D', text:'先停下來，問「你覺得這個方向怎麼樣？」', scores:{ S4:3 } },
     ]
   },
   {
-    text: '你休息的時候，腦子通常是什麼狀態？',
+    text: '別人跟你說一件讓他很困擾的事，你最自然的反應是？',
     options: [
-      { key:'A', text:'安靜下來反而更焦慮，我需要持續有事情做', scores:{ X1:3 } },
-      { key:'B', text:'開始思考計畫或需要解決的問題', scores:{ X2:3 } },
-      { key:'C', text:'反覆思考過去的對話或即將發生的事', scores:{ X3:3 } },
-      { key:'D', text:'可以比較放鬆，雖然有時候還是會有想法浮現', scores:{ X4:3 } }
+      { key:'A', text:'幫他想下一步，或者分析這個情況', scores:{ S1:3 } },
+      { key:'B', text:'深深感受到他的困擾，甚至為他焦慮', scores:{ S2:3 } },
+      { key:'C', text:'聽完後分享自己也有過類似的事', scores:{ S3:3 } },
+      { key:'D', text:'先確認他說的我有沒有理解正確，再問他希望我怎麼幫', scores:{ S4:3 } },
     ]
   },
   {
-    text: '你認為焦慮這個情緒，本質上是什麼？',
+    text: '在一個你很在意結果的對話裡，你最難做到的是？',
     options: [
-      { key:'A', text:'一種不舒服的感覺，應該要消除掉', scores:{ X1:3 } },
-      { key:'B', text:'一種訊號，告訴我有問題需要解決', scores:{ X2:3 } },
-      { key:'C', text:'我的腦子在保護我，雖然有時候幫倒忙', scores:{ X3:3 } },
-      { key:'D', text:'一種資訊，在告訴我某件事對我很重要', scores:{ X4:3 } }
+      { key:'A', text:'停止想解法，只是陪著對方在情緒裡', scores:{ S1:3 } },
+      { key:'B', text:'不讓情緒影響我的表達和判斷', scores:{ S2:3 } },
+      { key:'C', text:'確認我們真的在討論同一件事', scores:{ S3:3 } },
+      { key:'D', text:'在溝通當下調整策略，其實我已經做得還不錯了', scores:{ S4:3 } },
     ]
   },
   {
-    text: '當你的焦慮無法通過「做什麼」來解決的時候，你通常怎麼做？',
+    text: '你認為「深度溝通」最核心的能力是什麼？',
     options: [
-      { key:'A', text:'繼續分心，讓時間過去', scores:{ X1:3 } },
-      { key:'B', text:'更努力地尋找可以做的事', scores:{ X2:3 } },
-      { key:'C', text:'繼續思考，直到自己精疲力竭', scores:{ X3:3 } },
-      { key:'D', text:'試著接受「我現在沒辦法解決這件事」，然後放它在那裡', scores:{ X4:3 } }
+      { key:'A', text:'把複雜的事說清楚，讓對方理解', scores:{ S1:3 } },
+      { key:'B', text:'表達自己的感受，讓對方感受到你的真誠', scores:{ S2:3 } },
+      { key:'C', text:'讓對方說更多，你負責聆聽', scores:{ S3:3 } },
+      { key:'D', text:'識別這個對話屬於哪個頻道，然後讓雙方對齊', scores:{ S4:3 } },
     ]
   }
 ];
 
 const RESULTS = {
-  X1: {
-    type:     '迴避逃逸型',
-    subtitle: 'The Escape Artist',
-    desc:     '你應對焦慮的主要方式是「不去感覺它」——轉移注意力、讓自己保持忙碌、或找到某種讓你暫時不用面對它的活動。這個策略有效，但只在短期內有效。',
-    analysis: '迴避逃逸型是最常見的焦慮應對方式之一，也是最讓人筋疲力竭的一種。\n\n它的邏輯是：如果我不去感覺它，它就不存在。問題是焦慮不是一個需要被消除的訊號——它是一個需要被聽見的訊號。當你持續迴避它，它只好用更大的聲音回來。\n\n另一個代價是：你為了不感覺焦慮，需要持續尋找分心的事物。這讓你的生活變成一場不斷逃跑的遊戲——從焦慮逃到刷手機，從刷手機逃到工作，從工作逃到另一個分心。\n\n「與焦慮和解」的第一步不是消除它，而是停下來，讓自己感覺到它一分鐘，問一句話：「你在告訴我什麼？」',
-    morview:  '我理解這個模式——它給你的是即時的緩解，而那種緩解是真實的。但你付出的代價是能量，那些用來逃跑的能量，本來可以用在別的地方。\n\n一個低門檻的開始：下次感到焦慮的時候，不要立刻找事情做。給自己 60 秒，只是坐著感覺那個焦慮在身體的哪裡——是胸口緊？肩膀僵？胃不舒服？只是感覺，不需要解決。這一分鐘可能改變你和焦慮的關係。',
-    cta:      '留下 Email，我寄給你針對「迴避逃逸型」的 60 秒焦慮接觸練習。'
+  S1: {
+    type:     '解題優先型',
+    subtitle: 'The Problem Solver',
+    desc:     '你在溝通裡的主要卡關，是在對方需要「被理解」的時候，你進入了「解決問題」的模式。你的出發點是好的——你真的想幫忙。但這讓對方感到被忽略，而不是被支持。',
+    analysis: '解題優先型是最常見的溝通陷阱之一，特別容易出現在高執行力、有責任感的人身上。\n\n《Supercommunicators》的核心框架是：對話有三個頻道——「這件事怎麼解決」（實際頻道）、「我現在有什麼感受」（情緒頻道）、「我們的關係是什麼」（社交頻道）。\n\n你的自動模式是實際頻道。這讓你在問題解決型的對話裡非常有效，但在對方需要情緒頻道時，你的「幫忙」反而讓他們覺得「你根本沒在聽我說的是感受，你只想修理問題」。\n\n修正不是「不解決問題」，是先確認頻道：「你現在是想聊聊，還是想找解法？」這一句話可以讓你的溝通成效翻倍。',
+    morview:  'INTJ 的直接：你的解題能力是資產。問題是它在錯的情境被觸發了。\n\n下次有人跟你說困難的事，在你開口之前先停三秒，問自己：「他現在需要的是被理解，還是被幫助？」這三秒會改變你的整個溝通方式。',
+    cta:      '留下 Email，我寄給你《Supercommunicators》裡的「三頻道識別快速練習」。'
   },
-  X2: {
-    type:     '過度控制型',
-    subtitle: 'The Control Seeker',
-    desc:     '你用「解決問題」來應對焦慮——有焦慮就找方案，有不確定就研究清楚，有失控感就建立計畫。這個策略讓你很有生產力，但它有一個你可能還沒意識到的代價。',
-    analysis: '過度控制型的核心信念是：「如果我把所有事情都想清楚了，焦慮就會消失。」這個信念有時候對，但在更多情況下，它讓你陷入一個無盡的分析迴圈。\n\n因為焦慮的根源常常不是「問題沒解決」，而是「不確定性本身」。而不確定性是生活的基本結構，不是一個可以被研究清楚、計畫掉的問題。\n\n過度控制型在外部表現得很強——有條理、有執行力、能應對。但內部的焦慮往往更深，因為每一個被解決的問題，後面還有下一個問題。你的安全感建立在「我能控制」這件事上，而這個基礎是脆弱的。',
-    morview:  '你的問題解決能力是真實的優勢。但焦慮不是一個問題——它是一個感受。感受不是通過解決來處理的，而是通過被感覺、被接受來消化的。\n\n嘗試一個區分：這個焦慮有沒有「可以採取行動」的部分？如果有，採取行動。如果沒有（比如等待一個結果），那就是你需要練習和不確定性共存的時候。',
-    cta:      '留下 Email，我寄給你針對「過度控制型」的「可控 vs 不可控」區分練習。'
+  S2: {
+    type:     '情緒淹沒型',
+    subtitle: 'The Emotional Absorber',
+    desc:     '你在溝通裡的最大障礙，是情緒反應的速度比思考的速度快。你感受很強，也很真實——但在情緒很強烈的時候，你很難同時保持清晰的思考。',
+    analysis: '情緒淹沒型的人在溝通裡有一個獨特的能力：你能快速感受到他人的情緒，這讓你非常有同理心。但這也是你的挑戰——你吸收了太多對方的情緒，以至於無法在情緒高峰時保持有效的溝通。\n\n《Supercommunicators》說，深度連結需要「脆弱性」，但脆弱性和被情緒淹沒是不同的。脆弱是有意識地選擇分享感受；被淹沒是情緒主導了你的整個反應系統。\n\n你需要的不是壓制情緒，而是建立情緒和行動之間的緩衝空間。最簡單的方法是：當你感到情緒上升，暫停一下，問自己「我現在感受到什麼？這個感受告訴我什麼？」然後再決定怎麼回應。',
+    morview:  '你的情感深度是連結的資源，不是弱點。你需要練習的是：讓感受成為資訊，而不是指令。感受到情緒，不代表必須立刻在那個情緒的驅動下說話或行動。',
+    cta:      '留下 Email，我寄給你《Supercommunicators》裡的「情緒緩衝練習」——在情緒高峰時保持清晰。'
   },
-  X3: {
-    type:     '反芻思考型',
-    subtitle: 'The Ruminator',
-    desc:     '你的焦慮主要住在你的腦子裡——你反覆思考同一件事，從不同角度分析，試圖找到一個讓你能放下來的確定答案。那個答案幾乎從來不會來，因為它不是思考能給你的東西。',
-    analysis: '反芻思考是焦慮最常見的認知模式之一。它的感覺像是「在認真思考問題」，但它和真正的問題解決有一個關鍵差異：真正的問題解決在思考之後，有新的認識或行動；反芻是在同一個地方原地踏步，越想越焦慮。\n\n反芻的隱性成本非常高——它消耗工作記憶和情緒資源，讓你很難做別的事。它也常常讓你的焦慮螺旋上升，因為越想越多角度，越多角度就越多需要擔心的地方。\n\n反芻型的焦慮特別難處理，因為「繼續思考」感覺就像是在「認真對待這件事」。停止思考感覺像是在逃避。但有時候，停下來才是對那件事最誠實的回應。',
-    morview:  '你的思維能力很強——但它現在在吃你自己。\n\n一個有效的打斷方式：當你發現自己在反芻，問自己「這個想法對我有用嗎？」——不是「這個想法對不對」，是「它有用嗎？」如果答案是沒有，你有許可讓它先放在那裡，而不是繼續追它。',
-    cta:      '留下 Email，我寄給你針對「反芻思考型」的打斷迴圈和接地練習。'
+  S3: {
+    type:     '平行對話型',
+    subtitle: 'The Parallel Talker',
+    desc:     '你和對方說的是不同的東西——不是因為你不聽，是因為你們沒有校準頻道。你在實際頻道，對方在情緒頻道；或者你在講事實，對方在講感受。',
+    analysis: '平行對話型最常見的體驗是：說了很多，但感覺沒有真正連上。對方好像沒在聽，或者你好像沒理解他真正的意思。\n\n這不是溝通能力差，是頻道不對。《Supercommunicators》的核心洞見是：有效溝通的前提是「校準」——讓兩個人在同一個對話類型裡。\n\n平行對話發生是因為沒有人去確認「我們現在在談的是什麼層次的問題」。你可以是那個去校準的人：在對話中加一句「我想確認一下，你說的這件事，你比較想討論的是……還是……？」\n\n這一個習慣，可以把大多數卡住的對話重新打開。',
+    morview:  '你需要的不是更多表達能力，是更多確認的習慣。在說之前先聽，在聽之後先確認，再說。這個順序改變，你的溝通成效會有很明顯的提升。',
+    cta:      '留下 Email，我寄給你《Supercommunicators》裡的「頻道校準一句話框架」。'
   },
-  X4: {
-    type:     '接觸轉化型',
-    subtitle: 'The Transformer',
-    desc:     '你已經發展出一種相對成熟的焦慮關係——你不迴避它，也不試圖強行消除它，而是把它當作一個訊號來聆聽。這個位置不是沒有焦慮，而是焦慮對你來說是有意義的資訊。',
-    analysis: '接觸轉化型代表一種對焦慮比較整合的關係。你理解焦慮是有功能的——它在告訴你某件事對你很重要，或者某種需求沒有被照顧到。\n\n但這個類型也有它的挑戰：有時候「理解焦慮」可以成為另一種回避——你在「分析」焦慮，而不是真正地感受它。智識化是一種精緻的迴避。\n\n另一個值得注意的是：接觸轉化需要容量——有時候焦慮的強度超過你當下能接觸的程度，這時候需要先有外部支持（關係、身體安撫），再回來和它接觸，而不是強迫自己在任何狀態下都要「處理」它。',
-    morview:  '你的方向是對的。繼續往前的工作是：當焦慮很強的時候，你能不能先讓身體落地（呼吸、移動、接觸、感受當下環境），再回來和焦慮對話，而不是直接進入「這告訴我什麼」的分析？\n\n身體先，理解後。這是接觸轉化的完整路徑。',
-    cta:      '留下 Email，我寄給你針對「接觸轉化型」的進階整合練習。'
+  S4: {
+    type:     '深度連結型',
+    subtitle: 'The Deep Connector',
+    desc:     '你已經發展出一種相對成熟的溝通直覺——你能感受到對話的頻道，能在不同需求之間調整，能在聆聽的同時保持清晰。這不是完美，而是一種持續在練習中的能力。',
+    analysis: '深度連結型代表一個對溝通有比較整合認識的人。你不只在「說」，也在「讀取」——讀取對方需要什麼，讀取這個對話在哪個層次發生，讀取什麼時候需要切換頻道。\n\n但這個位置也有它的挑戰：有時候你的「讀取」是假設，不是確認。你以為你知道對方在哪個頻道，但其實你沒有問。\n\n《Supercommunicators》說，最高階的溝通者不是「最會說話的人」，而是「最讓對方感到被理解的人」。被理解不是你說「我理解你」，是對方感受到「他真的懂我在說什麼」。\n\n你的下一步是：不只讀取，還要確認。「我理解你說的是……我有沒有說對？」這一句話是從「直覺好」到「真正連結」的跨越。',
+    morview:  '你的溝通直覺是真實的優勢。現在的工作是讓它更可靠——不靠感覺，靠確認。每次覺得「我理解他了」，就問一句「我說得對嗎？」',
+    cta:      '留下 Email，我寄給你《Supercommunicators》進階練習：「理解確認迴圈」。'
   }
 };
 </script>
@@ -455,14 +456,14 @@ function openLine() { window.open(CFG.lineUrl, '_blank'); }
 function openIG()   { window.open(CFG.igUrl,   '_blank'); }
 
 const KIT_MAPPING = {
-  'X1': { tag_id: 20674024, seq_id: 2808454 },
-  'X2': { tag_id: 20674025, seq_id: 2808456 },
-  'X3': { tag_id: 20674026, seq_id: 2808457 },
-  'X4': { tag_id: 20674027, seq_id: 2808458 },
+  'S1': { tag_id: 20715701, seq_id: 2809719 },
+  'S2': { tag_id: 20715702, seq_id: 2809720 },
+  'S3': { tag_id: 20715704, seq_id: 2809721 },
+  'S4': { tag_id: 20715705, seq_id: 2809722 },
 };
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
-const pctMap = { X1: 12.5, X2: 37.5, X3: 62.5, X4: 87.5 };
+const pctMap = { S1: 12.5, S2: 37.5, S3: 62.5, S4: 87.5 };
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -541,7 +542,7 @@ function buildShareHTML(r) {
   return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 44px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 溝通模式診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 20px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
@@ -553,7 +554,7 @@ function buildFullPDFHTML(r) {
   let h = '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 48px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 溝通模式診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 24px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +

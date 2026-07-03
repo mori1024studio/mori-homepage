@@ -3,19 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MORI — 你的焦慮模式是哪種？</title>
+<title>MORI — 你身邊的人，是朋友還是敵人？</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet">
 <link rel="stylesheet" href="/shared/style.css">
 <style>
-/* v1.0 | 2026-06-27 | 與焦慮和解測驗 · T4 光譜 */
-
+/* v1.0 | 2026-07-02 | 朋友與敵人測驗 · T4 光譜 */
 #site { min-height: 100vh; display: flex; flex-direction: column; }
 .quiz-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 80px; }
 .screen { width: 100%; max-width: 640px; opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s ease; pointer-events: none; position: absolute; }
 .screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
-
 .start-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.55); margin-bottom: 20px; text-transform: uppercase; }
 .start-title { font-family: var(--font-display); font-weight: 900; font-size: 52px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.15; margin-bottom: 28px; }
 .start-desc { font-family: 'LXGW WenKai TC', serif; font-size: 16px; line-height: 2; color: rgba(237,232,223,.55); margin-bottom: 48px; }
@@ -24,7 +22,6 @@
 .btn-start:hover { border-color: var(--gold); background: rgba(196,169,106,.06); }
 .btn-start-arrow { display: block; width: 28px; height: 1px; background: var(--gold); transition: width .3s; }
 .btn-start:hover .btn-start-arrow { width: 44px; }
-
 .progress-wrap { margin-bottom: 40px; }
 .progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .progress-num { font-family: 'Kaushan Script', cursive; font-size: 22px; color: var(--gold); }
@@ -49,7 +46,6 @@
 .quiz-nav { display: flex; align-items: center; margin-top: 24px; }
 .btn-prev-q { background: transparent; border: 1px solid var(--border); border-radius: 100px; padding: 10px 22px; font-size: 13px; color: var(--muted); cursor: none; font-family: var(--font-ui); transition: border-color .3s, color .3s; }
 .btn-prev-q:hover { border-color: rgba(196,169,106,.35); color: var(--text); }
-
 .survey-type-teaser { text-align: center; margin-bottom: 28px; }
 .survey-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 .survey-type-name { font-size: clamp(24px,5vw,34px); font-weight: 900; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
@@ -63,7 +59,6 @@
 .survey-opt.picked { border-color: var(--gold); color: var(--text); background: rgba(196,169,106,.08); }
 .btn-unlock { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--gold),var(--gold-b)); color: #0A0A0F; font-family: var(--font-ui); font-size: 15px; font-weight: 900; border: none; border-radius: 100px; cursor: none; margin-top: 8px; opacity: .35; pointer-events: none; transition: opacity .25s; }
 .btn-unlock:not([disabled]) { opacity: 1; pointer-events: auto; }
-
 .result-eyebrow { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .5em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 16px; }
 .result-type { font-family: var(--font-display); font-weight: 900; font-size: 64px; background: linear-gradient(160deg, #FFF 0%, #D4B878 50%, #C4A96A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 8px; }
 .result-subtitle { font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: .35em; color: rgba(196,169,106,.6); text-transform: uppercase; margin-bottom: 32px; }
@@ -75,8 +70,6 @@
 .result-morview-block { margin-bottom: 32px; padding: 20px; border-left: 2px solid rgba(196,169,106,.3); background: rgba(196,169,106,.04); }
 .result-morview-label { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .4em; color: rgba(196,169,106,.45); text-transform: uppercase; margin-bottom: 12px; }
 .result-morview-text { font-family: 'LXGW WenKai TC', serif; font-size: 14px; line-height: 2; color: rgba(196,169,106,.75); white-space: pre-line; }
-
-/* ── 光譜 ── */
 .spectrum-wrap { margin: 36px 0 44px; }
 .spectrum-labels-top { display: flex; justify-content: space-between; margin-bottom: 8px; }
 .spectrum-label-item { font-family: 'Noto Sans TC', sans-serif; font-size: 9px; letter-spacing: .08em; color: rgba(154,140,120,.45); text-align: center; max-width: 80px; line-height: 1.4; }
@@ -87,7 +80,6 @@
 .spectrum-zone-labels { display: flex; justify-content: space-between; margin-top: 10px; }
 .spectrum-zone-label { flex: 1; text-align: center; font-family: 'Noto Sans TC', sans-serif; font-size: 10px; font-weight: 700; color: rgba(154,140,120,.35); letter-spacing: .06em; transition: color .4s; cursor: default; }
 .spectrum-zone-label.active-zone { color: var(--gold); }
-
 .btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
 .btn-sec-row { display: flex; gap: 10px; }
 .btn-line { display: flex; align-items: center; justify-content: center; gap: 10px; background: #06C755; color: #fff; border: none; border-radius: 100px; padding: 16px; font-size: 15px; font-weight: 900; cursor: none; font-family: var(--font-ui); transition: opacity .2s; width: 100%; }
@@ -119,10 +111,8 @@
 </style>
 </head>
 <body>
-
 <div id="god-ray"></div>
 <div id="vignette"></div>
-
 <div id="preloader">
   <div id="pre-top"></div><div id="pre-bot"></div>
   <div id="pre-corner-tl"></div><div id="pre-corner-br"></div>
@@ -132,10 +122,8 @@
     <div class="pre-line" id="line-r"></div>
   </div>
 </div>
-
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
-
 <div id="site">
   <nav>
     <a href="/" class="logo" style="text-decoration:none">Mori</a>
@@ -144,9 +132,7 @@
       <a href="#" target="_blank">Line</a>
     </div>
   </nav>
-
   <main class="quiz-main">
-
     <div class="screen active" id="screen-start">
       <div class="gothic-arch" style="position:relative;width:100%;height:50px;margin-bottom:8px">
         <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -157,13 +143,12 @@
       <div class="ornament" style="margin-bottom:36px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="start-eyebrow">Mori Studio · 情緒探索</p>
+      <p class="start-eyebrow">Mori Studio · 人際策略診斷</p>
       <h1 class="start-title" id="quiz-title"></h1>
       <p class="start-desc" id="quiz-desc"></p>
       <p class="start-meta" id="quiz-meta"></p>
       <button class="btn-start" onclick="startQuiz()">開始探索<span class="btn-start-arrow"></span></button>
     </div>
-
     <div class="screen" id="screen-quiz">
       <div class="progress-wrap">
         <div class="progress-label">
@@ -174,14 +159,13 @@
           <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
         </div>
       </div>
-      <p class="question-tag" id="q-tag">焦慮模式探索</p>
+      <p class="question-tag" id="q-tag">人際策略診斷</p>
       <p class="question-text" id="q-text"></p>
       <div class="options" id="options-wrap"></div>
       <div class="quiz-nav">
         <button class="btn-prev-q" id="btnPrev" onclick="prevQ()">← 返回首頁</button>
       </div>
     </div>
-
     <div class="screen" id="screen-survey">
       <div class="survey-type-teaser">
         <p class="survey-eyebrow">你的結果出來了</p>
@@ -190,77 +174,67 @@
       </div>
       <div class="survey-divider">✦ 最後 3 個問題，讓我給你更精準的內容</div>
       <div class="survey-group">
-        <p class="survey-q">你的焦慮通常最容易在什麼情況下出現？</p>
+        <p class="survey-q">在你的關係裡，你最常遇到哪種困境？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(1,'A',this)">面對不確定的未來（工作、關係、財務）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'B',this)">人際關係中（衝突、被評判、被拒絕）</button>
-          <button class="survey-opt" onclick="surveyPick(1,'C',this)">當我需要做決定或承擔責任的時候</button>
-          <button class="survey-opt" onclick="surveyPick(1,'D',this)">安靜下來的時候，腦子開始轉個不停</button>
+          <button class="survey-opt" onclick="surveyPick(1,'A',this)">我在競爭中很難信任別人，總是把對方當作潛在威脅</button>
+          <button class="survey-opt" onclick="surveyPick(1,'B',this)">我太容易讓步，到最後感覺自己的需求沒有被照顧到</button>
+          <button class="survey-opt" onclick="surveyPick(1,'C',this)">我靠直覺判斷人，但有時候我的判斷是錯的</button>
+          <button class="survey-opt" onclick="surveyPick(1,'D',this)">我能判斷局勢，但有時候行動的時機或方式不夠精準</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你希望這個測驗最直接幫到你的是什麼？</p>
+        <p class="survey-q">你最想改善的人際能力是什麼？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(2,'A',this)">了解我的焦慮模式從哪裡來</button>
-          <button class="survey-opt" onclick="surveyPick(2,'B',this)">找到立即可用的「當下緩解」方法</button>
-          <button class="survey-opt" onclick="surveyPick(2,'C',this)">知道怎麼建立長期更穩定的情緒底盤</button>
-          <button class="survey-opt" onclick="surveyPick(2,'D',this)">了解怎麼讓焦慮成為有用的訊號而不是障礙</button>
+          <button class="survey-opt" onclick="surveyPick(2,'A',this)">學會在競爭中建立信任，而不是把合作視為弱點</button>
+          <button class="survey-opt" onclick="surveyPick(2,'B',this)">學會在關係裡設定界線，保護自己的利益而不傷害關係</button>
+          <button class="survey-opt" onclick="surveyPick(2,'C',this)">讓我的判斷更準確，不只靠感覺而是有更多資訊支撐</button>
+          <button class="survey-opt" onclick="surveyPick(2,'D',this)">在複雜的人際局勢中，更有效率地達成我想要的結果</button>
         </div>
       </div>
       <div class="survey-group">
-        <p class="survey-q">你之前試過哪些方式處理焦慮？</p>
+        <p class="survey-q">《朋友與敵人》裡，哪個觀點最讓你有感觸？</p>
         <div class="survey-opts">
-          <button class="survey-opt" onclick="surveyPick(3,'A',this)">告訴自己「不要想太多」，試著分心</button>
-          <button class="survey-opt" onclick="surveyPick(3,'B',this)">把問題想得很徹底，直到找到確定的答案</button>
-          <button class="survey-opt" onclick="surveyPick(3,'C',this)">冥想、呼吸、或正念練習</button>
-          <button class="survey-opt" onclick="surveyPick(3,'D',this)">跟人說話、寫日記、或尋求幫助</button>
+          <button class="survey-opt" onclick="surveyPick(3,'A',this)">「競爭和合作不是對立的——最聰明的人知道何時切換。」</button>
+          <button class="survey-opt" onclick="surveyPick(3,'B',this)">「在談判中，讓步太快會讓對方認為你的底牌已經攤開。」</button>
+          <button class="survey-opt" onclick="surveyPick(3,'C',this)">「地位和權力影響你如何被對待——你需要主動管理它。」</button>
+          <button class="survey-opt" onclick="surveyPick(3,'D',this)">「換位思考是人際策略最被低估的工具。」</button>
         </div>
       </div>
       <button class="btn-unlock" id="btnUnlock" onclick="unlockResult()" disabled>查看完整分析 →</button>
     </div>
-
-    <!-- 結果畫面（T4 光譜）-->
     <div class="screen" id="screen-result">
       <div class="ornament" style="margin-bottom:32px">
         <span class="orn-line orn-line-l"></span><span class="orn-diamond"></span><span class="orn-line orn-line-r"></span>
       </div>
-      <p class="result-eyebrow">你的焦慮模式</p>
+      <p class="result-eyebrow">你的人際策略模式</p>
       <h2 class="result-type" id="r-type"></h2>
       <p class="result-subtitle" id="r-subtitle"></p>
-
       <div class="spectrum-wrap">
         <div class="spectrum-labels-top">
-          <div class="spectrum-label-item">逃避迴避</div>
-          <div class="spectrum-label-item">強迫控制</div>
-          <div class="spectrum-label-item">反芻思考</div>
-          <div class="spectrum-label-item">接觸轉化</div>
+          <div class="spectrum-label-item">競爭導向</div>
+          <div class="spectrum-label-item">過度配合</div>
+          <div class="spectrum-label-item">直覺辨讀</div>
+          <div class="spectrum-label-item">策略清醒</div>
         </div>
         <div class="spectrum-track">
           <div class="spectrum-marker" id="spectrum-marker"></div>
         </div>
         <div class="spectrum-tick-row">
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
-          <div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div><div class="spectrum-tick"></div><div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div><div class="spectrum-tick"></div><div class="spectrum-tick"></div>
+          <div class="spectrum-tick"></div><div class="spectrum-tick"></div><div class="spectrum-tick"></div>
         </div>
         <div class="spectrum-zone-labels">
-          <div class="spectrum-zone-label" data-zone="X1">迴避逃逸</div>
-          <div class="spectrum-zone-label" data-zone="X2">過度控制</div>
-          <div class="spectrum-zone-label" data-zone="X3">反芻思考</div>
-          <div class="spectrum-zone-label" data-zone="X4">接觸轉化</div>
+          <div class="spectrum-zone-label" data-zone="F1">競爭導向型</div>
+          <div class="spectrum-zone-label" data-zone="F2">過度配合型</div>
+          <div class="spectrum-zone-label" data-zone="F3">直覺辨讀型</div>
+          <div class="spectrum-zone-label" data-zone="F4">策略清醒型</div>
         </div>
       </div>
-
       <div class="result-divider"></div>
       <p class="result-desc" id="r-desc"></p>
       <div class="result-analysis-block">
-        <p class="result-analysis-label">模式解析</p>
+        <p class="result-analysis-label">人際策略深度分析</p>
         <p class="result-analysis-text" id="r-analysis"></p>
       </div>
       <div class="result-morview-block">
@@ -297,20 +271,18 @@
       <div class="related">
         <p class="related-label">延伸探索</p>
         <div class="related-links">
-          <a href="/quiz/not-enough/" class="related-link">
-            <span class="related-link-title">你的「不夠好」從哪裡來？</span>
-            <span class="related-link-tag">自我價值 →</span>
+          <a href="/quiz/hidden-potential/" class="related-link">
+            <span class="related-link-title">你的潛能，被什麼卡住了？</span>
+            <span class="related-link-tag">隱性潛能 →</span>
           </a>
-          <a href="/quiz/beyond-origins/" class="related-link">
-            <span class="related-link-title">你的原生家庭模式還在控制你嗎？</span>
-            <span class="related-link-tag">原生家庭 →</span>
+          <a href="/quiz/think-again/" class="related-link">
+            <span class="related-link-title">你在哪種思維模式裡最容易卡住？</span>
+            <span class="related-link-tag">逆思維 →</span>
           </a>
         </div>
       </div>
     </div>
-
   </main>
-
   <footer>
     <div class="footer-logo">Mori</div>
     <div class="footer-links"><a href="https://instagram.com/mori1024_" target="_blank">Instagram</a><a href="#" target="_blank">Line</a></div>
@@ -320,119 +292,119 @@
 
 <script>
 const QUIZ_INFO = {
-  title:       '你的焦慮模式是哪種？',
-  desc:        '焦慮不是你的敵人——它是一個訊號，只是你可能還不知道它在告訴你什麼。這個測驗幫你找出你和焦慮的相處模式，以及怎麼開始讓它成為你的資源，而不是障礙。',
+  title:       '你身邊的人，是朋友還是敵人？',
+  desc:        '我們每天都在競爭和合作之間切換，但很少意識到自己的預設模式是什麼。Galinsky 和 Schweitzer 在《朋友與敵人》裡說，最聰明的人不是選邊站的人，而是知道在什麼時候切換的人。找出你的人際策略模式，看看你的盲點在哪裡。',
   meta:        '共 8 題 · 約 3 分鐘',
-  questionTag: '焦慮模式探索'
+  questionTag: '人際策略診斷'
 };
 
 const QUESTIONS = [
   {
-    text: '你感到焦慮的時候，第一個本能反應是什麼？',
+    text: '當你進入一個新的工作或合作關係，你的第一個直覺是什麼？',
     options: [
-      { key:'A', text:'找事情讓自己分心：刷手機、看劇、吃東西', scores:{ X1:3 } },
-      { key:'B', text:'開始列清單、研究解決方案，或想辦法掌控狀況', scores:{ X2:3 } },
-      { key:'C', text:'開始反覆想同一個問題，試圖找到確定的答案', scores:{ X3:3 } },
-      { key:'D', text:'先讓自己感覺到那個焦慮，問自己它在提醒我什麼', scores:{ X4:3 } }
+      { key:'A', text:'這個人可能是競爭對手，我需要先確認他的動機和意圖', scores:{ F1:3 } },
+      { key:'B', text:'我希望建立一個友好的關係，所以我先展示我的誠意和善意', scores:{ F2:3 } },
+      { key:'C', text:'我先觀察，靠感覺判斷這個人能不能信任', scores:{ F3:3 } },
+      { key:'D', text:'我評估這段關係的潛在價值，然後決定投入多少', scores:{ F4:3 } }
     ]
   },
   {
-    text: '你對於「不確定性」最核心的感受是什麼？',
+    text: '在談判或討論中，你最常有的感覺是什麼？',
     options: [
-      { key:'A', text:'非常不舒服，我寧願知道不好的結果，也不想懸在那裡', scores:{ X2:3 } },
-      { key:'B', text:'讓我焦慮，我會試著把不確定性研究清楚', scores:{ X3:3 } },
-      { key:'C', text:'讓我想逃開，有什麼能讓我不去想這件事就好', scores:{ X1:3 } },
-      { key:'D', text:'不舒服，但我知道不確定性是正常的，有時候只是需要等待', scores:{ X4:3 } }
+      { key:'A', text:'我需要保護自己的立場，不能讓對方佔到便宜', scores:{ F1:3 } },
+      { key:'B', text:'我希望找到一個兩方都滿意的方案，不想有輸贏', scores:{ F2:3 } },
+      { key:'C', text:'我在觀察對方的態度和語氣，感覺他的真實意圖', scores:{ F3:3 } },
+      { key:'D', text:'我在評估局勢，考慮如何最有效率地達成我的目標', scores:{ F4:3 } }
     ]
   },
   {
-    text: '你最近一次感到強烈焦慮，你的腦子在做什麼？',
+    text: '你怎麼看「競爭」在你的生活裡？',
     options: [
-      { key:'A', text:'反覆重播同一個情境或對話，想搞清楚哪裡出錯了', scores:{ X3:3 } },
-      { key:'B', text:'不斷想「如果...怎麼辦」，最壞情況的清單越列越長', scores:{ X2:3 } },
-      { key:'C', text:'試圖不去想那件事，讓自己做別的事', scores:{ X1:3 } },
-      { key:'D', text:'試著理解這個焦慮在對什麼情況做出反應', scores:{ X4:3 } }
+      { key:'A', text:'競爭是常態，你不競爭就會被人超越', scores:{ F1:3 } },
+      { key:'B', text:'我不太喜歡競爭，競爭會破壞關係', scores:{ F2:3 } },
+      { key:'C', text:'要看情況——有些競爭是健康的，有些是不必要的', scores:{ F3:3 } },
+      { key:'D', text:'競爭和合作都是工具，重點是知道什麼時候用哪一個', scores:{ F4:3 } }
     ]
   },
   {
-    text: '你的朋友向你描述他們的焦慮，你最常給的建議是什麼？',
+    text: '有人對你不公平或佔了你便宜，你最可能的反應是？',
     options: [
-      { key:'A', text:'「先不要想這件事，去做點讓自己開心的事」', scores:{ X1:3 } },
-      { key:'B', text:'「我們來想想有什麼解決方案」——開始分析', scores:{ X2:3 } },
-      { key:'C', text:'「你有沒有考慮過這個、那個、還有那個...」——很多角度', scores:{ X3:3 } },
-      { key:'D', text:'「這個焦慮告訴你什麼？」——先問，不急著解決', scores:{ X4:3 } }
+      { key:'A', text:'我會直接對抗，保護我的利益', scores:{ F1:3 } },
+      { key:'B', text:'我通常選擇忍讓，因為衝突的代價太高', scores:{ F2:3 } },
+      { key:'C', text:'要看對方是有意還是無意，再決定怎麼應對', scores:{ F3:3 } },
+      { key:'D', text:'我會選擇最有效率的方式讓局勢回到平衡，不一定是直接衝突', scores:{ F4:3 } }
     ]
   },
   {
-    text: '你做了一個決定之後感到後悔，你最常有的反應是什麼？',
+    text: '你覺得「信任」在關係裡應該怎麼建立？',
     options: [
-      { key:'A', text:'試著轉移注意力，不去回想那個決定', scores:{ X1:3 } },
-      { key:'B', text:'反覆分析「如果當初選另一個方向」的各種可能', scores:{ X3:3 } },
-      { key:'C', text:'研究怎麼彌補或減少損失，積極找對策', scores:{ X2:3 } },
-      { key:'D', text:'承認後悔的感受，問自己這個決定教了我什麼', scores:{ X4:3 } }
+      { key:'A', text:'信任需要被賺到，我不會輕易信任一個新認識的人', scores:{ F1:3 } },
+      { key:'B', text:'我傾向先給予信任，除非對方讓我失望', scores:{ F2:3 } },
+      { key:'C', text:'我靠直覺判斷一個人是否值得信任', scores:{ F3:3 } },
+      { key:'D', text:'我會觀察行為模式，然後根據數據決定信任程度', scores:{ F4:3 } }
     ]
   },
   {
-    text: '你休息的時候，腦子通常是什麼狀態？',
+    text: 'Galinsky 說：「讓步太快會讓對方認為你的底線已經攤開。」你對這句話的感受是？',
     options: [
-      { key:'A', text:'安靜下來反而更焦慮，我需要持續有事情做', scores:{ X1:3 } },
-      { key:'B', text:'開始思考計畫或需要解決的問題', scores:{ X2:3 } },
-      { key:'C', text:'反覆思考過去的對話或即將發生的事', scores:{ X3:3 } },
-      { key:'D', text:'可以比較放鬆，雖然有時候還是會有想法浮現', scores:{ X4:3 } }
+      { key:'A', text:'完全同意，所以我在談判中通常比較強硬', scores:{ F1:3 } },
+      { key:'B', text:'我知道這個道理，但我還是很難不妥協，因為我想維持關係', scores:{ F2:3 } },
+      { key:'C', text:'我會看對方的反應再決定，不是每次都這樣', scores:{ F3:3 } },
+      { key:'D', text:'我會策略性地控制讓步的時機和幅度', scores:{ F4:3 } }
     ]
   },
   {
-    text: '你認為焦慮這個情緒，本質上是什麼？',
+    text: '當你觀察一個人的時候，你最依賴什麼？',
     options: [
-      { key:'A', text:'一種不舒服的感覺，應該要消除掉', scores:{ X1:3 } },
-      { key:'B', text:'一種訊號，告訴我有問題需要解決', scores:{ X2:3 } },
-      { key:'C', text:'我的腦子在保護我，雖然有時候幫倒忙', scores:{ X3:3 } },
-      { key:'D', text:'一種資訊，在告訴我某件事對我很重要', scores:{ X4:3 } }
+      { key:'A', text:'他過去的行為記錄，還有他在什麼時候對我不誠實', scores:{ F1:3 } },
+      { key:'B', text:'他給我的感覺，以及他是否對我展現出善意', scores:{ F2:3 } },
+      { key:'C', text:'我的直覺——通常第一印象相當準確', scores:{ F3:3 } },
+      { key:'D', text:'多個維度的資訊：行為、動機、背景、以及他對其他人的態度', scores:{ F4:3 } }
     ]
   },
   {
-    text: '當你的焦慮無法通過「做什麼」來解決的時候，你通常怎麼做？',
+    text: '你在什麼情況下會選擇「合作」而不是「競爭」？',
     options: [
-      { key:'A', text:'繼續分心，讓時間過去', scores:{ X1:3 } },
-      { key:'B', text:'更努力地尋找可以做的事', scores:{ X2:3 } },
-      { key:'C', text:'繼續思考，直到自己精疲力竭', scores:{ X3:3 } },
-      { key:'D', text:'試著接受「我現在沒辦法解決這件事」，然後放它在那裡', scores:{ X4:3 } }
+      { key:'A', text:'很少——合作對我來說意味著我需要依賴別人，這讓我不安', scores:{ F1:3 } },
+      { key:'B', text:'大多數時候——我寧可合作也不想競爭', scores:{ F2:3 } },
+      { key:'C', text:'當我感覺對方是可以合作的人，我就會選擇合作', scores:{ F3:3 } },
+      { key:'D', text:'當合作能創造比競爭更大的回報，而且風險在可控範圍內', scores:{ F4:3 } }
     ]
   }
 ];
 
 const RESULTS = {
-  X1: {
-    type:     '迴避逃逸型',
-    subtitle: 'The Escape Artist',
-    desc:     '你應對焦慮的主要方式是「不去感覺它」——轉移注意力、讓自己保持忙碌、或找到某種讓你暫時不用面對它的活動。這個策略有效，但只在短期內有效。',
-    analysis: '迴避逃逸型是最常見的焦慮應對方式之一，也是最讓人筋疲力竭的一種。\n\n它的邏輯是：如果我不去感覺它，它就不存在。問題是焦慮不是一個需要被消除的訊號——它是一個需要被聽見的訊號。當你持續迴避它，它只好用更大的聲音回來。\n\n另一個代價是：你為了不感覺焦慮，需要持續尋找分心的事物。這讓你的生活變成一場不斷逃跑的遊戲——從焦慮逃到刷手機，從刷手機逃到工作，從工作逃到另一個分心。\n\n「與焦慮和解」的第一步不是消除它，而是停下來，讓自己感覺到它一分鐘，問一句話：「你在告訴我什麼？」',
-    morview:  '我理解這個模式——它給你的是即時的緩解，而那種緩解是真實的。但你付出的代價是能量，那些用來逃跑的能量，本來可以用在別的地方。\n\n一個低門檻的開始：下次感到焦慮的時候，不要立刻找事情做。給自己 60 秒，只是坐著感覺那個焦慮在身體的哪裡——是胸口緊？肩膀僵？胃不舒服？只是感覺，不需要解決。這一分鐘可能改變你和焦慮的關係。',
-    cta:      '留下 Email，我寄給你針對「迴避逃逸型」的 60 秒焦慮接觸練習。'
+  F1: {
+    type:     '競爭導向型',
+    subtitle: 'The Competition Oriented',
+    desc:     '你的預設模式是競爭。你警覺、自保，對關係裡的潛在威脅保持高度敏感。Galinsky 和 Schweitzer 說，這種模式在某些情境裡是優勢，但它也可能讓你錯過透過合作創造的更大價值。',
+    analysis: 'Galinsky 和 Schweitzer 在《朋友與敵人》裡說，人際關係的本質是「既合作又競爭（frenemy）」——我們同時是彼此的朋友和潛在對手。\n\n競爭導向型的人理解這個複雜性，但他們的天平傾向競爭端。這帶來了一個核心的機會成本：**他們在潛在盟友身上看到的是威脅，在合作機會裡看到的是風險。**\n\n書裡有一個關鍵的研究發現：在談判中，提前採取「合作信號」的一方，長期來看反而創造了更大的總價值——即使在短期的「誰讓誰多一點」上可能看起來輸了。\n\n競爭導向型最常損失的，是那些「如果建立了信任就能發生」的機會。他們在保護自己不被利用的同時，也保護自己不去利用合作的力量。\n\n具體的改善方向：\n1. 練習在低風險的情境裡主動釋放合作信號\n2. 嘗試在談判前先問「這段關係的長期價值是什麼？」再決定策略\n3. 注意你的「競爭警報系統」有沒有在不必要的地方響起',
+    morview:  '你不缺乏保護自己的能力——你缺乏的是選擇性信任的勇氣。\n\nGalinsky 說，最有效率的人際策略不是「總是競爭」或「總是合作」，而是知道哪些關係值得建立信任、然後在那些關係裡真正地合作。\n\n試著問自己：你身邊有沒有一段你本來可以更深度合作、但因為警戒心而讓它停在表面的關係？',
+    cta:      '留下 Email，我寄給你「競爭導向型的策略升級——如何在保護自己的同時建立真正的盟友關係」。'
   },
-  X2: {
-    type:     '過度控制型',
-    subtitle: 'The Control Seeker',
-    desc:     '你用「解決問題」來應對焦慮——有焦慮就找方案，有不確定就研究清楚，有失控感就建立計畫。這個策略讓你很有生產力，但它有一個你可能還沒意識到的代價。',
-    analysis: '過度控制型的核心信念是：「如果我把所有事情都想清楚了，焦慮就會消失。」這個信念有時候對，但在更多情況下，它讓你陷入一個無盡的分析迴圈。\n\n因為焦慮的根源常常不是「問題沒解決」，而是「不確定性本身」。而不確定性是生活的基本結構，不是一個可以被研究清楚、計畫掉的問題。\n\n過度控制型在外部表現得很強——有條理、有執行力、能應對。但內部的焦慮往往更深，因為每一個被解決的問題，後面還有下一個問題。你的安全感建立在「我能控制」這件事上，而這個基礎是脆弱的。',
-    morview:  '你的問題解決能力是真實的優勢。但焦慮不是一個問題——它是一個感受。感受不是通過解決來處理的，而是通過被感覺、被接受來消化的。\n\n嘗試一個區分：這個焦慮有沒有「可以採取行動」的部分？如果有，採取行動。如果沒有（比如等待一個結果），那就是你需要練習和不確定性共存的時候。',
-    cta:      '留下 Email，我寄給你針對「過度控制型」的「可控 vs 不可控」區分練習。'
+  F2: {
+    type:     '過度配合型',
+    subtitle: 'The Over-Accommodating',
+    desc:     '你的預設模式是配合和維持和諧。你不喜歡衝突，你願意讓步來保持關係的穩定。Galinsky 和 Schweitzer 說，這種模式讓你的人緣很好，但也可能讓你在談判和關係裡持續處於弱勢。',
+    analysis: 'Galinsky 和 Schweitzer 做了大量的談判研究，其中一個最清楚的發現是：**讓步太快不只是讓你輸掉即時的利益，它也改變了對方對你的定位。**\n\n當你習慣性地讓步，對方學到了一件事：施壓對你有效。這在無意中建立了一個讓你持續處於弱勢的動態。\n\n過度配合型的人通常有一個很深的信念：「維持關係比爭取利益更重要。」這個信念在某些情境是對的，但它不能成為所有情境的預設答案。\n\nGalinsky 說，設定界線和維持關係不是對立的。事實上，明確的界線往往是讓對方真正尊重你的基礎。一個你總是讓步的關係，對方尊重的不是你，而是你的「可利用性」。\n\n具體的改善方向：\n1. 在下次談判或討論前，先定義「我不能妥協的底線是什麼」\n2. 練習說「我需要想一下」而不是立刻答應\n3. 區分「為了關係的長期好處而讓步」和「因為不敢衝突而讓步」——只做前者',
+    morview:  '你不缺乏善意——你缺乏的是為自己的利益發聲的練習。\n\n維持關係和保護自己的利益，不需要是互斥的。Galinsky 說，最好的關係是雙方都能清楚說出自己的需要——而不是一方持續委屈自己來讓另一方舒服。\n\n你的善意是一個真實的優勢。問題是它有沒有被放在對的地方。',
+    cta:      '留下 Email，我寄給你「過度配合型的界線建立策略——如何在不傷害關係的前提下保護自己的利益」。'
   },
-  X3: {
-    type:     '反芻思考型',
-    subtitle: 'The Ruminator',
-    desc:     '你的焦慮主要住在你的腦子裡——你反覆思考同一件事，從不同角度分析，試圖找到一個讓你能放下來的確定答案。那個答案幾乎從來不會來，因為它不是思考能給你的東西。',
-    analysis: '反芻思考是焦慮最常見的認知模式之一。它的感覺像是「在認真思考問題」，但它和真正的問題解決有一個關鍵差異：真正的問題解決在思考之後，有新的認識或行動；反芻是在同一個地方原地踏步，越想越焦慮。\n\n反芻的隱性成本非常高——它消耗工作記憶和情緒資源，讓你很難做別的事。它也常常讓你的焦慮螺旋上升，因為越想越多角度，越多角度就越多需要擔心的地方。\n\n反芻型的焦慮特別難處理，因為「繼續思考」感覺就像是在「認真對待這件事」。停止思考感覺像是在逃避。但有時候，停下來才是對那件事最誠實的回應。',
-    morview:  '你的思維能力很強——但它現在在吃你自己。\n\n一個有效的打斷方式：當你發現自己在反芻，問自己「這個想法對我有用嗎？」——不是「這個想法對不對」，是「它有用嗎？」如果答案是沒有，你有許可讓它先放在那裡，而不是繼續追它。',
-    cta:      '留下 Email，我寄給你針對「反芻思考型」的打斷迴圈和接地練習。'
+  F3: {
+    type:     '直覺辨讀型',
+    subtitle: 'The Intuitive Reader',
+    desc:     '你靠直覺讀人，而且通常準確。你能感覺到一個人的真實意圖，能看到表面話語後面的動機。Galinsky 和 Schweitzer 說，這是一個很有價值的能力，但它也有一個盲點：直覺是高效的，但它不是全面的。',
+    analysis: 'Galinsky 和 Schweitzer 在書裡討論了大量關於「信號讀取（signal detection）」的研究。\n\n讀直覺型的人在某些信號上非常敏感——他們能感受到情緒、態度、非語言的訊息。這讓他們在人際互動中有一個不對稱的優勢。\n\n但直覺有一個系統性的盲點：**它是根據你的過去經驗建立的模式匹配，所以它在「你熟悉的情境」裡準確，在「你沒有足夠先例的情境」裡容易出錯。**\n\n書裡有一個重要的研究：人們對「欺騙」的直覺判斷，準確率只比隨機猜測高一點點——但我們相信自己的直覺非常準確。這個差距，就是直覺辨讀型需要填補的空白。\n\n具體的改善方向：\n1. 在你的直覺告訴你某件事之後，試著問：「有沒有與這個直覺相反的證據？」\n2. 補充更多結構性的資訊——行為記錄、第三方的評價、歷史模式\n3. 注意你的直覺在哪些情境裡最容易出錯（通常是你帶有情緒的情境）',
+    morview:  '你讀人的能力是真實的——它讓你在很多情況下比別人看得更清楚。\n\n但 Galinsky 說，最聰明的讀人者不是只靠直覺，而是把直覺當作「需要被驗證的假設」，然後尋找支持或否定它的更多資訊。\n\n你的直覺給你一個起點，不是一個終點。',
+    cta:      '留下 Email，我寄給你「直覺辨讀型的升級框架——如何用系統性資訊強化你的人際判斷力」。'
   },
-  X4: {
-    type:     '接觸轉化型',
-    subtitle: 'The Transformer',
-    desc:     '你已經發展出一種相對成熟的焦慮關係——你不迴避它，也不試圖強行消除它，而是把它當作一個訊號來聆聽。這個位置不是沒有焦慮，而是焦慮對你來說是有意義的資訊。',
-    analysis: '接觸轉化型代表一種對焦慮比較整合的關係。你理解焦慮是有功能的——它在告訴你某件事對你很重要，或者某種需求沒有被照顧到。\n\n但這個類型也有它的挑戰：有時候「理解焦慮」可以成為另一種回避——你在「分析」焦慮，而不是真正地感受它。智識化是一種精緻的迴避。\n\n另一個值得注意的是：接觸轉化需要容量——有時候焦慮的強度超過你當下能接觸的程度，這時候需要先有外部支持（關係、身體安撫），再回來和它接觸，而不是強迫自己在任何狀態下都要「處理」它。',
-    morview:  '你的方向是對的。繼續往前的工作是：當焦慮很強的時候，你能不能先讓身體落地（呼吸、移動、接觸、感受當下環境），再回來和焦慮對話，而不是直接進入「這告訴我什麼」的分析？\n\n身體先，理解後。這是接觸轉化的完整路徑。',
-    cta:      '留下 Email，我寄給你針對「接觸轉化型」的進階整合練習。'
+  F4: {
+    type:     '策略清醒型',
+    subtitle: 'The Strategically Aware',
+    desc:     '你理解競爭和合作的雙重性，你能在不同的情境裡切換策略。Galinsky 和 Schweitzer 說，你已經掌握了人際策略最重要的核心能力：知道什麼時候該當朋友，什麼時候要像對敵人一樣保護自己。',
+    analysis: 'Galinsky 和 Schweitzer 在《朋友與敵人》裡說，大多數人在競爭和合作之間沒有意識地切換——他們有一個預設模式，然後在那個模式裡行動。\n\n策略清醒型的人不同：他們能有意識地評估局勢，然後選擇最適合當下的策略。\n\n但書裡也說，策略清醒型面對的是更高層次的挑戰：\n\n**第一，換位思考的深度。** Galinsky 說，真正有效的換位思考不只是「如果我是他我會怎麼想」，而是理解對方的動機、壓力、和他眼中的局勢——這需要主動蒐集資訊，不只是設想。\n\n**第二，長期關係的管理。** 在單次互動裡策略清醒是一個優勢，但在長期關係裡，過於「策略性」可能讓對方感覺被計算，而不是被真實對待。\n\n**第三，知道自己什麼時候過度策略化。** 有些關係不需要策略，需要的是真實連結。策略清醒型有時候會在不需要分析的地方過度分析。',
+    morview:  '你已經理解了人際關係最複雜的部分：它既不是純粹的合作，也不是純粹的競爭。\n\nGalinsky 說，最厲害的人際策略家，知道什麼時候要放下策略，讓關係自然地發展。不是每一段關係都需要被管理，有些只需要被真實地對待。\n\n繼續精進你的判斷力，但也保留一些空間給沒有策略的連結。',
+    cta:      '留下 Email，我寄給你「策略清醒型的進階框架——換位思考、長期關係管理、和知道什麼時候放下策略」。'
   }
 };
 </script>
@@ -455,14 +427,13 @@ function openLine() { window.open(CFG.lineUrl, '_blank'); }
 function openIG()   { window.open(CFG.igUrl,   '_blank'); }
 
 const KIT_MAPPING = {
-  'X1': { tag_id: 20674024, seq_id: 2808454 },
-  'X2': { tag_id: 20674025, seq_id: 2808456 },
-  'X3': { tag_id: 20674026, seq_id: 2808457 },
-  'X4': { tag_id: 20674027, seq_id: 2808458 },
+  'F1': { tag_id: 20822370, seq_id: 2813664 },
+  'F2': { tag_id: 20822371, seq_id: 2813665 },
+  'F3': { tag_id: 20822372, seq_id: 2813666 },
+  'F4': { tag_id: 20822373, seq_id: 2813667 },
 };
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
-
-const pctMap = { X1: 12.5, X2: 37.5, X3: 62.5, X4: 87.5 };
+const pctMap = { F1: 12.5, F2: 37.5, F3: 62.5, F4: 87.5 };
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -475,10 +446,10 @@ function startQuiz() {
 }
 function renderQuestion() {
   const q = QUESTIONS[currentQ], total = QUESTIONS.length;
-  document.getElementById('q-num').textContent           = 'Q' + (currentQ + 1);
-  document.getElementById('q-total').textContent         = '/ ' + total + ' 題';
-  document.getElementById('progress-fill').style.width  = (currentQ / total * 100) + '%';
-  document.getElementById('q-text').textContent          = q.text;
+  document.getElementById('q-num').textContent          = 'Q' + (currentQ + 1);
+  document.getElementById('q-total').textContent        = '/ ' + total + ' 題';
+  document.getElementById('progress-fill').style.width = (currentQ / total * 100) + '%';
+  document.getElementById('q-text').textContent         = q.text;
   const wrap = document.getElementById('options-wrap'); wrap.innerHTML = '';
   q.options.forEach((opt, i) => {
     const btn = document.createElement('button'); btn.className = 'option';
@@ -496,6 +467,7 @@ function selectOption(el, opt, idx) {
   document.querySelectorAll('.option').forEach((o, i) => {
     if (i === idx) o.classList.add('selected'); else o.classList.add('fade-out');
   });
+  Object.entries(opt.scores).forEach(([k,v]) => { scores[k] = (scores[k]||0)+v; });
   setTimeout(() => { currentQ++; if (currentQ < QUESTIONS.length) renderQuestion(); else showResult(); }, 520);
 }
 function prevQ() { if (currentQ === 0) { showScreen('screen-start'); return; } currentQ--; renderQuestion(); }
@@ -541,7 +513,7 @@ function buildShareHTML(r) {
   return '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 44px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 人際策略診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 20px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
@@ -553,13 +525,13 @@ function buildFullPDFHTML(r) {
   let h = '<div style="width:390px;background:#090705;font-family:\'Noto Sans TC\',\'PingFang TC\',sans-serif;color:#EDE8DF">' +
     '<div style="height:5px;background:linear-gradient(90deg,#C4A96A,#E8C86A)"></div>' +
     '<div style="padding:36px 28px 48px">' +
-      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 焦慮模式探索報告</p>' +
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9A8C78;margin:0 0 24px">Mori · 人際策略診斷報告</p>' +
       '<h2 style="font-size:30px;font-weight:900;color:#EDE8DF;margin:0 0 10px;line-height:1.2">' + r.type + '</h2>' +
       '<p style="font-size:14px;color:#C4A96A;font-weight:500;margin:0 0 24px;line-height:1.6">' + r.subtitle + '</p>' +
       '<div style="height:1px;background:rgba(196,169,106,0.15);margin:0 0 20px"></div>' +
       '<p style="font-size:13px;color:#9A8C78;line-height:1.9;margin:0 0 20px">' + r.desc + '</p>';
   if (r.analysis) {
-    h += '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;text-transform:uppercase;margin:0 0 10px">深度分析</p>' +
+    h += '<p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#C4A96A;text-transform:uppercase;margin:0 0 10px">人際策略深度分析</p>' +
       '<p style="font-size:12px;color:rgba(154,140,120,.85);line-height:1.9;margin:0 0 20px;white-space:pre-line">' + r.analysis + '</p>';
   }
   if (r.morview) {
@@ -574,12 +546,9 @@ function buildFullPDFHTML(r) {
 }
 async function downloadPDF() {
   if (!currentResultKey) return;
-  const r = RESULTS[currentResultKey];
-  const target = document.getElementById('pdf-target');
-  const btn = document.getElementById('dlBtn');
-  const origHTML = btn ? btn.innerHTML : '';
-  target.style.display = 'block';
-  target.innerHTML = buildFullPDFHTML(r);
+  const r = RESULTS[currentResultKey]; const target = document.getElementById('pdf-target');
+  const btn = document.getElementById('dlBtn'); const origHTML = btn ? btn.innerHTML : '';
+  target.style.display = 'block'; target.innerHTML = buildFullPDFHTML(r);
   if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
   try {
     await document.fonts.ready;
@@ -591,18 +560,12 @@ async function downloadPDF() {
     pdf.addImage(imgData, 'PNG', 0, 0, w, h);
     pdf.save('mori-result-' + currentResultKey.toLowerCase() + '.pdf');
   } catch(e) { console.error(e); }
-  finally {
-    target.style.display = 'none';
-    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
-  }
+  finally { target.style.display = 'none'; if (btn) { btn.disabled = false; btn.innerHTML = origHTML; } }
 }
-
 async function shareResult() {
   if (!currentResultKey) return;
-  const r = RESULTS[currentResultKey];
-  const target = document.getElementById('pdf-target');
-  target.style.display = 'block';
-  target.innerHTML = buildShareHTML(r);
+  const r = RESULTS[currentResultKey]; const target = document.getElementById('pdf-target');
+  target.style.display = 'block'; target.innerHTML = buildShareHTML(r);
   try {
     await document.fonts.ready;
     const canvas = await html2canvas(target, { backgroundColor: '#090705', scale: 2, useCORS: true, logging: false });
@@ -612,16 +575,12 @@ async function shareResult() {
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: 'Mori 測驗結果' });
       } else {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = fname;
-        a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; a.click();
       }
     }, 'image/png');
   } catch(e) { console.error(e); }
   finally { target.style.display = 'none'; }
 }
-
 async function submitEmail() {
   const emailEl = document.getElementById('email-input'), email = emailEl.value.trim();
   if (!email || !email.includes('@')) return;
@@ -639,36 +598,15 @@ async function submitEmail() {
     if (kitSubId && _sid) await fetch(`/api/kit/v4/sequences/${_sid}/subscribers`, {
       method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:kitSubId }),
     });
-    if (kitSubRes.ok) { document.querySelector('.email-form').style.display='none'; document.getElementById('email-done').style.display='block'; }
-    else { btn.disabled=false; btn.textContent='送出'; }
+    document.getElementById('email-done').style.display='block';
+    emailEl.value=''; emailEl.disabled=true; btn.style.display='none';
   } catch(e) { btn.disabled=false; btn.textContent='送出'; }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  const lL=document.getElementById('line-l'), lR=document.getElementById('line-r'), pt=document.getElementById('pre-text');
-  setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
-  setTimeout(() => { pt.classList.add('ready'); pt.textContent='Enter'; }, 1600);
-  pt.addEventListener('click', () => {
-    if (!pt.classList.contains('ready')) return;
-    document.getElementById('preloader').style.opacity='0';
-    setTimeout(() => { document.getElementById('preloader').style.display='none'; document.getElementById('site').style.opacity='1'; }, 600);
-  });
-  const cur=document.getElementById('cursor'), ring=document.getElementById('cursor-ring');
-  let mx=0,my=0,rx=0,ry=0;
-  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
-  (function tick(){ rx+=(mx-rx)*.18; ry+=(my-ry)*.18;
-    cur.style.left=mx+'px'; cur.style.top=my+'px';
-    ring.style.left=rx+'px'; ring.style.top=ry+'px';
-    requestAnimationFrame(tick); })();
-  document.querySelectorAll('button,a').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-  });
-  MoriParticles.init('quiz');
-});
+MoriParticles.init('quiz');
 </script>
-<div id="pdf-target"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<div id="pdf-target"></div>
 </body>
 </html>
