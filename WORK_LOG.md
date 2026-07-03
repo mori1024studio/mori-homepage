@@ -24,6 +24,14 @@
 - CF 建 API token → `gh secret set CLOUDFLARE_API_TOKEN`
 - 決定空殼 sequence 補內容的方式（Playwright 自動化 vs 手動）
 
+### 同日後續（全部解決）
+- ✅ Kit key 旋轉完成：舊 key 401 失效、新 key 入 CF secret、代理驗證通過
+- ✅ GitHub Actions 自動部署跑通（CLOUDFLARE_API_TOKEN 已設，push 即 deploy）
+- ✅ 「102 空殼」真相：714 封信 6/27 已上傳但全卡草稿——`kit_publish_all.py` 全數發佈（713 成功 0 失敗）
+- ✅ 125 sequence 發送時間全改 Asia/Taipei 09:00（原美東 11:00 = 台灣半夜）
+- ✅ 終驗：125/125 email_count=7、時區正確、active
+- 剩餘：寄件域名/DMARC（需自有網域）、Kit 方案試用期確認、email 商業出口、寄達驗證（明早 09:00 後查 proxytest 信箱）
+
 ---
 
 ## 2026-06-29｜Session：新測驗 + 內容資產補全
