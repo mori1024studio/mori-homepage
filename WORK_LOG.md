@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-07-04｜Session：找回並重建 quiz-tracker 後台（Sonnet 5）
+
+### 背景
+Mori 想找「測驗完成後可看到結果、分析暖養 vs 副業合作」的後台，一度以為 Notion 紀錄被刪。追查後發現是獨立的 Cloudflare Worker 專案 `000_Agent/quiz-tracker/`（密碼 mori2026），從未進版控，且只有 `sidebiz` 一個測驗還在回報資料，其餘 26 個新測驗都沒接線。
+
+### 完成
+- **密碼移出原始碼**：`ADMIN_PW` 改用 `wrangler secret put`，不再寫死在 `src/index.js`（舊密碼 mori2026 已作廢，新密碼只存在 Mori 本人手上，不寫入任何檔案）
+- **quiz-tracker 備份**：`git init` 推到私有 repo `github.com/mori1024studio/quiz-tracker`
+- **Worker API 擴充**：新增 `PUT /update`（後台編輯）、`DELETE /delete`（後台刪除）、`POST /email`（測驗頁補寫 email，公開端點僅能改 email 欄位）；`/data`、`/update`、`/delete` 改用 `Authorization: Bearer` 標頭驗證，不再把密碼放 URL query
+- **後台 UI**：`/admin` 頁面新增編輯/刪除按鈕 + 「未分類」篩選與統計
+- **shared/tracker.js**：新增 `sendQuizTrack()`（測驗解鎖結果時呼叫，自動判斷 quiz slug、依 q1-3 算 segment）與 `sendQuizEmail()`（email 送出後補寫同一筆記錄，不重複建列）
+- **全站接線**：template + 26 個上線測驗頁自動接上（sidebiz 已有自己的整合邏輯，未變動）
+- **端對端驗證**：Playwright 實跑 not-enough 測驗 → 確認 KV 有新記錄、segment 自動算對、email 補寫到同一筆、後台編輯/刪除按鈕都正常運作
+
+### 待辦
+- 密碼已更新但只跟 Mori 口頭/介面內交接，注意保管（後台網址：`https://quiz-tracker.mori1024.workers.dev/admin`）
+- Cloudflare Workers KV 免費版每日寫入上限約 1000 次，流量大時留意
+- `— 未分類` 的 segment 需要 Mori 在後台手動複核（自動算出的 partner/client/warm/cold 只是粗略公式，來自 sidebiz 原本的判斷邏輯）
+
+---
+
 ## 2026-07-03｜Session：安全修復 + 全漏斗稽核（Fable 5）
 
 ### 完成
