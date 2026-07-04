@@ -482,6 +482,7 @@ const RESULTS = {
 
 <!-- ════ 共用引擎 ════ -->
 <script src="/shared/particles.js"></script>
+<script src="/shared/tracker.js"></script>
 <script>
 document.getElementById('quiz-title').textContent = QUIZ_INFO.title;
 document.getElementById('quiz-desc').textContent  = QUIZ_INFO.desc;
@@ -565,7 +566,7 @@ function surveyPick(q, val, btn) {
   btn.classList.add('picked');
   if (surveyAnswers[1] && surveyAnswers[2] && surveyAnswers[3]) document.getElementById('btnUnlock').disabled = false;
 }
-function unlockResult() { renderFullResult(); showScreen('screen-result'); }
+function unlockResult() { renderFullResult(); sendQuizTrack(_mtResultLabel(), surveyAnswers[1], surveyAnswers[2], surveyAnswers[3]); showScreen('screen-result'); }
 function renderFullResult() {
   const r = RESULTS[currentResultKey];
   document.getElementById('r-type').textContent     = r.type;
@@ -673,7 +674,7 @@ async function shareResult() {
 
 async function submitEmail() {
   const emailEl = document.getElementById('email-input'), email = emailEl.value.trim();
-  if (!email || !email.includes('@')) return;
+  if (!email || !email.includes('@')) return; sendQuizEmail(email);
   const btn = document.querySelector('.btn-email'); btn.disabled=true; btn.textContent='送出中…';
   try {
     const { tag_id:_tid, seq_id:_sid } = KIT_MAPPING[currentResultKey] || {};

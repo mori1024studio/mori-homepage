@@ -709,7 +709,7 @@ function surveyPick(q, val, btn) {
   }
 }
 function unlockResult() {
-  renderFullResult();
+  renderFullResult(); sendQuizTrack(_mtResultLabel(), surveyAnswers[1], surveyAnswers[2], surveyAnswers[3]);
   showScreen('screen-result');
 }
 
@@ -836,7 +836,7 @@ async function shareResult() {
 async function submitEmail() {
   const emailEl = document.getElementById('email-input');
   const email = emailEl.value.trim();
-  if (!email || !email.includes('@')) return;
+  if (!email || !email.includes('@')) return; sendQuizEmail(email);
   const btn = document.querySelector('.btn-email');
   btn.disabled = true; btn.textContent = '送出中…';
   try {
@@ -894,6 +894,7 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 <div id="pdf-target"></div>
 <script src="/shared/particles.js"></script>
+<script src="/shared/tracker.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d97376ef07c04db087c5b366961e9bb8"}'></script><!-- End Cloudflare Web Analytics -->

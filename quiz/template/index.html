@@ -398,6 +398,7 @@ const RESULTS = {
 
 <!-- ══ 共用引擎（不需要修改）══════════════════════════════════ -->
 <script src="/shared/particles.js"></script>
+<script src="/shared/tracker.js"></script>
 <script>
 /* ── 初始化頁面文案 ── */
 document.getElementById('quiz-title').textContent = QUIZ_INFO.title;
@@ -486,6 +487,7 @@ function showResult() {
     document.getElementById('r-cta-text').textContent = r.cta;
   }
 
+  sendQuizTrack(r.type);
   showScreen('screen-result');
 }
 
@@ -502,7 +504,8 @@ function shareResult() {
 function submitEmail() {
   const email = document.getElementById('email-input').value;
   if (!email) return;
-  /* ★ 改這裡：接上 MailerLite API 或表單 */
+  sendQuizEmail(email);
+  /* ★ 改這裡：接上 Kit API（參照 quiz/not-enough/ 的 submitEmail 寫法）*/
   alert('謝謝！我會寄給你：' + email);
 }
 
