@@ -127,8 +127,15 @@ body.hovering #cursor-ring { width: 58px; height: 58px; border-color: rgba(232,2
   white-space: nowrap; user-select: none;
   transition: color .4s;
 }
-#pre-text.ready { color: var(--text); cursor: none; }
-#pre-text.ready:hover { color: var(--gold); }
+#pre-progress-track {
+  position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%);
+  width: clamp(120px,26vw,240px); height: 1px;
+  background: rgba(196,169,106,.15); z-index: 2; overflow: hidden;
+}
+#pre-progress-bar {
+  height: 100%; width: 0%; background: var(--gold);
+  transition: width 1.5s cubic-bezier(.4,0,.2,1);
+}
 
 /* ── SITE WRAPPER ── */
 #site { position: relative; z-index: 10; opacity: 0; }

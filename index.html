@@ -144,6 +144,7 @@
       <span id="pre-text">Loading</span>
       <div class="pre-line" id="line-r"></div>
     </div>
+  <div id="pre-progress-track"><div id="pre-progress-bar"></div></div>
   </div>
 
   <div id="cursor"></div>
@@ -810,19 +811,16 @@
   const preTop=document.getElementById('pre-top'),preBot=document.getElementById('pre-bot');
   const preText=document.getElementById('pre-text');
   const lineL=document.getElementById('line-l'),lineR=document.getElementById('line-r');
+  const preBar=document.getElementById('pre-progress-bar');
   const site=document.getElementById('site');
 
   function initPreloader(){
     lineL.classList.add('open'); lineR.classList.add('open');
-    setTimeout(()=>{
-      preText.textContent='Enter';
-      preText.classList.add('ready');
-      preText.addEventListener('click',onEnter);
-    },1600);
+    requestAnimationFrame(()=>{ preBar.style.width='100%'; });
+    setTimeout(onEnter,1700);
   }
 
   function onEnter(){
-    preText.removeEventListener('click',onEnter);
     gsap.registerPlugin(ScrollTrigger);
     const tl=gsap.timeline();
     tl.to([lineL,lineR,preText],{opacity:0,duration:.35,ease:'power2.in'})

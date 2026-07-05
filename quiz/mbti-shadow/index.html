@@ -284,6 +284,7 @@
     <span id="pre-text">Loading</span>
     <div class="pre-line" id="line-r"></div>
   </div>
+<div id="pre-progress-track"><div id="pre-progress-bar"></div></div>
 </div>
 
 <div id="cursor"></div>
@@ -874,16 +875,15 @@ window.addEventListener('DOMContentLoaded', () => {
   const pt = document.getElementById('pre-text');
 
   setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
-  setTimeout(() => { pt.classList.add('ready'); pt.textContent = 'Enter'; }, 1600);
-
-  pt.addEventListener('click', () => {
-    if (!pt.classList.contains('ready')) return;
+  const pb = document.getElementById('pre-progress-bar');
+  requestAnimationFrame(() => { pb.style.width = '100%'; });
+  setTimeout(() => {
     document.getElementById('preloader').style.opacity = '0';
     setTimeout(() => {
       document.getElementById('preloader').style.display = 'none';
       document.getElementById('site').style.opacity = '1';
     }, 600);
-  });
+  }, 1700);
 
   /* 自訂游標 */
   const cur = document.getElementById('cursor');

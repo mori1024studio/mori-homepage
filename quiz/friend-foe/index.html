@@ -121,6 +121,7 @@
     <span id="pre-text">Loading</span>
     <div class="pre-line" id="line-r"></div>
   </div>
+<div id="pre-progress-track"><div id="pre-progress-bar"></div></div>
 </div>
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
@@ -604,7 +605,37 @@ async function submitEmail() {
   } catch(e) { btn.disabled=false; btn.textContent='送出'; }
 }
 
-MoriParticles.init('quiz');
+window.addEventListener('DOMContentLoaded', () => {
+  const lL = document.getElementById('line-l');
+  const lR = document.getElementById('line-r');
+  const pt = document.getElementById('pre-text');
+
+  setTimeout(() => { lL.classList.add('open'); lR.classList.add('open'); }, 200);
+  const pb = document.getElementById('pre-progress-bar');
+  requestAnimationFrame(() => { pb.style.width = '100%'; });
+  setTimeout(() => {
+    document.getElementById('preloader').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('preloader').style.display = 'none';
+      document.getElementById('site').style.opacity = '1';
+    }, 600);
+  }, 1700);
+
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function tick(){ rx+=(mx-rx)*.18; ry+=(my-ry)*.18;
+    cur.style.left=mx+'px'; cur.style.top=my+'px';
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(tick); })();
+  document.querySelectorAll('button,a').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+
+  MoriParticles.init('quiz');
+});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
