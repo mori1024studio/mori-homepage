@@ -484,34 +484,13 @@
       <div class="carousel-nav">
         <button class="carousel-btn" id="prev-btn">&#8592;</button>
         <div class="carousel-pips">
-          <div class="pip active" data-pip="0"></div>
-          <div class="pip" data-pip="1"></div>
-          <div class="pip" data-pip="2"></div>
-          <div class="pip" data-pip="3"></div>
-          <div class="pip" data-pip="4"></div>
-          <div class="pip" data-pip="5"></div>
-          <div class="pip" data-pip="6"></div>
-          <div class="pip" data-pip="7"></div>
-          <div class="pip" data-pip="8"></div>
-          <div class="pip" data-pip="9"></div>
-          <div class="pip" data-pip="10"></div>
-          <div class="pip" data-pip="11"></div>
-          <div class="pip" data-pip="12"></div>
-          <div class="pip" data-pip="13"></div>
-          <div class="pip" data-pip="14"></div>
-          <div class="pip" data-pip="15"></div>
-          <div class="pip" data-pip="16"></div>
-          <div class="pip" data-pip="17"></div>
-          <div class="pip" data-pip="18"></div>
-          <div class="pip" data-pip="19"></div>
-          <div class="pip" data-pip="20"></div>
-          <div class="pip" data-pip="21"></div>
-          <div class="pip" data-pip="22"></div>
-          <div class="pip" data-pip="23"></div>
-          <div class="pip" data-pip="24"></div>
-          <div class="pip" data-pip="25"></div>
-          <div class="pip" data-pip="26"></div>
-          <div class="pip" data-pip="27"></div>
+          <div class="pip" data-offset="-3"></div>
+          <div class="pip" data-offset="-2"></div>
+          <div class="pip" data-offset="-1"></div>
+          <div class="pip active" data-offset="0"></div>
+          <div class="pip" data-offset="1"></div>
+          <div class="pip" data-offset="2"></div>
+          <div class="pip" data-offset="3"></div>
         </div>
         <button class="carousel-btn" id="next-btn">&#8594;</button>
       </div>
@@ -799,12 +778,15 @@
       if(instant){const t=card.style.transition;card.style.transition='none';setCardPos(card,off);requestAnimationFrame(()=>{card.style.transition=t;});}
       else setCardPos(card,off);
     });
-    pips.forEach((pip,i)=>pip.classList.toggle('active',i===activeIdx));
+    pips.forEach(pip=>{
+      const off=parseInt(pip.dataset.offset,10);
+      pip.dataset.idx=((activeIdx+off)%N+N)%N;
+    });
   }
 
   document.getElementById('next-btn').addEventListener('click',()=>{activeIdx=(activeIdx+1)%N;updateCarousel(false);});
   document.getElementById('prev-btn').addEventListener('click',()=>{activeIdx=(activeIdx-1+N)%N;updateCarousel(false);});
-  pips.forEach((pip,i)=>pip.addEventListener('click',()=>{activeIdx=i;updateCarousel(false);}));
+  pips.forEach(pip=>pip.addEventListener('click',()=>{activeIdx=parseInt(pip.dataset.idx,10);updateCarousel(false);}));
 
   /* ── PRELOADER ── */
   const preloader=document.getElementById('preloader');
