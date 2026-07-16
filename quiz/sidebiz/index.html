@@ -326,6 +326,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://mori-homepage.pages.dev/shared/particles.js"></script>
+<script src="https://mori-homepage.pages.dev/shared/tracker.js"></script>
 <script>
 /* ── 設定 ─────────────────────────────────────────────── */
 const KIT_MAPPING = {
@@ -335,7 +336,6 @@ const KIT_MAPPING = {
   'S': { tag_id: 20663586, seq_id: 2807575 },
   'K': { tag_id: 20663587, seq_id: 2807576 },
 };
-const TRACKER = 'https://quiz-tracker.mori1024.workers.dev/track';
 const TYPE_ORDER = ['K','C','S','T','M'];
 
 /* ── 題目 ────────────────────────────────────────────── */
@@ -559,7 +559,11 @@ function surveyPick(q, val, btn) {
   if (surveyAnswers[1] && surveyAnswers[2] && surveyAnswers[3]) document.getElementById('btnUnlock').disabled = false;
 }
 
-function unlockResult() { renderFullResult(); showScreen('screen-result'); }
+function unlockResult() {
+  sendQuizTrack(TYPES[finalType].name, surveyAnswers[1], surveyAnswers[2], surveyAnswers[3]);
+  renderFullResult();
+  showScreen('screen-result');
+}
 
 /* ── 結果渲染（T6）─────────────────────────────────────── */
 function renderFullResult() {
@@ -617,10 +621,6 @@ async function submitEmail() {
   if (!email || !email.includes('@')) return;
   const btn = document.querySelector('.email-submit');
   btn.textContent = '傳送中…'; btn.disabled = true;
-  const {1:q1,2:q2,3:q3} = surveyAnswers;
-  const seg = (q1==='C'||q1==='D')&&q2==='C'&&(q3==='C'||q3==='D') ? 'partner' :
-              q2==='A'&&(q3==='A'||q3==='B') ? 'client' :
-              q1==='A'||q3==='D' ? 'warm' : 'cold';
   try {
     const { tag_id: _tid, seq_id: _sid } = KIT_MAPPING[finalType] || {};
     const kitSubRes = await fetch('/api/kit/v4/subscribers', {
@@ -643,11 +643,7 @@ async function submitEmail() {
         body: JSON.stringify({ id: kitSubId }),
       });
     }
-    fetch(TRACKER, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ quiz:'side-gene', result: TYPES[finalType].name, q1,q2,q3, segment: seg, email })
-    }).catch(()=>{});
+    sendQuizEmail(email);
   } catch(e) {}
   document.querySelector('.email-form').style.display = 'none';
   document.getElementById('email-done').style.display = 'block';

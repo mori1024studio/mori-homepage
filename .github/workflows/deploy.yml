@@ -16,3 +16,41 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 20af18e732d887b42df1b5622e3cd026
           command: pages deploy . --project-name=mori-homepage
+
+      - name: Smoke test（部署後驗證代表性頁面與 API 防護）
+        run: |
+          set -e
+          BASE="https://mori-homepage.pages.dev"
+          fail=0
+
+          check_200() {
+            code=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 3 --retry-connrefused "$1")
+            if [ "$code" != "200" ]; then
+              echo "❌ $1 -> $code（期望 200）"
+              fail=1
+            else
+              echo "✅ $1 -> 200"
+            fi
+          }
+
+          check_status() {
+            code=$(curl -s -o /dev/null -w "%{http_code}" --retry 3 --retry-delay 3 -X "$2" "$1")
+            if [ "$code" != "$3" ]; then
+              echo "❌ $2 $1 -> $code（期望 $3）"
+              fail=1
+            else
+              echo "✅ $2 $1 -> $3"
+            fi
+          }
+
+          check_200 "$BASE/"
+          check_200 "$BASE/quiz/sidebiz/"
+          check_200 "$BASE/quiz/mbti-shadow/"
+          check_200 "$BASE/quiz/anxiety-resolve/"
+          check_status "$BASE/api/kit/tags" "GET" "405"
+          check_status "https://quiz-tracker.mori1024.workers.dev/data" "GET" "401"
+
+          if [ "$fail" -eq 1 ]; then
+            echo "部署後 smoke test 失敗，請檢查上面標記 ❌ 的項目"
+            exit 1
+          fi
