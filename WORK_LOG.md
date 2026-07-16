@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-07-16｜Session：Agent/Skill 顧問審查後續執行（Sonnet 5）
+
+### 背景
+上一輪召集 6 位領域顧問審查現有 Agent/Skill 配置，找出 18 條缺口與進化建議；這次逐條執行「立即該做」+「值得規劃」共 18 項。
+
+### 完成（mori-homepage / quiz-tracker 相關部分）
+- **quiz-tracker Worker**：新增 KV 每日寫入配額監控（80%閾值 header 警告）、每週自動備份（cron，8週滾動保留）、後台密碼防暴力鎖定（5次錯誤鎖15分鐘）；已部署驗證（`ba589b1`）
+- **部署後 smoke test**：`deploy.yml` 加一步驗證代表性測驗頁 + `/api/kit/` 405 防護 + quiz-tracker `/data` 401 防護，失敗即標紅（`ca25df2`）
+- **sidebiz 追蹤修正**：改用共用 `shared/tracker.js`，修正原本寫死 `quiz:'side-gene'` 跟實際 URL slug (`sidebiz`) 對不上的問題，且改成在結果揭露當下就記錄（不再只在填 email 時才記錄）（`ca25df2`）
+- **全站 SEO 補齊**：首頁 + 27 個測驗頁全部加上 meta description / OG tags / JSON-LD Quiz schema（依各測驗實際結果類型寫的描述，非通用文字）；新增 `sitemap.xml`（28 URL）+ `robots.txt`；template 同步更新讓未來新測驗預設就有（`9e56a36`）
+- **首頁 H1 補齊**：seo-audit 正式健檢抓到首頁零 H1，把 hero 品牌標題的 wrapper 從 `div` 改 `h1`（只換標籤，class/CSS 不動）（`bc8fd71`）
+- **gitleaks pre-commit hook**：mori-homepage + quiz-tracker 兩個 repo 都裝上，`gitleaks detect` 順便抓到 mori-homepage git 歷史裡還留有 41 筆舊 MailerLite JWT（已知已作廢，但historyi 沒清）
+
+### 待 Mori
+- git 歷史裡的舊 JWT 要不要用 BFG/filter-repo 清掉（涉及 force-push，需要你點頭才動）
+- Kit 側的 win-back 再啟動序列已寫好文案草稿（`100_Todo/drafts/email-sequences/_win-back/`），但沒有 KIT_API_KEY 沒辦法幫你接進 Kit 後台，需要你或下一個有key的 session 執行
+
+---
+
 ## 2026-07-04｜Session：找回並重建 quiz-tracker 後台（Sonnet 5）
 
 ### 背景
