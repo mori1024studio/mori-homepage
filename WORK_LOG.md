@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-07-19｜Session：修復 IG 內建瀏覽器黑屏/閃爍（c1946ac）
+
+### 背景
+Mori 朋友回報：從 IG 連結點進測驗頁，只在首頁看到閃爍、什麼都看不到。診斷：首頁 `#site{opacity:0}` 只靠 GSAP 時間軸揭示，Three.js（手機 14000 顆粒子）在 IG 的 WKWebView 記憶體上限下崩潰重載循環 → 閃爍；任何 CDN/WebGL 失敗也會讓頁面永久黑屏。
+
+### 完成
+- **首頁保險絲**（`index.html`）：獨立 script，5 秒後偵測 `#site` 仍隱藏就強制關 preloader、顯示 hero/medallion；不依賴 THREE/GSAP。已用「three.js 載入失敗」情境本機驗證通過
+- **首頁 in-app 降載**：偵測 IG/FB/LINE/WeChat UA → 粒子 6000 顆 + pixelRatio 1，從根源避免 WebView 崩潰
+- **sidebiz init 順序修正**（唯一脆弱順序的測驗頁）：preloader 關閉排程先跑，`MoriParticles.init` 包 try/catch
+- **git 分岔修復**：發現 7/16 掃 key 時本地 29 個檔案的 CF beacon token（公開值）被誤植為 REDACTED 佔位字，造成本地/遠端歷史分岔。以 origin/main（真 token、與線上一致）為基底 cherry-pick 本次修復，本地已重新對齊遠端
+- **部署驗證**：push 自動 deploy，線上首頁 + sidebiz 皆 0 console error、內容正常顯示
+
+### 待辦
+- 請 Mori 或朋友在 IG 內建瀏覽器實測確認（Claude 無法真機模擬 WKWebView 記憶體行為）
+- `quiz/start-with-why/index.html` 有一份 session 前就存在的未 commit 修改（16+/52-），來源不明，保留在工作區待 Mori 確認
+
+---
+
 ## 2026-07-16｜Session：Agent/Skill 顧問審查後續執行（Sonnet 5）
 
 ### 背景

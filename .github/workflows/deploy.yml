@@ -20,7 +20,7 @@ jobs:
       - name: Smoke test（部署後驗證代表性頁面與 API 防護）
         run: |
           set -e
-          BASE="https://mori-homepage.pages.dev"
+          BASE="https://mentelume.com"
           fail=0
 
           check_200() {
