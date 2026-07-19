@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- v1.0 | 2026-07-19 | 新增 404 頁：停用 CF Pages SPA fallback，錯誤連結不再偽裝成首頁 -->
+<title>MORI — 找不到頁面</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* ── 404 頁專屬樣式（沿用品牌 token）── */
+body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #090705; color: #EDE8DF; font-family: 'Noto Sans TC', sans-serif; text-align: center; }
+.wrap { padding: 24px; }
+.logo { font-family: 'Kaushan Script', cursive; font-size: 40px; color: #C4A96A; margin-bottom: 28px; }
+.code { font-size: 11px; letter-spacing: .5em; color: rgba(196,169,106,.5); text-transform: uppercase; margin-bottom: 14px; }
+h1 { font-size: 20px; font-weight: 400; color: rgba(237,232,223,.8); margin: 0 0 36px; line-height: 1.8; }
+.btn { display: inline-block; font-size: 14px; letter-spacing: .2em; color: #C4A96A; border: 1px solid rgba(196,169,106,.3); padding: 13px 34px; border-radius: 100px; text-decoration: none; transition: border-color .3s, background .3s; }
+.btn:hover { border-color: #C4A96A; background: rgba(196,169,106,.06); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">Mori</div>
+  <div class="code">404 · Page Not Found</div>
+  <h1>這個頁面不存在，<br>可能是連結打錯或已經搬家了。</h1>
+  <a class="btn" href="/">回首頁看所有測驗</a>
+</div>
+</body>
+</html>
