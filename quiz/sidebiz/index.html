@@ -739,15 +739,15 @@ function startQuiz() {
 
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
-  MoriParticles.init('quiz');
+  const pl = document.getElementById('preloader');
+  setTimeout(() => { pl.classList.add('fade'); setTimeout(() => pl.style.display='none', 700); }, 1800);
+  try { MoriParticles.init('quiz'); } catch(e) {}
   const dot = document.getElementById('cursorDot');
   const ring = document.getElementById('cursorRing');
   document.addEventListener('mousemove', e => {
     dot.style.left = e.clientX + 'px'; dot.style.top = e.clientY + 'px';
     ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
   });
-  const pl = document.getElementById('preloader');
-  setTimeout(() => { pl.classList.add('fade'); setTimeout(() => pl.style.display='none', 700); }, 1800);
 });
 </script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d97376ef07c04db087c5b366961e9bb8"}'></script><!-- End Cloudflare Web Analytics -->

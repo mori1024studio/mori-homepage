@@ -604,6 +604,8 @@
   }
 
   /* ── THREE.JS SCENE ── */
+  /* IG/FB/LINE 內建瀏覽器記憶體上限低，降載避免 WebView 崩潰重載循環 */
+  const isInApp=/Instagram|FBAN|FBAV|FB_IAB|Line\/|MicroMessenger/i.test(navigator.userAgent);
   const cvs=document.getElementById('three-canvas');
   const W=window.innerWidth,H=window.innerHeight;
   const scene=new THREE.Scene();
@@ -611,14 +613,14 @@
   const camera=new THREE.PerspectiveCamera(80,W/H,0.1,3000);
   camera.position.set(0,-110,200); camera.lookAt(0,-100,-300);
   const renderer=new THREE.WebGLRenderer({canvas:cvs,antialias:false});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  renderer.setPixelRatio(isInApp?1:Math.min(devicePixelRatio,1.5));
   renderer.setSize(W,H); renderer.setClearColor(0x090705,1);
   const circleTex=makeCircleTex();
 
   /* ── TERRAIN SYSTEM：三地形自動輪換（星空 / 沙丘 / 山峰）── */
   const isMobile=window.innerWidth<768;
   const HP={
-    count:isMobile?14000:40000, size:isMobile?7:5.5,
+    count:isInApp?6000:(isMobile?14000:40000), size:isMobile?7:5.5,
     float:18, terrainScale:1.1, terrainY:-200,
     terrainXScale:4, surfaceTight:0.05, terrainZScale:2,
   };
@@ -865,6 +867,23 @@
   }
 
   initPreloader();
+  </script>
+  <script>
+  /* ── 保險絲：主腳本失敗（IG 內建瀏覽器 WebGL/CDN 掛掉）時仍顯示內容 ── */
+  (function(){
+    setTimeout(function(){
+      var site=document.getElementById('site');
+      if(!site||getComputedStyle(site).opacity!=='0') return;
+      var pl=document.getElementById('preloader');
+      if(pl) pl.style.display='none';
+      site.style.opacity='1';
+      document.querySelectorAll('.hero-eyebrow,.hero-letter,.hero-sub,.scroll-cue').forEach(function(el){
+        el.style.opacity='1'; el.style.transform='none';
+      });
+      var disc=document.querySelector('.medallion-disc');
+      if(disc) disc.style.clipPath='circle(52% at 50% 50%)';
+    }, 5000);
+  })();
   </script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d97376ef07c04db087c5b366961e9bb8"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
