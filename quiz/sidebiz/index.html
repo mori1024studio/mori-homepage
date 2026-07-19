@@ -177,10 +177,10 @@
 
 <div id="site">
   <!-- ── Nav ── -->
-  <nav class="nav">
-    <a href="/" class="nav-logo">Mori</a>
-    <div class="nav-right">
-      <a href="https://instagram.com/mori1024_" target="_blank" rel="noopener" class="nav-link">IG</a>
+  <nav>
+    <a href="/" class="logo" style="text-decoration:none">Mori</a>
+    <div class="nav-links">
+      <a href="https://instagram.com/mori1024_" target="_blank" rel="noopener">Instagram</a>
     </div>
   </nav>
 
@@ -740,7 +740,11 @@ function startQuiz() {
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
   const pl = document.getElementById('preloader');
-  setTimeout(() => { pl.classList.add('fade'); setTimeout(() => pl.style.display='none', 700); }, 1800);
+  setTimeout(() => {
+    pl.classList.add('fade');
+    document.getElementById('site').style.opacity = '1';
+    setTimeout(() => pl.style.display='none', 700);
+  }, 1800);
   try { MoriParticles.init('quiz'); } catch(e) {}
   const dot = document.getElementById('cursorDot');
   const ring = document.getElementById('cursorRing');
