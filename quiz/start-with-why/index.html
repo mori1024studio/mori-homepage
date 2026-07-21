@@ -97,7 +97,7 @@
 .option.fade-out { opacity: .25; transform: translateX(-6px); }
 .option-key { font-family: 'Kaushan Script', cursive; font-size: 18px; color: rgba(196,169,106,.4); flex-shrink: 0; width: 20px; transition: color .25s; }
 .option:hover .option-key, .option.selected .option-key { color: var(--gold); }
-.option-text { font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7; color: rgba(237,232,223,.7); transition: color .25s; }
+.option-text { text-align: left; flex: 1; font-family: 'LXGW WenKai TC', serif; font-size: 15px; line-height: 1.7; color: rgba(237,232,223,.7); transition: color .25s; }
 .option:hover .option-text, .option.selected .option-text { color: var(--text); }
 
 .quiz-nav { display: flex; align-items: center; margin-top: 24px; }
@@ -156,6 +156,13 @@
 .email-input:focus { border-color: rgba(196,169,106,.45); }
 .email-input::placeholder { color: rgba(154,140,120,.35); }
 .btn-email { padding: 10px 20px; background: rgba(196,169,106,.12); border: 1px solid rgba(196,169,106,.3); color: var(--gold); font-family: 'Noto Sans TC', sans-serif; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; cursor: none; white-space: nowrap; transition: all .25s; }
+/* ── 指南導流區塊 ── */
+.guide-cta { display: block; background: #14141F; border: 1.5px solid rgba(196,169,106,.36); border-radius: 18px; padding: 18px 20px; margin-top: 24px; text-decoration: none; transition: all .26s cubic-bezier(.4,0,.2,1); }
+.guide-cta:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(196,169,106,.12); }
+.guide-cta-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .09em; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; }
+.guide-cta-title { display: block; font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.55; }
+.cta-sub-link { display: block; text-align: center; margin-top: 10px; font-size: 13px; color: var(--muted); text-decoration: underline; }
+.cta-sub-link:hover { color: var(--gold); }
 .btn-email:hover { background: rgba(196,169,106,.2); }
 
 /* ════ T7 核心解鎖動畫 ════ */
@@ -386,6 +393,11 @@
           <p class="result-morview-label">Mori 觀點</p>
           <p class="result-morview-text" id="r-morview"></p>
         </div>
+        <!-- ── 指南導流區塊 ── -->
+        <a class="guide-cta" href="https://__NOTION_DOMAIN__.notion.site/3a0b6e97534a816db7c4fd259d0c8de7?utm_source=quiz&utm_medium=result&utm_campaign=start-with-why" target="_blank" rel="noopener">
+          <span class="guide-cta-label">📘 下一步</span>
+          <span class="guide-cta-title">WHY 清楚了，把它變成受眾定位 →《IG 副業旅程指南》1-1 找出你的黃金受眾</span>
+        </a>
         <div class="btn-row">
           <button class="btn-line" onclick="openLine()">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true" style="flex-shrink:0"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
@@ -407,11 +419,9 @@
         <div class="result-cta" id="result-cta" style="display:none">
           <p class="result-cta-label">深度解析</p>
           <p class="result-cta-text" id="r-cta-text"></p>
-          <div class="email-form">
-            <input class="email-input" type="email" placeholder="你的 Email" id="email-input">
-            <button class="btn-email" onclick="submitEmail()">送出</button>
-          </div>
-          <p id="email-done" style="display:none;color:var(--gold);font-size:13px;text-align:center;margin-top:12px;">✓ 收到了，稍後寄到你的信箱。</p>
+          <!-- ── 深度解析 CTA（LINE 主＋Beacons email 副）── -->
+          <button class="btn-line" onclick="openLine()" style="margin-top:4px">加 LINE 領深度解析</button>
+          <a class="cta-sub-link" href="__BEACONS_SUB_URL__" target="_blank" rel="noopener">習慣用 Email？訂閱接收 →</a>
         </div>
         <div class="related">
           <p class="related-label">繼續探索</p>
@@ -670,14 +680,7 @@ async function downloadPDF() {
   }
 }
 
-/* ── Kit 串接設定 ── */
-const KIT_MAPPING = {
-  'W1': { tag_id: 20673081, seq_id: 2808415 },
-  'W2': { tag_id: 20673082, seq_id: 2808416 },
-  'W3': { tag_id: 20673083, seq_id: 2808417 },
-  'W4': { tag_id: 20673084, seq_id: 2808418 },
-  'W5': { tag_id: 20673085, seq_id: 2808419 },
-};
+/* ── Kit 串接已移除（2026-07-18 停用 Kit，改 LINE 主＋Beacons email 副）── */
 Object.keys(RESULTS).forEach(k => { scores[k] = 0; });
 
 function showScreen(id) {
@@ -816,45 +819,6 @@ async function shareResult() {
   finally { target.style.display = 'none'; }
 }
 
-async function submitEmail() {
-  const emailEl = document.getElementById('email-input');
-  const email = emailEl.value.trim();
-  if (!email || !email.includes('@')) return; sendQuizEmail(email);
-  const btn = document.querySelector('.btn-email');
-  btn.disabled = true;
-  btn.textContent = '送出中…';
-  try {
-    const { tag_id: _tid, seq_id: _sid } = KIT_MAPPING[currentResultKey] || {};
-    const kitSubRes = await fetch('/api/kit/v4/subscribers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email_address: email }),
-    });
-    const kitSubId = kitSubRes.ok ? (await kitSubRes.json()).subscriber?.id : null;
-    if (kitSubId && _tid) {
-      await fetch(`/api/kit/v4/tags/${_tid}/subscribers`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: kitSubId }),
-      });
-    }
-    if (kitSubId && _sid) {
-      await fetch(`/api/kit/v4/sequences/${_sid}/subscribers`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: kitSubId }),
-      });
-    }
-    if (kitSubRes.ok) {
-      document.querySelector('.email-form').style.display = 'none';
-      document.getElementById('email-done').style.display = 'block';
-    } else {
-      btn.disabled = false; btn.textContent = '送出';
-    }
-  } catch(err) {
-    btn.disabled = false; btn.textContent = '送出';
-  }
-}
 window.addEventListener('DOMContentLoaded', () => {
   const lL = document.getElementById('line-l');
   const lR = document.getElementById('line-r');
