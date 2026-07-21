@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-07-21｜Session：手機版選項換行對齊修正（a661e3a）+ 誤部署還原（e88c441）
+
+### 完成
+- **選項換行對齊**：手機版中文選項換行後第二行置中（根因：選項是 `<button>`，瀏覽器預設 `text-align:center`，窄螢幕換行才顯現）。全 27 測驗頁 + template 的基底 `.option-text` 加 `text-align:left; flex:1`；字母 a-e 獨立左欄突出、文字整塊靠左。sidebiz + human-nature + mbti-shadow 三結構變體皆截圖驗證
+- **誤部署還原**：`git add quiz/` 誤把 start-with-why 一份「session 前就存在、未 commit」的 WIP 改版一起 commit+push（Kit→LINE 遷移，2026-07-18 標記，**含佔位符 `__NOTION_DOMAIN__`/`__BEACONS_SUB_URL__`**，會讓線上 CTA 壞掉）。發現後：WIP 完整備份到 `_wip-backup/`（已 gitignore）→ start-with-why 還原乾淨版 + 只保留選項對齊 → 重新部署驗證佔位符歸零、Kit 表單還原、CI 綠
+
+### 待 Mori（重要）
+- **start-with-why 的 Kit→LINE 遷移是未完成品**（有人 2026-07-18 動過但沒收尾），暫存在 `_wip-backup/start-with-why_kit-to-line-WIP_2026-07-18.html` + `.patch`。要繼續這個方向的話，需先把兩個佔位符換成真實 URL（Notion 網域、Beacons 訂閱連結）再套用——這與你稍早提的「不用 Kit、用自己網域寄信」方向一致，可一起規劃
+
+---
+
 ## 2026-07-19｜Session：修復 IG 內建瀏覽器黑屏/閃爍（c1946ac）
 
 ### 背景
